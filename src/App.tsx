@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
@@ -37,7 +38,7 @@ import AdminSettings from "@/pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
-function RequireAuth({ children, role }: { children: JSX.Element; role?: "admin" | "member" }) {
+function RequireAuth({ children, role }: { children: ReactElement; role?: "admin" | "member" }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   if (role === "admin" && user.role !== "admin") return <Navigate to="/dashboard" replace />;
