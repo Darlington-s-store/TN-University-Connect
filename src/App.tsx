@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import Preloader from "@/components/Preloader";
 
 import PublicLayout from "@/components/layout/PublicLayout";
 import MemberLayout from "@/components/layout/MemberLayout";
@@ -50,6 +51,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
+          <Preloader />
           <BrowserRouter>
             <Routes>
               {/* Public */}
