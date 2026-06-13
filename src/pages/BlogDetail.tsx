@@ -28,8 +28,14 @@ export default function BlogDetail() {
           <span className="flex items-center gap-1"><Calendar className="h-4 w-4" /> {new Date(post.date).toLocaleDateString("en-GB", { dateStyle: "long" })}</span>
           <button className="flex items-center gap-1 hover:text-primary"><Share2 className="h-4 w-4" /> Share</button>
         </div>
-        <div className="aspect-video bg-gradient-to-br from-primary/20 via-accent/10 to-secondary/20 rounded-lg grid place-items-center mb-8">
-          <BookOpen className="h-16 w-16 text-primary/40" />
+        <div className="aspect-video rounded-lg overflow-hidden mb-8 bg-muted">
+          {post.image ? (
+            <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-primary/20 via-accent/10 to-secondary/20 grid place-items-center">
+              <BookOpen className="h-16 w-16 text-primary/40" />
+            </div>
+          )}
         </div>
         <p className="text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap">{post.body}</p>
       </div>

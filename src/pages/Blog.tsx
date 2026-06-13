@@ -48,10 +48,13 @@ export default function Blog() {
             <Card className="overflow-hidden border-none shadow-2xl bg-white rounded-3xl group">
               <div className="grid lg:grid-cols-2">
                 <div className="aspect-[16/10] lg:aspect-auto relative overflow-hidden bg-muted">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-ghana-red/20 group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                    <BookOpen className="h-24 w-24 text-secondary" />
-                  </div>
+                  {featured.image ? (
+                    <img src={featured.image} alt={featured.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-ghana-red/20 group-hover:scale-105 transition-transform duration-700 grid place-items-center">
+                      <BookOpen className="h-24 w-24 text-secondary opacity-30" />
+                    </div>
+                  )}
                   <div className="absolute top-6 left-6">
                     <Badge className="bg-accent text-accent-foreground shadow-lg px-4 py-1">Featured Article</Badge>
                   </div>
@@ -128,10 +131,13 @@ export default function Blog() {
                   <Link key={b.id} to={`/blog/${b.id}`} className="group">
                     <Card className="h-full border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col">
                       <div className="aspect-[16/9] relative overflow-hidden bg-muted">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 group-hover:scale-105 transition-transform duration-500" />
-                        <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                          <BookOpen className="h-10 w-10 text-secondary" />
-                        </div>
+                        {b.image ? (
+                          <img src={b.image} alt={b.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 group-hover:scale-105 transition-transform duration-500 grid place-items-center">
+                            <BookOpen className="h-10 w-10 text-secondary opacity-20" />
+                          </div>
+                        )}
                         <div className="absolute top-4 left-4">
                           <Badge variant="secondary" className="bg-white/90 backdrop-blur shadow-sm border-none">{b.category}</Badge>
                         </div>
