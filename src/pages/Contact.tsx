@@ -49,94 +49,165 @@ export default function Contact() {
   };
 
   return (
-    <div>
-      <section className="hero-gradient text-white py-16">
-        <div className="container mx-auto px-4 sm:px-6">
-          <Badge className="bg-accent text-accent-foreground mb-3">Get in touch</Badge>
-          <h1 className="text-4xl font-bold">Contact Us</h1>
-          <p className="mt-3 text-white/80 max-w-2xl">We'd love to hear from you. Send us a message and we'll respond promptly.</p>
+    <div className="bg-white min-h-screen">
+      {/* MODERN HERO */}
+      <section className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,rgba(0,107,45,0.1)_0%,transparent_50%)]" />
+          <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(215,25,32,0.1)_0%,transparent_50%)]" />
         </div>
-        <div className="h-2 flag-stripe mt-10" />
+        
+        <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center flex flex-col items-center">
+          <Badge className="bg-accent text-accent-foreground mb-6 px-4 py-1 uppercase tracking-widest font-bold">Contact Us</Badge>
+          <h1 className="text-4xl sm:text-6xl font-bold mb-6">Let's Connect</h1>
+          <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+            Have a question, partnership proposal, or just want to say hello? Our team is here to help you navigate the TNUC ecosystem.
+          </p>
+        </div>
       </section>
 
-      <section className="py-16">
-        <div className="container mx-auto px-4 sm:px-6 grid lg:grid-cols-[1fr_360px] gap-10">
-          <Card className="shadow-elegant border-0">
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-bold text-secondary mb-6">Send us a message</h2>
-              <form onSubmit={submit} className="space-y-4" noValidate>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name">Full name</Label>
-                    <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={100} />
-                    {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
+      {/* CONTACT SECTION - MODERN SPLIT */}
+      <section className="py-24 -mt-10 relative z-20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
+            {/* CONTACT INFO - MODERN CARDS */}
+            <div className="lg:col-span-4 space-y-6">
+              <Card className="border-none shadow-xl bg-white rounded-3xl p-8 group hover:-translate-y-1 transition-all duration-300">
+                <div className="flex items-start gap-6">
+                  <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} />
-                    {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+                    <h3 className="font-bold text-secondary mb-1">Email Us</h3>
+                    <p className="text-sm text-muted-foreground mb-3">Direct support for general inquiries</p>
+                    <a href="mailto:hello@tnuc.gh" className="text-primary font-bold hover:underline">hello@tnuc.gh</a>
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input id="subject" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} maxLength={200} />
-                  {errors.subject && <p className="text-xs text-destructive mt-1">{errors.subject}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea id="message" rows={6} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} maxLength={1000} />
-                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                    <span>{errors.message}</span>
-                    <span>{form.message.length}/1000</span>
+              </Card>
+
+              <Card className="border-none shadow-xl bg-white rounded-3xl p-8 group hover:-translate-y-1 transition-all duration-300">
+                <div className="flex items-start gap-6">
+                  <div className="h-12 w-12 rounded-2xl bg-ghana-gold/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Phone className="h-6 w-6 text-ghana-gold" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-secondary mb-1">Call Us</h3>
+                    <p className="text-sm text-muted-foreground mb-3">Mon-Fri from 8am to 5pm</p>
+                    <a href="tel:+233302500000" className="text-secondary font-bold hover:underline">+233 30 250 0000</a>
                   </div>
                 </div>
-                <Button type="submit" disabled={submitting} size="lg" className="w-full sm:w-auto">
-                  <Send className="h-4 w-4" /> {submitting ? "Sending..." : "Send message"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </Card>
 
-          <div className="space-y-6">
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <h3 className="font-bold text-secondary">Reach us</h3>
-                <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary grid place-items-center shrink-0"><MapPin className="h-5 w-5" /></div>
-                  <div className="text-sm"><div className="font-medium text-secondary">Office</div><div className="text-muted-foreground">Accra, Greater Accra Region, Ghana</div></div>
+              <Card className="border-none shadow-xl bg-white rounded-3xl p-8 group hover:-translate-y-1 transition-all duration-300">
+                <div className="flex items-start gap-6">
+                  <div className="h-12 w-12 rounded-2xl bg-ghana-red/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <MapPin className="h-6 w-6 text-ghana-red" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-secondary mb-1">Visit Us</h3>
+                    <p className="text-sm text-muted-foreground mb-3">Our headquarters in the capital</p>
+                    <p className="text-secondary font-bold">Accra, Greater Accra Region</p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-ghana-red/10 text-ghana-red grid place-items-center shrink-0"><Phone className="h-5 w-5" /></div>
-                  <div className="text-sm"><div className="font-medium text-secondary">Phone</div><div className="text-muted-foreground">+233 30 250 0000</div></div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-accent/30 text-secondary grid place-items-center shrink-0"><Mail className="h-5 w-5" /></div>
-                  <div className="text-sm"><div className="font-medium text-secondary">Email</div><div className="text-muted-foreground">hello@tnuc.gh</div></div>
-                </div>
-              </CardContent>
-            </Card>
+              </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-bold text-secondary mb-4">Follow us</h3>
-                <div className="flex gap-3">
+              {/* SOCIAL LINKS - CLEAN */}
+              <div className="p-8 bg-muted/30 rounded-3xl">
+                <h4 className="text-sm font-bold text-secondary uppercase tracking-widest mb-6">Follow our journey</h4>
+                <div className="flex gap-4">
                   {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                    <a key={i} href="#" className="h-10 w-10 rounded-full bg-muted grid place-items-center hover:bg-primary hover:text-primary-foreground transition-smooth">
-                      <Icon className="h-4 w-4" />
+                    <a key={i} href="#" className="h-12 w-12 rounded-xl bg-white shadow-sm flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300">
+                      <Icon className="h-5 w-5" />
                     </a>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="overflow-hidden">
-              <iframe
-                title="Accra, Ghana map"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=-0.30%2C5.50%2C-0.10%2C5.65&layer=mapnik&marker=5.5600%2C-0.2057"
-                className="w-full h-56 border-0"
-                loading="lazy"
-              />
-            </Card>
+            {/* CONTACT FORM - SOPHISTICATED */}
+            <div className="lg:col-span-8">
+              <Card className="border-none shadow-2xl bg-white rounded-[2rem] overflow-hidden">
+                <div className="p-8 lg:p-12">
+                  <h2 className="text-3xl font-bold text-secondary mb-2">Send a message</h2>
+                  <p className="text-muted-foreground mb-10">Fill out the form below and we'll get back to you within 24-48 hours.</p>
+                  
+                  <form onSubmit={submit} className="space-y-8" noValidate>
+                    <div className="grid sm:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <Label htmlFor="name" className="text-sm font-bold text-secondary uppercase tracking-tighter">Full Name</Label>
+                        <Input 
+                          id="name" 
+                          value={form.name} 
+                          onChange={(e) => setForm({ ...form, name: e.target.value })} 
+                          className="h-14 bg-muted/30 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-lg px-6" 
+                          placeholder="John Doe"
+                        />
+                        {errors.name && <p className="text-xs text-ghana-red font-medium">{errors.name}</p>}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email" className="text-sm font-bold text-secondary uppercase tracking-tighter">Email Address</Label>
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          value={form.email} 
+                          onChange={(e) => setForm({ ...form, email: e.target.value })} 
+                          className="h-14 bg-muted/30 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-lg px-6" 
+                          placeholder="john@university.edu"
+                        />
+                        {errors.email && <p className="text-xs text-ghana-red font-medium">{errors.email}</p>}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="subject" className="text-sm font-bold text-secondary uppercase tracking-tighter">Subject</Label>
+                      <Input 
+                        id="subject" 
+                        value={form.subject} 
+                        onChange={(e) => setForm({ ...form, subject: e.target.value })} 
+                        className="h-14 bg-muted/30 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-lg px-6" 
+                        placeholder="How can we help you?"
+                      />
+                      {errors.subject && <p className="text-xs text-ghana-red font-medium">{errors.subject}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center mb-1">
+                        <Label htmlFor="message" className="text-sm font-bold text-secondary uppercase tracking-tighter">Your Message</Label>
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{form.message.length}/1000</span>
+                      </div>
+                      <Textarea 
+                        id="message" 
+                        rows={6} 
+                        value={form.message} 
+                        onChange={(e) => setForm({ ...form, message: e.target.value })} 
+                        className="bg-muted/30 border-none rounded-[2rem] focus:ring-2 focus:ring-primary/20 text-lg p-8 resize-none" 
+                        placeholder="Tell us more about your inquiry..."
+                      />
+                      {errors.message && <p className="text-xs text-ghana-red font-medium">{errors.message}</p>}
+                    </div>
+
+                    <Button type="submit" disabled={submitting} size="lg" className="h-16 px-12 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 group w-full sm:w-auto">
+                      {submitting ? "Sending..." : "Send Message"}
+                      <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </Button>
+                  </form>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* MAP PLACEHOLDER - MODERN */}
+      <section className="py-24 bg-muted/20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="aspect-[21/9] rounded-[3rem] bg-secondary/5 border border-border flex items-center justify-center relative overflow-hidden group">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,107,45,0.05)_0%,transparent_70%)]" />
+            <div className="text-center relative z-10">
+              <MapPin className="h-12 w-12 text-primary mx-auto mb-4 opacity-50 group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl font-bold text-secondary">Find us in Accra</h3>
+              <p className="text-muted-foreground">Serving all 16 regions across the nation</p>
+            </div>
           </div>
         </div>
       </section>

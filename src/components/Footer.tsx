@@ -10,7 +10,7 @@ export default function Footer() {
           <Logo variant="light" />
           <p className="text-sm text-white/70 leading-relaxed">
             Uniting Ghana's universities, students and alumni through one connected platform.
-            Guide. Work. Inspire.
+            Guide • Work • Inspire
           </p>
           <div className="flex gap-3">
             {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (

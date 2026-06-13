@@ -4,7 +4,7 @@ import { ArrowRight, GraduationCap, Users, BookOpen, Award, Quote, Sparkles, Map
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import logoAsset from "@/assets/logo.jpeg.asset.json";
+import logoAsset from "@/assets/TN LOGO.jpeg";
 import { getAnnouncements, getBlogs, UNIVERSITIES } from "@/lib/data";
 
 const stats = [
@@ -39,59 +39,41 @@ export default function Home() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative overflow-hidden hero-gradient text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-ghana-gold blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full bg-ghana-red blur-3xl" />
+      <section className="relative overflow-hidden hero-gradient text-white min-h-[40vh] lg:min-h-[50vh] flex items-center">
+        {/* Background Decorative Elements */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-secondary/40 via-transparent to-secondary/40" />
+          <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-ghana-gold/15 blur-[100px]" />
+          <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-ghana-red/15 blur-[100px]" />
         </div>
 
-        <div className="container relative mx-auto px-4 sm:px-6 py-20 lg:py-32 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="container relative mx-auto px-4 sm:px-6 py-8 lg:py-16 flex flex-col items-center text-center z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            className="flex flex-col items-center max-w-4xl"
           >
-            <Badge className="bg-accent text-accent-foreground hover:bg-accent mb-4 shadow-gold">
-              <Sparkles className="h-3 w-3 mr-1" /> Guide · Work · Inspire
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-              Connecting Ghana's <span className="text-accent">Universities</span>,
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold leading-tight drop-shadow-sm">
+              Connecting Ghana's <span className="text-accent underline decoration-ghana-red/30 underline-offset-4">Universities</span>,
               <br /> Empowering Every Student.
             </h1>
-            <p className="mt-6 text-lg text-white/80 max-w-xl">
+            <p className="mt-4 text-base sm:text-xl text-white/90 max-w-2xl font-medium leading-relaxed drop-shadow-sm">
               One unified platform for students, alumni, and institutions across Ghana — share opportunities,
               build networks, and shape the future of higher education.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-gold">
-                <Link to="/register">Join Now <ArrowRight className="h-4 w-4" /></Link>
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-gold h-12 px-8 text-base font-bold">
+                <Link to="/register">Join Now <ArrowRight className="h-4 w-4 ml-2" /></Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20">
+              <Button asChild size="lg" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 h-12 px-8 text-base">
                 <Link to="/about">Learn More</Link>
               </Button>
             </div>
-            <div className="mt-10 flex items-center gap-2 text-sm text-white/70">
-              <MapPin className="h-4 w-4 text-accent" />
-              Headquartered in Accra · Serving all 10 regions
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="relative flex justify-center"
-          >
-            <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full" />
-            <img
-              src={logoAsset.url}
-              alt="TN Universities Connect"
-              className="relative max-w-md w-full drop-shadow-2xl"
-            />
           </motion.div>
         </div>
 
-        <div className="h-2 flag-stripe" />
+        <div className="absolute bottom-0 left-0 right-0 h-2 flag-stripe z-20" />
       </section>
 
       {/* STATS */}

@@ -1,3 +1,4 @@
+import logoAsset from "@/assets/TN LOGO.jpeg";
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import Logo from "@/components/Logo";
