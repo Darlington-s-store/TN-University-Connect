@@ -18,6 +18,7 @@ export type BlogPost = {
   date: string;
   excerpt: string;
   body: string;
+  image?: string;
   featured?: boolean;
   published: boolean;
 };
@@ -129,7 +130,12 @@ export const getAnnouncements = () => read(ANN_KEY, announcementSeed);
 export const saveAnnouncements = (list: Announcement[]) => write(ANN_KEY, list);
 
 // ---------- Blog ----------
-const BLOG_KEY = "tnu_blogs";
+import blog1 from "@/assets/blog-1.jpg";
+import blog2 from "@/assets/blog-2.jpg";
+import blog3 from "@/assets/blog-3.jpg";
+import blog4 from "@/assets/blog-4.jpg";
+
+const BLOG_KEY = "tnu_blogs_v2";
 const blogSeed: BlogPost[] = [
   {
     id: "b1",
@@ -138,7 +144,8 @@ const blogSeed: BlogPost[] = [
     author: "Dr. Ama Boateng",
     date: "2026-06-01",
     excerpt: "A look at the cross-institutional research networks emerging across Ghana.",
-    body: "Over the last decade, Ghanaian universities have moved from siloed research to vibrant collaboration networks. From shared labs to joint publications, the country's higher-education ecosystem is becoming a model for the region. This piece explores three case studies that show what is working — and what still needs to change.",
+    body: "Over the last decade, Ghanaian universities have moved from siloed research to vibrant collaboration networks. From shared labs to joint publications, the country's higher-education ecosystem is becoming a model for the region.\n\nThis piece explores three case studies that show what is working — and what still needs to change. We examine the joint biotech program between UG and KNUST, the West African Climate Research Consortium led by UCC, and the new shared computing grid hosted at GIMPA.\n\nWhat unites these efforts is a shift in mindset: institutions are no longer competing for limited prestige, they are pooling resources to amplify impact. The result is faster publication cycles, larger grant wins, and graduate students who get exposure to a much wider network of mentors.",
+    image: blog1,
     featured: true,
     published: true,
   },
@@ -149,7 +156,8 @@ const blogSeed: BlogPost[] = [
     author: "Kojo Asante",
     date: "2026-05-20",
     excerpt: "Practical advice for students considering exchange programs.",
-    body: "Studying abroad opens doors, but maintaining connections at home matters too. We spoke with five returning students about scholarships, visas, homesickness, and how to keep your roots while spreading your wings.",
+    body: "Studying abroad opens doors, but maintaining connections at home matters too. We spoke with five returning students about scholarships, visas, homesickness, and how to keep your roots while spreading your wings.\n\nKey takeaways: start the scholarship search at least 12 months out, build a weekly check-in habit with family, and find at least one Ghanaian student association at your destination campus before you arrive.",
+    image: blog3,
     published: true,
   },
   {
@@ -159,7 +167,8 @@ const blogSeed: BlogPost[] = [
     author: "Akosua Frimpong",
     date: "2026-05-10",
     excerpt: "Career services should be embedded from day one, not as an afterthought.",
-    body: "Too many students arrive at graduation under-prepared for the job market. We argue that career development should begin in the first semester — through structured mentorship, paid internships, and skills passports that travel with students throughout their academic journey.",
+    body: "Too many students arrive at graduation under-prepared for the job market. We argue that career development should begin in the first semester — through structured mentorship, paid internships, and skills passports that travel with students throughout their academic journey.\n\nThe most successful programs we studied tie career milestones directly into the academic calendar, so students never have to choose between coursework and professional development.",
+    image: blog4,
     published: true,
   },
   {
@@ -169,7 +178,8 @@ const blogSeed: BlogPost[] = [
     author: "Yaw Owusu",
     date: "2026-04-22",
     excerpt: "From solar-powered campuses to zero-waste cafeterias.",
-    body: "Sustainability is no longer optional. These five institutions are leading the way — with rooftop solar, community gardens, plastic-free policies, and a sharp focus on the UN's Sustainable Development Goals.",
+    body: "Sustainability is no longer optional. These five institutions are leading the way — with rooftop solar, community gardens, plastic-free policies, and a sharp focus on the UN's Sustainable Development Goals.\n\nUG Legon has cut campus electricity emissions by 22% in two years. Ashesi runs an entirely paperless admissions process. UCC's marine biology department has turned its coastal research station into a community education hub.",
+    image: blog2,
     published: true,
   },
 ];
