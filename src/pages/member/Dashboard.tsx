@@ -31,7 +31,7 @@ export default function MemberDashboard() {
   const blogs = getBlogs().slice(0, 2);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 overflow-x-hidden">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <Badge variant="outline" className="border-primary text-primary mb-2">

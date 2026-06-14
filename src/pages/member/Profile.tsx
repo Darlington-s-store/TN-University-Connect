@@ -61,20 +61,24 @@ export default function MemberProfile() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
+        <TabsList className="w-full sm:w-auto overflow-x-auto no-scrollbar">
+          <TabsTrigger value="profile" className="flex-1 sm:flex-none">
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex-1 sm:flex-none">
+            Security
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
           <Card>
             <CardContent className="p-6">
               <form onSubmit={saveProfile} className="space-y-6">
-                <div className="flex items-center gap-6">
-                  <div className="relative">
-                    <Avatar className="h-24 w-24">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+                  <div className="relative shrink-0">
+                    <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
                       <AvatarImage src={form.avatar} />
-                      <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
+                      <AvatarFallback className="text-xl sm:text-2xl bg-primary text-primary-foreground">
                         {form.name
                           .split(" ")
                           .map((p) => p[0])
@@ -82,14 +86,14 @@ export default function MemberProfile() {
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <label className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-primary text-primary-foreground grid place-items-center cursor-pointer shadow-elegant hover:scale-110 transition-smooth">
-                      <Camera className="h-4 w-4" />
+                    <label className="absolute -bottom-1 -right-1 h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-primary text-primary-foreground grid place-items-center cursor-pointer shadow-elegant hover:scale-110 transition-smooth">
+                      <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
                       <input type="file" accept="image/*" className="hidden" onChange={onAvatar} />
                     </label>
                   </div>
-                  <div>
-                    <div className="font-semibold text-secondary">{form.name}</div>
-                    <div className="text-sm text-muted-foreground">{form.email}</div>
+                  <div className="min-w-0">
+                    <div className="font-semibold text-secondary truncate">{form.name}</div>
+                    <div className="text-sm text-muted-foreground truncate">{form.email}</div>
                   </div>
                 </div>
 
