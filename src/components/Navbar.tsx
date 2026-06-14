@@ -1,6 +1,15 @@
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Menu, X, LogIn, UserPlus, ChevronDown, ShieldCheck, User as UserIcon, Bell } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogIn,
+  UserPlus,
+  ChevronDown,
+  ShieldCheck,
+  User as UserIcon,
+  Bell,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
 import { useAuth } from "@/lib/auth";

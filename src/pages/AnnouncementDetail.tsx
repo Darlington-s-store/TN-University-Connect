@@ -38,7 +38,11 @@ export default function AnnouncementDetail() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,107,45,0.18)_0%,transparent_55%)]" />
         </div>
         <div className="container relative z-10 mx-auto px-4 sm:px-6 max-w-3xl">
-          <Button asChild variant="ghost" className="mb-6 text-white/80 hover:text-white hover:bg-white/10">
+          <Button
+            asChild
+            variant="ghost"
+            className="mb-6 text-white/80 hover:text-white hover:bg-white/10"
+          >
             <Link to="/announcements">
               <ArrowLeft className="h-4 w-4" /> All announcements
             </Link>
@@ -64,7 +68,11 @@ export default function AnnouncementDetail() {
         <div className="container mx-auto px-4 sm:px-6 max-w-3xl">
           <div className="aspect-[16/7] rounded-2xl overflow-hidden mb-10 shadow-soft">
             <div className="h-full w-full relative">
-              <img src={cardPattern} alt="" className="absolute inset-0 h-full w-full object-cover" />
+              <img
+                src={cardPattern}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
               <div className="absolute inset-0 bg-gradient-to-tr from-secondary/70 via-primary/30 to-transparent" />
               <div className="absolute inset-0 grid place-items-center">
                 <Megaphone className="h-14 w-14 text-white/80" />
