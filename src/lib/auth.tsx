@@ -44,11 +44,19 @@ export interface RegisterData {
   niche?: string;
 }
 
+export interface GoogleProfile {
+  sub: string;
+  email: string;
+  name: string;
+  picture?: string;
+}
+
 type AuthCtx = {
   user: User | null;
   initializing: boolean;
   login: (email: string, password: string) => Promise<User>;
   register: (data: RegisterData) => Promise<User>;
+  googleLogin: (profile: GoogleProfile) => Promise<User>;
   logout: () => void;
   updateUser: (patch: Partial<User>) => void;
 };
@@ -188,6 +196,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return safe;
   };
 
+  const googleLogin = async (profile: GoogleProfile): Promise<User> => {
+    const users = readUsers();
+    const existing = users.find((u) => u.email.toLowerCase() === profile.email.toLowerCase());
+    if (existing) {
+      const { password: _p, ...safe } = existing;
+      setUser(safe);
+      localStorage.setItem(KEY, JSON.stringify(safe));
+      return safe;
+    }
+    const newUser: User & { password?: string } = {
+      id: `user-${Date.now()}`,
+      name: profile.name,
+      email: profile.email,
+      role: "member" as const,
+      avatar: profile.picture,
+      joinedAt: new Date().toISOString(),
+      profileComplete: false,
+    };
+    users.push(newUser);
+    writeUsers(users);
+    const { password: _p, ...safe } = newUser;
+    setUser(safe);
+    localStorage.setItem(KEY, JSON.stringify(safe));
+    return safe;
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem(KEY);
@@ -209,7 +243,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ user, initializing, login, register, logout, updateUser }}>
+    <Ctx.Provider value={{ user, initializing, login, register, googleLogin, logout, updateUser }}>
       {children}
     </Ctx.Provider>
   );
