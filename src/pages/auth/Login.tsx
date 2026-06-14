@@ -96,7 +96,7 @@ export default function Login() {
           <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign in"}
         </Button>
         <div className="text-xs text-center text-muted-foreground pt-2 border-t mt-4 pt-4">
-          <strong>Demo accounts:</strong> admin@tnuc.gh / admin123 · kwame@tnuc.gh / member123
+          <strong>Demo account:</strong> kwame@tnuc.gh / member123
         </div>
       </form>
     </AuthShell>

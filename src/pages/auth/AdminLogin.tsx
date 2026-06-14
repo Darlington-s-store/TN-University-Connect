@@ -61,7 +61,7 @@ export default function AdminLogin() {
             type="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            placeholder="admin@tnuc.gh"
+            placeholder=""
           />
           {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
         </div>
@@ -80,10 +80,6 @@ export default function AdminLogin() {
         <Button type="submit" disabled={loading} size="lg" className="w-full">
           <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign in"}
         </Button>
-
-        <div className="text-xs text-center text-muted-foreground pt-4 border-t mt-6">
-          <strong>Admin Credentials:</strong> admin@tnuc.gh / admin123
-        </div>
       </form>
     </AuthShell>
   );
