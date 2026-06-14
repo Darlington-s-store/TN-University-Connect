@@ -45,8 +45,8 @@ export default function BreakingNewsOverlay() {
         <div className="p-5 text-center space-y-2">
           <h2 className="text-xl font-extrabold text-secondary">Rest in Peace</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            We are deeply saddened by the passing of a UCC student. Our heartfelt condolences go
-            out to the family, friends, and the university community.
+            We are deeply saddened by the passing of a UCC student. Our heartfelt condolences go out
+            to the family, friends, and the university community.
           </p>
           <div className="text-xs text-muted-foreground pt-1">
             This message will close in{" "}

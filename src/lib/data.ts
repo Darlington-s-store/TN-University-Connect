@@ -96,9 +96,10 @@ function write<T>(key: string, value: T) {
 
 import annDimes from "@/assets/ann-dimes.jpg";
 import annLegal from "@/assets/ann-legal.jpg";
+import annHyundaiStem from "@/assets/ann-hyundai-stem.png";
 
 // ---------- Announcements ----------
-const ANN_KEY = "tnu_announcements_v3";
+const ANN_KEY = "tnu_announcements_v4";
 const announcementSeed: Announcement[] = [
   {
     id: "a1",
@@ -124,11 +125,13 @@ const announcementSeed: Announcement[] = [
   },
   {
     id: "a3",
-    title: "Scholarship opportunities for STEM students announced",
+    title: "Apply for the Hyundai Women in STEM Scholarship",
     category: "Scholarships",
-    date: "2026-04-30",
-    excerpt: "Twenty fully-funded scholarships available for STEM graduate students.",
-    body: "TN Universities Connect, in partnership with Ghana's Ministry of Education, is offering twenty fully-funded scholarships to outstanding graduate students in Science, Technology, Engineering, and Mathematics. Apply via the announcements portal.",
+    date: "2026-06-14",
+    excerpt:
+      "Are you a female high school senior or college undergraduate wishing to pursue a STEM-related field of education? Consider applying for the $10,000 Hyundai Women in STEM Scholarship!",
+    body: "Are you a high school senior or college undergraduate who identifies as female, resides in the United States, and wishes to pursue a STEM-related field of education? If so, you might consider applying for the Hyundai Women in STEM Scholarship!\n\nEach year, the scholarship awards $10,000 to five applicants who submit the most thoughtful 500-word (or less) essay in response to the following prompt:\n\nAt Hyundai, we know the success of a company is only equal to the talent of its team. We seek those who persevere, ask, “Why not?” and dare to make a difference. In 500 words or less, tell us how, as a woman in STEM, you’ll redefine convention by doing things differently, more efficiently. We want you to succeed—and hopefully even consider working with us one day.\n\nIf you’re passionate about STEM and wish to reduce your college debt, we encourage you to apply!\n\nEligibility information\nThis scholarship is open to female high school seniors and college undergraduates who wish to pursue a STEM degree. Applicants must also meet the below eligibility requirements.\n\n• Grade Level: High School Seniors & College Students\n• Academic Interest: Agriculture, Food Science/Nutrition, Horticulture/Floriculture, Natural Resources, Environmental Science, Paper and Pulp Engineering, Computer Science, Engineering, etc.\n• Gender: Female\n• Citizenship Status: U.S. Citizens, Permanent Residents",
+    image: annHyundaiStem,
     published: true,
   },
   {
