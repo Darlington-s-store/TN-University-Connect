@@ -1,14 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  GraduationCap,
-  Users,
-  BookOpen,
-  Award,
-  Quote,
-  Calendar,
-} from "lucide-react";
+import { ArrowRight, GraduationCap, Users, BookOpen, Award, Quote, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

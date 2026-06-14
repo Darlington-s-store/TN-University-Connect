@@ -50,7 +50,14 @@ export default function AdminReports() {
       ];
       const rows = [
         headers.join(","),
-        ...data.map((s) => headers.map((h) => `"${(s as any)[h] ?? ""}"`).join(",")),
+        ...data.map((s) =>
+          headers
+            .map(
+              (h) =>
+                `"${(s as unknown as Record<string, string | number | undefined | null>)[h] ?? ""}"`,
+            )
+            .join(","),
+        ),
       ].join("\n");
       const blob = new Blob([rows], { type: "text/csv" });
       const url = URL.createObjectURL(blob);

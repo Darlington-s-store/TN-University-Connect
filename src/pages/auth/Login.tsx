@@ -37,8 +37,9 @@ export default function Login() {
       const user = await login(form.email, form.password);
       toast.success(`Welcome back, ${user.name}`);
       navigate(user.role === "admin" ? "/admin" : "/dashboard");
-    } catch (e: any) {
-      toast.error(e.message || "Login failed");
+    } catch (e) {
+      const error = e as Error;
+      toast.error(error.message || "Login failed");
     } finally {
       setLoading(false);
     }

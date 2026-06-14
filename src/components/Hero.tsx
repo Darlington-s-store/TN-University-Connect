@@ -39,9 +39,8 @@ export default function Hero() {
           </h1>
 
           <p className="max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-slate-200 leading-relaxed font-sans font-medium">
-            A unified national network connecting students, alumni, and academic
-            institutions across all regions of Ghana. Access scholarships, share research, and
-            discover opportunities.
+            A unified national network connecting students, alumni, and academic institutions across
+            all regions of Ghana. Access scholarships, share research, and discover opportunities.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">

@@ -204,7 +204,9 @@ export default function StudentForm() {
                 <Label>Gender</Label>
                 <RadioGroup
                   value={form.gender}
-                  onValueChange={(v: any) => setForm({ ...form, gender: v })}
+                  onValueChange={(v) =>
+                    setForm({ ...form, gender: v as "male" | "female" | "other" })
+                  }
                   className="flex gap-6 mt-2"
                 >
                   {(["male", "female", "other"] as const).map((g) => (

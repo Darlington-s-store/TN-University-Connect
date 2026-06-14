@@ -78,23 +78,25 @@ export default function AdminSettings() {
       <Card>
         <CardContent className="p-6 space-y-4">
           <h3 className="font-bold text-secondary">Features</h3>
-          {[
-            {
-              key: "allowRegistration",
-              label: "Allow new member registrations",
-              desc: "When off, the register page is disabled.",
-            },
-            {
-              key: "emailNotifications",
-              label: "Email notifications",
-              desc: "Send notification emails on key events.",
-            },
-            {
-              key: "maintenance",
-              label: "Maintenance mode",
-              desc: "Show a maintenance banner to all visitors.",
-            },
-          ].map((s, i) => (
+          {(
+            [
+              {
+                key: "allowRegistration",
+                label: "Allow new member registrations",
+                desc: "When off, the register page is disabled.",
+              },
+              {
+                key: "emailNotifications",
+                label: "Email notifications",
+                desc: "Send notification emails on key events.",
+              },
+              {
+                key: "maintenance",
+                label: "Maintenance mode",
+                desc: "Show a maintenance banner to all visitors.",
+              },
+            ] as const
+          ).map((s, i) => (
             <div key={s.key}>
               {i > 0 && <Separator className="my-3" />}
               <div className="flex justify-between items-center">
@@ -103,8 +105,8 @@ export default function AdminSettings() {
                   <div className="text-sm text-muted-foreground">{s.desc}</div>
                 </div>
                 <Switch
-                  checked={(settings as any)[s.key]}
-                  onCheckedChange={(v) => setSettings({ ...settings, [s.key]: v } as any)}
+                  checked={settings[s.key]}
+                  onCheckedChange={(v) => setSettings({ ...settings, [s.key]: v })}
                 />
               </div>
             </div>
