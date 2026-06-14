@@ -8,7 +8,6 @@ import {
   Award,
   Quote,
   Calendar,
-  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -115,19 +114,12 @@ export default function Home() {
 
       {/* FEATURED ANNOUNCEMENTS */}
       <section className="py-20 bg-white relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-[30rem] h-[30rem] bg-ghana-gold/5 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-ghana-green/5 rounded-full blur-[100px] pointer-events-none" />
-
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
-              <Badge
-                variant="outline"
-                className="border-ghana-red text-ghana-red px-3 py-1 font-bold uppercase tracking-wider mb-3"
-              >
-                <Star className="h-3 w-3 mr-1 inline" /> Announcements
-              </Badge>
+              <div className="text-ghana-red text-xs font-bold uppercase tracking-wider mb-3">
+                Announcements
+              </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-secondary tracking-tight">
                 Latest updates across the network
               </h2>
@@ -209,12 +201,9 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
-              <Badge
-                variant="outline"
-                className="border-primary text-primary px-3 py-1 font-bold uppercase tracking-wider mb-3"
-              >
+              <div className="text-primary text-xs font-bold uppercase tracking-wider mb-3">
                 Insights & Research
-              </Badge>
+              </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-secondary tracking-tight">
                 Academic stories and insights
               </h2>
@@ -292,12 +281,9 @@ export default function Home() {
       {/* PARTNER UNIVERSITIES */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 text-center">
-          <Badge
-            variant="outline"
-            className="border-ghana-green text-ghana-green px-3 py-1 font-bold uppercase tracking-wider mb-3"
-          >
+          <div className="text-ghana-green text-xs font-bold uppercase tracking-wider mb-3">
             Institutional Directory
-          </Badge>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-secondary tracking-tight mb-3">
             A growing nationwide network
           </h2>
@@ -327,14 +313,11 @@ export default function Home() {
           aria-hidden="true"
           className="absolute inset-0 h-full w-full object-cover opacity-5 mix-blend-overlay"
         />
-        <div className="absolute top-10 left-10 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
-
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
-            <Badge className="bg-accent text-accent-foreground px-4 py-1.5 font-bold uppercase tracking-wider mb-4 border-0">
+            <div className="text-accent text-xs font-bold uppercase tracking-wider mb-4">
               Community Voices
-            </Badge>
+            </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
               Testimonials from our members
             </h2>
