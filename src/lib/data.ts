@@ -94,16 +94,20 @@ function write<T>(key: string, value: T) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+import annDimes from "@/assets/ann-dimes.jpg";
+
 // ---------- Announcements ----------
-const ANN_KEY = "tnu_announcements";
+const ANN_KEY = "tnu_announcements_v2";
 const announcementSeed: Announcement[] = [
   {
     id: "a1",
-    title: "2026 National University Symposium opens registration",
+    title: "UCC, DIMES IS COMING!!!!!!!",
     category: "Events",
-    date: "2026-05-28",
-    excerpt: "All member universities are invited to the annual symposium in Accra this August.",
-    body: "TN Universities Connect is proud to announce that registration is now open for the 2026 National University Symposium. The three-day event will be held at the Accra International Conference Centre from 12–14 August. Sessions will cover research collaboration, student mobility, and the future of higher education in West Africa.",
+    date: "2026-06-14",
+    excerpt:
+      "You asked, we listened. After all the DMs + requests, Dimes and the team are coming to UCC this Wednesday with the brooches. Stock is limited so come through early. See you soon, UCC.",
+    body: "UCC, DIMES IS COMING!!!!!!!\n\nYou asked, we listened. After all the DMs + requests, Dimes and the team are coming to UCC this Wednesday with the brooches. Stock is limited so come through early. See you soon, UCC.",
+    image: annDimes,
     published: true,
   },
   {
