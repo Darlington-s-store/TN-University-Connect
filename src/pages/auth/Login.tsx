@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/lib/auth";
-import { decodeGoogleCredential } from "@/lib/google";
+import { decodeGoogleCredential, CLIENT_ID } from "@/lib/google";
 
 const schema = z.object({
   email: z.string().trim().email("Enter a valid email"),
@@ -118,47 +118,51 @@ export default function Login() {
         <Button type="submit" disabled={loading} size="lg" className="w-full">
           <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign in"}
         </Button>
-        <div className="relative py-2">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-muted-foreground">or continue with</span>
-          </div>
-        </div>
-        <div className="flex justify-center">
-          {googleLoading ? (
-            <Button disabled variant="outline" size="lg" className="w-full">
-              <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
+        {CLIENT_ID && (
+          <>
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-muted-foreground">or continue with</span>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              {googleLoading ? (
+                <Button disabled variant="outline" size="lg" className="w-full">
+                  <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  Signing in...
+                </Button>
+              ) : (
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => toast.error("Google sign-in failed")}
+                  theme="outline"
+                  size="large"
+                  text="signin_with"
+                  shape="rectangular"
+                  width="100%"
                 />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              Signing in...
-            </Button>
-          ) : (
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => toast.error("Google sign-in failed")}
-              theme="outline"
-              size="large"
-              text="signin_with"
-              shape="rectangular"
-              width="100%"
-            />
-          )}
-        </div>
+              )}
+            </div>
+          </>
+        )}
       </form>
     </AuthShell>
   );

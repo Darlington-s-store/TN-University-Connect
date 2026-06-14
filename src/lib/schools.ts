@@ -232,7 +232,13 @@ export function getGhanaSchools(): GhanaSchool[] {
       console.error(e);
     }
   }
-  return all.filter((s) => !hidden.includes(s.name));
+  const seen = new Set<string>();
+  return all.filter((s) => {
+    if (hidden.includes(s.name)) return false;
+    if (seen.has(s.name)) return false;
+    seen.add(s.name);
+    return true;
+  });
 }
 
 export function saveCustomSchools(custom: GhanaSchool[]) {
@@ -244,7 +250,9 @@ export function saveCustomSchools(custom: GhanaSchool[]) {
 export function getFaculties(): string[] {
   const custom = getCustomFaculties();
   const hidden = getHiddenFaculties();
-  return [...FACULTIES, ...custom].filter((f) => !hidden.includes(f));
+  return [...FACULTIES, ...custom]
+    .filter((f) => !hidden.includes(f))
+    .filter((f, i, arr) => arr.indexOf(f) === i);
 }
 
 export function getCustomFaculties(): string[] {
@@ -284,7 +292,9 @@ export function saveHiddenFaculties(hidden: string[]) {
 export function getProgrammes(): string[] {
   const custom = getCustomProgrammes();
   const hidden = getHiddenProgrammes();
-  return [...PROGRAMMES, ...custom].filter((p) => !hidden.includes(p));
+  return [...PROGRAMMES, ...custom]
+    .filter((p) => !hidden.includes(p))
+    .filter((p, i, arr) => arr.indexOf(p) === i);
 }
 
 export function getCustomProgrammes(): string[] {
@@ -324,7 +334,9 @@ export function saveHiddenProgrammes(hidden: string[]) {
 export function getLevels(): string[] {
   const custom = getCustomLevels();
   const hidden = getHiddenLevels();
-  return [...LEVELS, ...custom].filter((l) => !hidden.includes(l));
+  return [...LEVELS, ...custom]
+    .filter((l) => !hidden.includes(l))
+    .filter((l, i, arr) => arr.indexOf(l) === i);
 }
 
 export function getCustomLevels(): string[] {

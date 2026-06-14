@@ -1,7 +1,7 @@
 import { GoogleOAuthProvider, CredentialResponse } from "@react-oauth/google";
 import { ReactNode } from "react";
 
-const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+export const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
 export function GoogleProvider({ children }: { children: ReactNode }) {
   if (!CLIENT_ID) return <>{children}</>;
