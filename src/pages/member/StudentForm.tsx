@@ -9,7 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
 import { UNIVERSITIES, DEPARTMENTS, getStudents, saveStudents, Student } from "@/lib/data";
 
@@ -68,7 +74,8 @@ export default function StudentForm() {
       id: existing?.id || `s-${Date.now()}`,
       submittedAt: new Date().toISOString(),
     };
-    if (idx >= 0) all[idx] = record; else all.unshift(record);
+    if (idx >= 0) all[idx] = record;
+    else all.unshift(record);
     saveStudents(all);
     toast.success(existing ? "Information updated" : "Information submitted");
     setStep("done");
@@ -77,7 +84,11 @@ export default function StudentForm() {
   if (step === "done") {
     return (
       <div className="max-w-3xl">
-        <div className="mb-6"><Badge variant="outline" className="border-primary text-primary">Student Information</Badge></div>
+        <div className="mb-6">
+          <Badge variant="outline" className="border-primary text-primary">
+            Student Information
+          </Badge>
+        </div>
         <Card className="border-0 shadow-elegant">
           <div className="h-1 flag-stripe" />
           <CardContent className="p-8 text-center">
@@ -85,10 +96,16 @@ export default function StudentForm() {
               <CheckCircle2 className="h-8 w-8 text-primary" />
             </div>
             <h2 className="text-2xl font-bold text-secondary mb-2">Submission received</h2>
-            <p className="text-muted-foreground">Your student details are on file. You can edit them anytime.</p>
+            <p className="text-muted-foreground">
+              Your student details are on file. You can edit them anytime.
+            </p>
             <div className="mt-6 flex justify-center gap-2">
-              <Button variant="outline" onClick={() => setStep("preview")}><Eye className="h-4 w-4" /> View</Button>
-              <Button onClick={() => setStep("form")}><Pencil className="h-4 w-4" /> Edit</Button>
+              <Button variant="outline" onClick={() => setStep("preview")}>
+                <Eye className="h-4 w-4" /> View
+              </Button>
+              <Button onClick={() => setStep("form")}>
+                <Pencil className="h-4 w-4" /> Edit
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -100,7 +117,9 @@ export default function StudentForm() {
     return (
       <div className="max-w-3xl space-y-6">
         <div>
-          <Badge variant="outline" className="border-primary text-primary mb-2">Step 2 of 2</Badge>
+          <Badge variant="outline" className="border-primary text-primary mb-2">
+            Step 2 of 2
+          </Badge>
           <h1 className="text-3xl font-bold text-secondary">Review your information</h1>
           <p className="text-muted-foreground">Check everything is correct before submitting.</p>
         </div>
@@ -127,8 +146,12 @@ export default function StudentForm() {
           </CardContent>
         </Card>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={() => setStep("form")}><ArrowLeft className="h-4 w-4" /> Edit</Button>
-          <Button onClick={submit}>Confirm & Submit <ArrowRight className="h-4 w-4" /></Button>
+          <Button variant="outline" onClick={() => setStep("form")}>
+            <ArrowLeft className="h-4 w-4" /> Edit
+          </Button>
+          <Button onClick={submit}>
+            Confirm & Submit <ArrowRight className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     );
@@ -137,9 +160,13 @@ export default function StudentForm() {
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <Badge variant="outline" className="border-primary text-primary mb-2">Step 1 of 2</Badge>
+        <Badge variant="outline" className="border-primary text-primary mb-2">
+          Step 1 of 2
+        </Badge>
         <h1 className="text-3xl font-bold text-secondary">Student Information Form</h1>
-        <p className="text-muted-foreground">Fill in your academic and contact details. You can preview before submitting.</p>
+        <p className="text-muted-foreground">
+          Fill in your academic and contact details. You can preview before submitting.
+        </p>
       </div>
 
       <Card>
@@ -147,13 +174,39 @@ export default function StudentForm() {
           <section>
             <h3 className="font-bold text-secondary mb-4">Personal details</h3>
             <div className="grid sm:grid-cols-2 gap-4">
-              <Field label="Full name" error={errors.fullName}><Input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} /></Field>
-              <Field label="Email" error={errors.email}><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
-              <Field label="Phone" error={errors.phone}><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
-              <Field label="Date of birth" error={errors.dob}><Input type="date" value={form.dob} onChange={(e) => setForm({ ...form, dob: e.target.value })} /></Field>
+              <Field label="Full name" error={errors.fullName}>
+                <Input
+                  value={form.fullName}
+                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                />
+              </Field>
+              <Field label="Email" error={errors.email}>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </Field>
+              <Field label="Phone" error={errors.phone}>
+                <Input
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
+              </Field>
+              <Field label="Date of birth" error={errors.dob}>
+                <Input
+                  type="date"
+                  value={form.dob}
+                  onChange={(e) => setForm({ ...form, dob: e.target.value })}
+                />
+              </Field>
               <div className="sm:col-span-2">
                 <Label>Gender</Label>
-                <RadioGroup value={form.gender} onValueChange={(v: any) => setForm({ ...form, gender: v })} className="flex gap-6 mt-2">
+                <RadioGroup
+                  value={form.gender}
+                  onValueChange={(v: any) => setForm({ ...form, gender: v })}
+                  className="flex gap-6 mt-2"
+                >
                   {(["male", "female", "other"] as const).map((g) => (
                     <label key={g} className="flex items-center gap-2 cursor-pointer">
                       <RadioGroupItem value={g} /> <span className="capitalize">{g}</span>
@@ -168,41 +221,94 @@ export default function StudentForm() {
             <h3 className="font-bold text-secondary mb-4">Academic details</h3>
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="University" error={errors.university}>
-                <Select value={form.university} onValueChange={(v) => setForm({ ...form, university: v })}>
-                  <SelectTrigger><SelectValue placeholder="Select university" /></SelectTrigger>
-                  <SelectContent>{UNIVERSITIES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
+                <Select
+                  value={form.university}
+                  onValueChange={(v) => setForm({ ...form, university: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select university" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {UNIVERSITIES.map((u) => (
+                      <SelectItem key={u} value={u}>
+                        {u}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </Field>
               <Field label="Department" error={errors.department}>
-                <Select value={form.department} onValueChange={(v) => setForm({ ...form, department: v })}>
-                  <SelectTrigger><SelectValue placeholder="Select department" /></SelectTrigger>
-                  <SelectContent>{DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                <Select
+                  value={form.department}
+                  onValueChange={(v) => setForm({ ...form, department: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEPARTMENTS.map((d) => (
+                      <SelectItem key={d} value={d}>
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </Field>
-              <Field label="Program / Degree" error={errors.program}><Input value={form.program} onChange={(e) => setForm({ ...form, program: e.target.value })} placeholder="e.g. BSc Computer Science" /></Field>
+              <Field label="Program / Degree" error={errors.program}>
+                <Input
+                  value={form.program}
+                  onChange={(e) => setForm({ ...form, program: e.target.value })}
+                  placeholder="e.g. BSc Computer Science"
+                />
+              </Field>
               <Field label="Level" error={errors.level}>
                 <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v })}>
-                  <SelectTrigger><SelectValue placeholder="Select level" /></SelectTrigger>
-                  <SelectContent>{["100", "200", "300", "400", "500", "600"].map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["100", "200", "300", "400", "500", "600"].map((l) => (
+                      <SelectItem key={l} value={l}>
+                        {l}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </Field>
-              <Field label="Index / Student number" error={errors.indexNumber}><Input value={form.indexNumber} onChange={(e) => setForm({ ...form, indexNumber: e.target.value })} /></Field>
-              <Field label="Contact address" error={errors.address}><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
+              <Field label="Index / Student number" error={errors.indexNumber}>
+                <Input
+                  value={form.indexNumber}
+                  onChange={(e) => setForm({ ...form, indexNumber: e.target.value })}
+                />
+              </Field>
+              <Field label="Contact address" error={errors.address}>
+                <Input
+                  value={form.address}
+                  onChange={(e) => setForm({ ...form, address: e.target.value })}
+                />
+              </Field>
             </div>
           </section>
 
           <section>
-            <h3 className="font-bold text-secondary mb-4">Documents <span className="text-xs font-normal text-muted-foreground">(optional)</span></h3>
+            <h3 className="font-bold text-secondary mb-4">
+              Documents{" "}
+              <span className="text-xs font-normal text-muted-foreground">(optional)</span>
+            </h3>
             <label className="block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-smooth">
               <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-              <div className="text-sm font-medium text-secondary">Click to upload supporting documents</div>
+              <div className="text-sm font-medium text-secondary">
+                Click to upload supporting documents
+              </div>
               <div className="text-xs text-muted-foreground mt-1">PDF, JPG, PNG · Max 5MB</div>
               <input type="file" className="hidden" />
             </label>
           </section>
 
           <div className="flex justify-end gap-2 pt-4 border-t">
-            <Button onClick={goPreview}>Preview <ArrowRight className="h-4 w-4" /></Button>
+            <Button onClick={goPreview}>
+              Preview <ArrowRight className="h-4 w-4" />
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -210,7 +316,15 @@ export default function StudentForm() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <Label>{label}</Label>

@@ -20,6 +20,7 @@ import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
 
 import Login from "@/pages/auth/Login";
+import AdminLogin from "@/pages/auth/AdminLogin";
 import Register from "@/pages/auth/Register";
 import ForgotPassword from "@/pages/auth/ForgotPassword";
 import ResetPassword from "@/pages/auth/ResetPassword";
@@ -41,7 +42,7 @@ const queryClient = new QueryClient();
 
 function RequireAuth({ children, role }: { children: ReactElement; role?: "admin" | "member" }) {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to={role === "admin" ? "/admin/login" : "/login"} replace />;
   if (role === "admin" && user.role !== "admin") return <Navigate to="/dashboard" replace />;
   return children;
 }
@@ -67,6 +68,7 @@ export default function App() {
 
               {/* Auth */}
               <Route path="/login" element={<Login />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />

@@ -48,25 +48,48 @@ export default function Login() {
     <AuthShell
       title="Welcome back"
       subtitle="Sign in to access your TN Universities Connect dashboard."
-      footer={<>New here? <Link to="/register" className="text-primary font-medium hover:underline">Create an account</Link></>}
+      footer={
+        <>
+          New here?{" "}
+          <Link to="/register" className="text-primary font-medium hover:underline">
+            Create an account
+          </Link>
+        </>
+      }
     >
       <form onSubmit={submit} className="space-y-4" noValidate>
         <div>
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" />
+          <Input
+            id="email"
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            placeholder="you@example.com"
+          />
           {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
         </div>
         <div>
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+          <Input
+            id="password"
+            type="password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
           {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
         </div>
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center gap-2 cursor-pointer">
-            <Checkbox checked={form.remember} onCheckedChange={(v) => setForm({ ...form, remember: !!v })} />
+            <Checkbox
+              checked={form.remember}
+              onCheckedChange={(v) => setForm({ ...form, remember: !!v })}
+            />
             <span>Remember me</span>
           </label>
-          <Link to="/forgot-password" className="text-primary hover:underline">Forgot password?</Link>
+          <Link to="/forgot-password" className="text-primary hover:underline">
+            Forgot password?
+          </Link>
         </div>
         <Button type="submit" disabled={loading} size="lg" className="w-full">
           <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign in"}

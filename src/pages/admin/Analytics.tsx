@@ -1,6 +1,20 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart, Bar, LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend } from "recharts";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
 import { getStudents, UNIVERSITIES, DEPARTMENTS } from "@/lib/data";
 
 const COLORS = ["#006B2D", "#D71920", "#F5C518", "#0B1F3A", "#888", "#5cbdb9", "#c44569"];
@@ -16,7 +30,8 @@ export default function AdminAnalytics() {
 
   const gender = ["male", "female", "other"].map((g) => ({
     name: g.charAt(0).toUpperCase() + g.slice(1),
-    value: students.filter((s) => s.gender === g).length || (g === "male" ? 3 : g === "female" ? 2 : 0),
+    value:
+      students.filter((s) => s.gender === g).length || (g === "male" ? 3 : g === "female" ? 2 : 0),
   }));
 
   const byUni = UNIVERSITIES.map((u) => ({
@@ -32,15 +47,21 @@ export default function AdminAnalytics() {
   return (
     <div className="space-y-6">
       <div>
-        <Badge variant="outline" className="border-accent text-accent-foreground mb-2">Analytics</Badge>
+        <Badge variant="outline" className="border-accent text-accent-foreground mb-2">
+          Analytics
+        </Badge>
         <h1 className="text-3xl font-bold text-secondary">Network Analytics</h1>
-        <p className="text-muted-foreground">Insights about registrations, demographics, and institutional distribution.</p>
+        <p className="text-muted-foreground">
+          Insights about registrations, demographics, and institutional distribution.
+        </p>
       </div>
 
       <Card>
         <CardContent className="p-6">
           <h3 className="font-bold text-secondary mb-1">Registration & engagement trends</h3>
-          <p className="text-sm text-muted-foreground mb-4">Monthly student registrations vs active members</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            Monthly student registrations vs active members
+          </p>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={trend}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -48,8 +69,20 @@ export default function AdminAnalytics() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="registrations" stroke="#006B2D" strokeWidth={3} dot={{ r: 5 }} />
-              <Line type="monotone" dataKey="active" stroke="#D71920" strokeWidth={3} dot={{ r: 5 }} />
+              <Line
+                type="monotone"
+                dataKey="registrations"
+                stroke="#006B2D"
+                strokeWidth={3}
+                dot={{ r: 5 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="active"
+                stroke="#D71920"
+                strokeWidth={3}
+                dot={{ r: 5 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
@@ -63,7 +96,9 @@ export default function AdminAnalytics() {
             <ResponsiveContainer width="100%" height={260}>
               <PieChart>
                 <Pie data={gender} dataKey="value" nameKey="name" outerRadius={90} label>
-                  {gender.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
+                  {gender.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i]} />
+                  ))}
                 </Pie>
                 <Tooltip />
                 <Legend />

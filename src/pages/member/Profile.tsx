@@ -8,7 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
 import { UNIVERSITIES, DEPARTMENTS } from "@/lib/data";
 
@@ -69,7 +75,11 @@ export default function MemberProfile() {
                     <Avatar className="h-24 w-24">
                       <AvatarImage src={form.avatar} />
                       <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
-                        {form.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}
+                        {form.name
+                          .split(" ")
+                          .map((p) => p[0])
+                          .slice(0, 2)
+                          .join("")}
                       </AvatarFallback>
                     </Avatar>
                     <label className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-primary text-primary-foreground grid place-items-center cursor-pointer shadow-elegant hover:scale-110 transition-smooth">
@@ -86,7 +96,10 @@ export default function MemberProfile() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <Label>Full name</Label>
-                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                    <Input
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    />
                   </div>
                   <div>
                     <Label>Email</Label>
@@ -94,25 +107,56 @@ export default function MemberProfile() {
                   </div>
                   <div>
                     <Label>Phone</Label>
-                    <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+233 ..." />
+                    <Input
+                      value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      placeholder="+233 ..."
+                    />
                   </div>
                   <div>
                     <Label>University</Label>
-                    <Select value={form.university} onValueChange={(v) => setForm({ ...form, university: v })}>
-                      <SelectTrigger><SelectValue placeholder="Select university" /></SelectTrigger>
-                      <SelectContent>{UNIVERSITIES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
+                    <Select
+                      value={form.university}
+                      onValueChange={(v) => setForm({ ...form, university: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select university" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {UNIVERSITIES.map((u) => (
+                          <SelectItem key={u} value={u}>
+                            {u}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                   </div>
                   <div className="sm:col-span-2">
                     <Label>Department</Label>
-                    <Select value={form.department} onValueChange={(v) => setForm({ ...form, department: v })}>
-                      <SelectTrigger><SelectValue placeholder="Select department" /></SelectTrigger>
-                      <SelectContent>{DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                    <Select
+                      value={form.department}
+                      onValueChange={(v) => setForm({ ...form, department: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DEPARTMENTS.map((d) => (
+                          <SelectItem key={d} value={d}>
+                            {d}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                   </div>
                   <div className="sm:col-span-2">
                     <Label>Bio</Label>
-                    <Textarea rows={4} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Tell the community a bit about yourself..." />
+                    <Textarea
+                      rows={4}
+                      value={form.bio}
+                      onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                      placeholder="Tell the community a bit about yourself..."
+                    />
                   </div>
                 </div>
 
@@ -125,19 +169,33 @@ export default function MemberProfile() {
         <TabsContent value="security">
           <Card>
             <CardContent className="p-6">
-              <h3 className="font-bold text-secondary flex items-center gap-2 mb-4"><Lock className="h-4 w-4" /> Change password</h3>
+              <h3 className="font-bold text-secondary flex items-center gap-2 mb-4">
+                <Lock className="h-4 w-4" /> Change password
+              </h3>
               <form onSubmit={changePassword} className="space-y-4 max-w-md">
                 <div>
                   <Label>Current password</Label>
-                  <Input type="password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} />
+                  <Input
+                    type="password"
+                    value={pw.current}
+                    onChange={(e) => setPw({ ...pw, current: e.target.value })}
+                  />
                 </div>
                 <div>
                   <Label>New password</Label>
-                  <Input type="password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} />
+                  <Input
+                    type="password"
+                    value={pw.next}
+                    onChange={(e) => setPw({ ...pw, next: e.target.value })}
+                  />
                 </div>
                 <div>
                   <Label>Confirm new password</Label>
-                  <Input type="password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} />
+                  <Input
+                    type="password"
+                    value={pw.confirm}
+                    onChange={(e) => setPw({ ...pw, confirm: e.target.value })}
+                  />
                 </div>
                 <Button type="submit">Update password</Button>
               </form>

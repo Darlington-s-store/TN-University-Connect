@@ -56,12 +56,15 @@ export default function Contact() {
           <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,rgba(0,107,45,0.1)_0%,transparent_50%)]" />
           <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(215,25,32,0.1)_0%,transparent_50%)]" />
         </div>
-        
+
         <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center flex flex-col items-center">
-          <Badge className="bg-accent text-accent-foreground mb-6 px-4 py-1 uppercase tracking-widest font-bold">Contact Us</Badge>
+          <Badge className="bg-accent text-accent-foreground mb-6 px-4 py-1 uppercase tracking-widest font-bold">
+            Contact Us
+          </Badge>
           <h1 className="text-4xl sm:text-6xl font-bold mb-6">Let's Connect</h1>
           <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-            Have a question, partnership proposal, or just want to say hello? Our team is here to help you navigate the TNUC ecosystem.
+            Have a question, partnership proposal, or just want to say hello? Our team is here to
+            help you navigate the TNUC ecosystem.
           </p>
         </div>
       </section>
@@ -79,8 +82,15 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-bold text-secondary mb-1">Email Us</h3>
-                    <p className="text-sm text-muted-foreground mb-3">Direct support for general inquiries</p>
-                    <a href="mailto:hello@tnuc.gh" className="text-primary font-bold hover:underline">hello@tnuc.gh</a>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Direct support for general inquiries
+                    </p>
+                    <a
+                      href="mailto:hello@tnuc.gh"
+                      className="text-primary font-bold hover:underline"
+                    >
+                      hello@tnuc.gh
+                    </a>
                   </div>
                 </div>
               </Card>
@@ -93,7 +103,12 @@ export default function Contact() {
                   <div>
                     <h3 className="font-bold text-secondary mb-1">Call Us</h3>
                     <p className="text-sm text-muted-foreground mb-3">Mon-Fri from 8am to 5pm</p>
-                    <a href="tel:+233302500000" className="text-secondary font-bold hover:underline">+233 30 250 0000</a>
+                    <a
+                      href="tel:+233302500000"
+                      className="text-secondary font-bold hover:underline"
+                    >
+                      +233 30 250 0000
+                    </a>
                   </div>
                 </div>
               </Card>
@@ -105,7 +120,9 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-bold text-secondary mb-1">Visit Us</h3>
-                    <p className="text-sm text-muted-foreground mb-3">Our headquarters in the capital</p>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Our headquarters in the capital
+                    </p>
                     <p className="text-secondary font-bold">Accra, Greater Accra Region</p>
                   </div>
                 </div>
@@ -113,10 +130,16 @@ export default function Contact() {
 
               {/* SOCIAL LINKS - CLEAN */}
               <div className="p-8 bg-muted/30 rounded-3xl">
-                <h4 className="text-sm font-bold text-secondary uppercase tracking-widest mb-6">Follow our journey</h4>
+                <h4 className="text-sm font-bold text-secondary uppercase tracking-widest mb-6">
+                  Follow our journey
+                </h4>
                 <div className="flex gap-4">
                   {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                    <a key={i} href="#" className="h-12 w-12 rounded-xl bg-white shadow-sm flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300">
+                    <a
+                      key={i}
+                      href="#"
+                      className="h-12 w-12 rounded-xl bg-white shadow-sm flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
+                    >
                       <Icon className="h-5 w-5" />
                     </a>
                   ))}
@@ -129,64 +152,101 @@ export default function Contact() {
               <Card className="border-none shadow-2xl bg-white rounded-[2rem] overflow-hidden">
                 <div className="p-8 lg:p-12">
                   <h2 className="text-3xl font-bold text-secondary mb-2">Send a message</h2>
-                  <p className="text-muted-foreground mb-10">Fill out the form below and we'll get back to you within 24-48 hours.</p>
-                  
+                  <p className="text-muted-foreground mb-10">
+                    Fill out the form below and we'll get back to you within 24-48 hours.
+                  </p>
+
                   <form onSubmit={submit} className="space-y-8" noValidate>
                     <div className="grid sm:grid-cols-2 gap-8">
                       <div className="space-y-2">
-                        <Label htmlFor="name" className="text-sm font-bold text-secondary uppercase tracking-tighter">Full Name</Label>
-                        <Input 
-                          id="name" 
-                          value={form.name} 
-                          onChange={(e) => setForm({ ...form, name: e.target.value })} 
-                          className="h-14 bg-muted/30 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-lg px-6" 
+                        <Label
+                          htmlFor="name"
+                          className="text-sm font-bold text-secondary uppercase tracking-tighter"
+                        >
+                          Full Name
+                        </Label>
+                        <Input
+                          id="name"
+                          value={form.name}
+                          onChange={(e) => setForm({ ...form, name: e.target.value })}
+                          className="h-14 bg-muted/30 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-lg px-6"
                           placeholder="John Doe"
                         />
-                        {errors.name && <p className="text-xs text-ghana-red font-medium">{errors.name}</p>}
+                        {errors.name && (
+                          <p className="text-xs text-ghana-red font-medium">{errors.name}</p>
+                        )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email" className="text-sm font-bold text-secondary uppercase tracking-tighter">Email Address</Label>
-                        <Input 
-                          id="email" 
-                          type="email" 
-                          value={form.email} 
-                          onChange={(e) => setForm({ ...form, email: e.target.value })} 
-                          className="h-14 bg-muted/30 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-lg px-6" 
+                        <Label
+                          htmlFor="email"
+                          className="text-sm font-bold text-secondary uppercase tracking-tighter"
+                        >
+                          Email Address
+                        </Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => setForm({ ...form, email: e.target.value })}
+                          className="h-14 bg-muted/30 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-lg px-6"
                           placeholder="john@university.edu"
                         />
-                        {errors.email && <p className="text-xs text-ghana-red font-medium">{errors.email}</p>}
+                        {errors.email && (
+                          <p className="text-xs text-ghana-red font-medium">{errors.email}</p>
+                        )}
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="subject" className="text-sm font-bold text-secondary uppercase tracking-tighter">Subject</Label>
-                      <Input 
-                        id="subject" 
-                        value={form.subject} 
-                        onChange={(e) => setForm({ ...form, subject: e.target.value })} 
-                        className="h-14 bg-muted/30 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-lg px-6" 
+                      <Label
+                        htmlFor="subject"
+                        className="text-sm font-bold text-secondary uppercase tracking-tighter"
+                      >
+                        Subject
+                      </Label>
+                      <Input
+                        id="subject"
+                        value={form.subject}
+                        onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                        className="h-14 bg-muted/30 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-lg px-6"
                         placeholder="How can we help you?"
                       />
-                      {errors.subject && <p className="text-xs text-ghana-red font-medium">{errors.subject}</p>}
+                      {errors.subject && (
+                        <p className="text-xs text-ghana-red font-medium">{errors.subject}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
                       <div className="flex justify-between items-center mb-1">
-                        <Label htmlFor="message" className="text-sm font-bold text-secondary uppercase tracking-tighter">Your Message</Label>
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{form.message.length}/1000</span>
+                        <Label
+                          htmlFor="message"
+                          className="text-sm font-bold text-secondary uppercase tracking-tighter"
+                        >
+                          Your Message
+                        </Label>
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                          {form.message.length}/1000
+                        </span>
                       </div>
-                      <Textarea 
-                        id="message" 
-                        rows={6} 
-                        value={form.message} 
-                        onChange={(e) => setForm({ ...form, message: e.target.value })} 
-                        className="bg-muted/30 border-none rounded-[2rem] focus:ring-2 focus:ring-primary/20 text-lg p-8 resize-none" 
+                      <Textarea
+                        id="message"
+                        rows={6}
+                        value={form.message}
+                        onChange={(e) => setForm({ ...form, message: e.target.value })}
+                        className="bg-muted/30 border-none rounded-[2rem] focus:ring-2 focus:ring-primary/20 text-lg p-8 resize-none"
                         placeholder="Tell us more about your inquiry..."
                       />
-                      {errors.message && <p className="text-xs text-ghana-red font-medium">{errors.message}</p>}
+                      {errors.message && (
+                        <p className="text-xs text-ghana-red font-medium">{errors.message}</p>
+                      )}
                     </div>
 
-                    <Button type="submit" disabled={submitting} size="lg" className="h-16 px-12 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 group w-full sm:w-auto">
+                    <Button
+                      type="submit"
+                      disabled={submitting}
+                      size="lg"
+                      className="h-16 px-12 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 group w-full sm:w-auto"
+                    >
                       {submitting ? "Sending..." : "Send Message"}
                       <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                     </Button>

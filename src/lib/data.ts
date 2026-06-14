@@ -39,7 +39,7 @@ export type Student = {
   fullName: string;
   email: string;
   phone: string;
-  gender: "male" | "female" | "other";
+  gender: string;
   dob: string;
   university: string;
   department: string;
@@ -48,6 +48,10 @@ export type Student = {
   indexNumber: string;
   address: string;
   submittedAt: string;
+  nationality?: string;
+  status?: string;
+  church?: string;
+  niche?: string;
 };
 
 export const UNIVERSITIES = [

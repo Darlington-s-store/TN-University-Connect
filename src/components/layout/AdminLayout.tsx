@@ -1,5 +1,20 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, BarChart3, FileText, Megaphone, BookOpen, Mail, Settings, LogOut, Home, Bell, Search, Menu, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  BarChart3,
+  FileText,
+  Megaphone,
+  BookOpen,
+  Mail,
+  Settings,
+  LogOut,
+  Home,
+  Bell,
+  Search,
+  Menu,
+  X,
+} from "lucide-react";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
@@ -32,9 +47,11 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       <div className="p-4 border-b border-white/10 flex items-center justify-between">
         <Logo variant="light" />
       </div>
-      
+
       <div className="px-4 py-3 border-b border-white/10">
-        <div className="text-[11px] uppercase tracking-wider text-accent font-semibold">Admin Panel</div>
+        <div className="text-[11px] uppercase tracking-wider text-accent font-semibold">
+          Admin Panel
+        </div>
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto no-scrollbar">
@@ -56,10 +73,10 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       </nav>
 
       <div className="p-4 border-t border-white/10">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="w-full bg-transparent border-white/20 text-white hover:bg-white/10 gap-2" 
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full bg-transparent border-white/20 text-white hover:bg-white/10 gap-2"
           onClick={() => {
             onClose?.();
             navigate("/");
@@ -79,21 +96,21 @@ export default function AdminLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const getPageTitle = () => {
-    const item = items.find(i => i.to === location.pathname);
+    const item = items.find((i) => i.to === location.pathname);
     if (item) return item.label;
     if (location.pathname === "/admin/settings") return "Settings";
     return "Admin Panel";
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc]">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:w-64 bg-secondary text-secondary-foreground flex-col sticky top-0 h-screen z-20">
+      <aside className="hidden lg:flex lg:w-64 bg-secondary text-secondary-foreground flex-col fixed inset-y-0 left-0 z-20">
         <SidebarContent />
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="lg:pl-64 flex flex-col min-h-screen">
         {/* Topbar */}
         <header className="h-16 border-b bg-white flex items-center justify-between px-4 sm:px-8 sticky top-0 z-10">
           <div className="flex items-center gap-4">
@@ -110,36 +127,48 @@ export default function AdminLayout() {
             </Sheet>
 
             <h2 className="text-lg font-semibold text-secondary sm:block">{getPageTitle()}</h2>
-            
+
             <div className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input 
-                type="text" 
-                placeholder="Search..." 
+              <input
+                type="text"
+                placeholder="Search..."
                 className="pl-9 pr-4 py-1.5 bg-muted/50 border-none rounded-full text-sm focus:ring-1 focus:ring-primary w-64"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
-            <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-secondary hidden sm:flex">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative text-muted-foreground hover:text-secondary hidden sm:flex"
+            >
               <Bell className="h-5 w-5" />
               <span className="absolute top-2 right-2 h-2 w-2 bg-ghana-red rounded-full border-2 border-white"></span>
             </Button>
-            
+
             <div className="h-8 w-px bg-border mx-1 hidden sm:block"></div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="pl-1 pr-2 py-1.5 h-auto gap-2 hover:bg-muted/50 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="pl-1 pr-2 py-1.5 h-auto gap-2 hover:bg-muted/50 rounded-full"
+                >
                   <Avatar className="h-8 w-8 border border-border">
                     <AvatarImage src="" />
                     <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                      {user?.name?.split(" ").map(n => n[0]).join("")}
+                      {user?.name
+                        ?.split(" ")
+                        .map((n: string) => n[0])
+                        .join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div className="text-left hidden sm:block">
-                    <div className="text-sm font-medium text-secondary leading-none truncate max-w-[100px]">{user?.name}</div>
+                    <div className="text-sm font-medium text-secondary leading-none truncate max-w-[100px]">
+                      {user?.name}
+                    </div>
                     <div className="text-[11px] text-muted-foreground mt-1">Administrator</div>
                   </div>
                 </Button>
@@ -147,7 +176,10 @@ export default function AdminLayout() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate("/admin/settings")} className="cursor-pointer gap-2">
+                <DropdownMenuItem
+                  onClick={() => navigate("/admin/settings")}
+                  className="cursor-pointer gap-2"
+                >
                   <Settings className="h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
@@ -156,8 +188,11 @@ export default function AdminLayout() {
                   <span>View Website</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={() => { logout(); navigate("/"); }} 
+                <DropdownMenuItem
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
                   className="cursor-pointer gap-2 text-ghana-red focus:text-ghana-red focus:bg-ghana-red/5"
                 >
                   <LogOut className="h-4 w-4" />

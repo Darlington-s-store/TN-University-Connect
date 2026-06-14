@@ -45,7 +45,10 @@ export default function Navbar() {
 
         <div className="hidden lg:flex items-center gap-2">
           {user ? (
-            <Button onClick={() => navigate(user.role === "admin" ? "/admin" : "/dashboard")} variant="default">
+            <Button
+              onClick={() => navigate(user.role === "admin" ? "/admin" : "/dashboard")}
+              variant="default"
+            >
               {user.role === "admin" ? "Admin Panel" : "Dashboard"}
             </Button>
           ) : (
@@ -100,10 +103,23 @@ export default function Navbar() {
                 </Button>
               ) : (
                 <>
-                  <Button variant="outline" className="flex-1" onClick={() => { setOpen(false); navigate("/login"); }}>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      setOpen(false);
+                      navigate("/login");
+                    }}
+                  >
                     Login
                   </Button>
-                  <Button className="flex-1" onClick={() => { setOpen(false); navigate("/register"); }}>
+                  <Button
+                    className="flex-1"
+                    onClick={() => {
+                      setOpen(false);
+                      navigate("/register");
+                    }}
+                  >
                     Join Now
                   </Button>
                 </>

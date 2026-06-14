@@ -4,7 +4,13 @@ import { FileDown, FileSpreadsheet, FileText as FileIcon, Download, Trash2 } fro
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { getStudents } from "@/lib/data";
 
@@ -14,14 +20,34 @@ export default function AdminReports() {
   const [type, setType] = useState("students");
   const [format, setFormat] = useState("csv");
   const [history, setHistory] = useState<HistItem[]>([
-    { id: "h1", type: "students", format: "csv", date: new Date(Date.now() - 86400000 * 2).toISOString() },
-    { id: "h2", type: "universities", format: "pdf", date: new Date(Date.now() - 86400000 * 5).toISOString() },
+    {
+      id: "h1",
+      type: "students",
+      format: "csv",
+      date: new Date(Date.now() - 86400000 * 2).toISOString(),
+    },
+    {
+      id: "h2",
+      type: "universities",
+      format: "pdf",
+      date: new Date(Date.now() - 86400000 * 5).toISOString(),
+    },
   ]);
 
   const generate = () => {
     const data = getStudents();
     if (format === "csv") {
-      const headers = ["fullName", "email", "phone", "gender", "university", "department", "program", "level", "indexNumber"];
+      const headers = [
+        "fullName",
+        "email",
+        "phone",
+        "gender",
+        "university",
+        "department",
+        "program",
+        "level",
+        "indexNumber",
+      ];
       const rows = [
         headers.join(","),
         ...data.map((s) => headers.map((h) => `"${(s as any)[h] ?? ""}"`).join(",")),
@@ -46,13 +72,18 @@ export default function AdminReports() {
       window.print();
     }
     toast.success(`Generated ${type} report (${format.toUpperCase()})`);
-    setHistory([{ id: `h-${Date.now()}`, type, format, date: new Date().toISOString() }, ...history]);
+    setHistory([
+      { id: `h-${Date.now()}`, type, format, date: new Date().toISOString() },
+      ...history,
+    ]);
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <Badge variant="outline" className="border-accent text-accent-foreground mb-2">Reports</Badge>
+        <Badge variant="outline" className="border-accent text-accent-foreground mb-2">
+          Reports
+        </Badge>
         <h1 className="text-3xl font-bold text-secondary">Reports</h1>
         <p className="text-muted-foreground">Generate and download reports across the platform.</p>
       </div>
@@ -65,7 +96,9 @@ export default function AdminReports() {
               <div>
                 <Label>Report type</Label>
                 <Select value={type} onValueChange={setType}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="students">Student registrations</SelectItem>
                     <SelectItem value="universities">University distribution</SelectItem>
@@ -77,7 +110,9 @@ export default function AdminReports() {
               <div>
                 <Label>Format</Label>
                 <Select value={format} onValueChange={setFormat}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="csv">CSV</SelectItem>
                     <SelectItem value="excel">Excel</SelectItem>
@@ -99,13 +134,17 @@ export default function AdminReports() {
                   onClick={() => setFormat(o.f)}
                   className={`p-4 rounded-lg border-2 text-left transition-smooth ${format === o.f ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
                 >
-                  <o.icon className={`h-6 w-6 mb-2 ${format === o.f ? "text-primary" : "text-muted-foreground"}`} />
+                  <o.icon
+                    className={`h-6 w-6 mb-2 ${format === o.f ? "text-primary" : "text-muted-foreground"}`}
+                  />
                   <div className="font-medium text-secondary">{o.label}</div>
                 </button>
               ))}
             </div>
 
-            <Button size="lg" onClick={generate}><Download className="h-4 w-4" /> Generate & download</Button>
+            <Button size="lg" onClick={generate}>
+              <Download className="h-4 w-4" /> Generate & download
+            </Button>
           </CardContent>
         </Card>
 
@@ -114,15 +153,30 @@ export default function AdminReports() {
             <h3 className="font-bold text-secondary mb-4">Download history</h3>
             <div className="space-y-2">
               {history.map((h) => (
-                <div key={h.id} className="flex items-center justify-between p-3 rounded-md bg-muted/40">
+                <div
+                  key={h.id}
+                  className="flex items-center justify-between p-3 rounded-md bg-muted/40"
+                >
                   <div>
                     <div className="font-medium text-secondary text-sm capitalize">{h.type}</div>
-                    <div className="text-xs text-muted-foreground">{new Date(h.date).toLocaleString("en-GB")} · {h.format.toUpperCase()}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {new Date(h.date).toLocaleString("en-GB")} · {h.format.toUpperCase()}
+                    </div>
                   </div>
-                  <Button size="icon" variant="ghost" onClick={() => setHistory(history.filter((x) => x.id !== h.id))}><Trash2 className="h-4 w-4" /></Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setHistory(history.filter((x) => x.id !== h.id))}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               ))}
-              {history.length === 0 && <div className="text-sm text-muted-foreground text-center py-4">No downloads yet.</div>}
+              {history.length === 0 && (
+                <div className="text-sm text-muted-foreground text-center py-4">
+                  No downloads yet.
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
