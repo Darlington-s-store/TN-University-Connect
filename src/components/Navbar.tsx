@@ -185,13 +185,6 @@ export default function Navbar() {
                   >
                     <UserPlus className="h-4 w-4 text-primary" /> Join Now
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => navigate("/admin/login")}
-                    className="cursor-pointer gap-2 text-xs text-muted-foreground"
-                  >
-                    <ShieldCheck className="h-3.5 w-3.5" /> Admin Login
-                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
@@ -261,13 +254,6 @@ export default function Navbar() {
                   >
                     <UserPlus className="h-4 w-4" /> Join Now
                   </Button>
-                  <Link
-                    to="/admin/login"
-                    onClick={() => setOpen(false)}
-                    className="text-xs text-muted-foreground flex items-center gap-1.5 px-1 pt-1"
-                  >
-                    <ShieldCheck className="h-3 w-3" /> Admin Login
-                  </Link>
                 </>
               )}
             </div>
