@@ -19,21 +19,21 @@ const PARTNER_UNIVERSITIES = [
   },
   {
     name: "Kwame Nkrumah University of Science and Technology",
-    logo: "https://upload.wikimedia.org/wikipedia/en/b/b5/Knust_seal.jpg",
+    logo: "https://upload.wikimedia.org/wikipedia/en/b/b4/Knust_seal.jpg",
     initials: "KNUST",
     bg: "#006B2D",
     text: "#F5C518",
   },
   {
     name: "University of Cape Coast",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e1/University_of_Cape_Coast_crest.png",
+    logo: "https://ucc.edu.gh/img/ucc-logos/horizontal-logo/white-horizontal-logo/ucclogo_horizontal_white.png",
     initials: "UCC",
     bg: "#004494",
-    text: "#F5C518",
+    text: "#ffffff",
   },
   {
     name: "University of Education, Winneba",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b6/University_of_Education%2C_Winneba_logo.jpg",
+    logo: "https://upload.wikimedia.org/wikipedia/en/0/08/University_of_Education%2C_Winneba_logo.jpg",
     initials: "UEW",
     bg: "#D71920",
     text: "#ffffff",
@@ -54,14 +54,14 @@ const PARTNER_UNIVERSITIES = [
   },
   {
     name: "Ashesi University",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/8/81/Ashesi_University_logo.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Ashesi_University_Logo.png",
     initials: "ASHESI",
     bg: "#7A1C1C",
     text: "#F5C518",
   },
   {
     name: "Central University",
-    logo: "https://upload.wikimedia.org/wikipedia/en/1/14/Central_University_%28Ghana%29.jpg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Central_University_%28Ghana%29.jpg",
     initials: "CU",
     bg: "#0B3C5D",
     text: "#F5C518",
@@ -75,7 +75,7 @@ const PARTNER_UNIVERSITIES = [
   },
   {
     name: "Ho Technical University",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/f/ff/Ho_Technical_University_logo.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b7/Ho_Polytechnic_Logo.jpg",
     initials: "HTU",
     bg: "#008A4B",
     text: "#F5C518",
@@ -99,8 +99,11 @@ function UniversityLogo({
 
   return (
     <div
-      className="h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center rounded-2xl p-2 shrink-0 border bg-white shadow-soft transition-all duration-300 group-hover:scale-105"
-      style={{ backgroundColor: error ? bg : "#ffffff", borderColor: error ? bg : "#f1f5f9" }}
+      className="h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center rounded-2xl p-2 shrink-0 border shadow-soft transition-all duration-300 group-hover:scale-105"
+      style={{
+        backgroundColor: name.includes("Cape Coast") ? bg : error ? bg : "#ffffff",
+        borderColor: name.includes("Cape Coast") || error ? bg : "#f1f5f9",
+      }}
     >
       {error ? (
         <span
