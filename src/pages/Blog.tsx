@@ -11,6 +11,8 @@ import blog2 from "@/assets/blog-2.jpg";
 import blog3 from "@/assets/blog-3.jpg";
 import blog4 from "@/assets/blog-4.jpg";
 import blog5 from "@/assets/blog-5.jpg";
+import blog6 from "@/assets/blog-6.jpg";
+import blog7 from "@/assets/blog-7.jpg";
 
 function resolveBlogImage(imgStr?: string) {
   if (!imgStr) return undefined;
@@ -20,6 +22,8 @@ function resolveBlogImage(imgStr?: string) {
   if (imgStr.includes("blog-3")) return blog3;
   if (imgStr.includes("blog-4")) return blog4;
   if (imgStr.includes("blog-5")) return blog5;
+  if (imgStr.includes("blog-6")) return blog6;
+  if (imgStr.includes("blog-7")) return blog7;
   return imgStr;
 }
 

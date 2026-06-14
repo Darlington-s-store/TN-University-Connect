@@ -143,8 +143,10 @@ import blog2 from "@/assets/blog-2.jpg";
 import blog3 from "@/assets/blog-3.jpg";
 import blog4 from "@/assets/blog-4.jpg";
 import blog5 from "@/assets/blog-5.jpg";
+import blog6 from "@/assets/blog-6.jpg";
+import blog7 from "@/assets/blog-7.jpg";
 
-const BLOG_KEY = "tnu_blogs_v3";
+const BLOG_KEY = "tnu_blogs_v4";
 const blogSeed: BlogPost[] = [
   {
     id: "b1",
@@ -177,7 +179,7 @@ const blogSeed: BlogPost[] = [
     date: "2026-05-10",
     excerpt: "Career services should be embedded from day one, not as an afterthought.",
     body: "Too many students arrive at graduation under-prepared for the job market. We argue that career development should begin in the first semester — through structured mentorship, paid internships, and skills passports that travel with students throughout their academic journey.\n\nThe most successful programs we studied tie career milestones directly into the academic calendar, so students never have to choose between coursework and professional development.",
-    image: blog4,
+    image: blog6,
     published: true,
   },
   {
@@ -188,7 +190,7 @@ const blogSeed: BlogPost[] = [
     date: "2026-04-22",
     excerpt: "From solar-powered campuses to zero-waste cafeterias.",
     body: "Sustainability is no longer optional. These five institutions are leading the way — with rooftop solar, community gardens, plastic-free policies, and a sharp focus on the UN's Sustainable Development Goals.\n\nUG Legon has cut campus electricity emissions by 22% in two years. Ashesi runs an entirely paperless admissions process. UCC's marine biology department has turned its coastal research station into a community education hub.",
-    image: blog2,
+    image: blog7,
     published: true,
   },
 ];
