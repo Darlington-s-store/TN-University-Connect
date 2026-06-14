@@ -81,7 +81,7 @@ export default function Footer() {
               <Phone className="h-4 w-4 text-accent shrink-0" /> +233 30 250 0000
             </li>
             <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-accent shrink-0" /> hello@tnuc.gh
+              <Mail className="h-4 w-4 text-accent shrink-0" /> info@tnuc.gh
             </li>
           </ul>
         </div>
@@ -94,7 +94,7 @@ export default function Footer() {
             <span className="inline-block w-2 h-2 rounded-full bg-ghana-red" />
             <span className="inline-block w-2 h-2 rounded-full bg-ghana-gold" />
             <span className="inline-block w-2 h-2 rounded-full bg-ghana-green" />
-            <span>Proudly Ghanaian</span>
+            <span></span>
           </span>
         </div>
       </div>

@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
-import { Camera, Lock } from "lucide-react";
+import { Camera, Lock, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -16,16 +17,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
-import { UNIVERSITIES, DEPARTMENTS } from "@/lib/data";
+import { getStudents, saveStudents, Student, UNIVERSITIES, DEPARTMENTS } from "@/lib/data";
+import { FACULTIES, PROGRAMMES, LEVELS, CHURCHES, NICHES } from "@/lib/schools";
 
 export default function MemberProfile() {
   const { user, updateUser } = useAuth();
+  const studentRecord = useMemo(
+    () => getStudents().find((s) => s.email === user?.email),
+    [user?.email],
+  );
+
   const [form, setForm] = useState({
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
+    gender: user?.gender || "male",
+    nationality: user?.nationality || "Ghanaian",
     university: user?.university || "",
+    schoolType: user?.schoolType || "",
+    uniType: user?.uniType || "",
+    faculty: user?.faculty || "",
     department: user?.department || "",
+    program: user?.program || "",
+    level: user?.level || "",
+    status: user?.status || "Active Student",
+    church: user?.church || "",
+    niche: user?.niche || "",
+    dob: studentRecord?.dob || "",
+    indexNumber: studentRecord?.indexNumber || "",
+    address: studentRecord?.address || "",
     bio: user?.bio || "",
     avatar: user?.avatar || "",
   });
@@ -33,7 +53,54 @@ export default function MemberProfile() {
 
   const saveProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    updateUser(form);
+    updateUser({
+      name: form.name,
+      phone: form.phone,
+      gender: form.gender,
+      nationality: form.nationality,
+      university: form.university,
+      schoolType: form.schoolType,
+      uniType: form.uniType || undefined,
+      faculty: form.faculty,
+      department: form.department,
+      program: form.program,
+      level: form.level,
+      status: form.status,
+      church: form.church,
+      niche: form.niche,
+      bio: form.bio,
+      avatar: form.avatar,
+    });
+
+    const all = getStudents();
+    const idx = all.findIndex((s) => s.email === form.email);
+    const record: Student = {
+      id: studentRecord?.id || `s-${Date.now()}`,
+      userId: studentRecord?.userId || user?.id,
+      fullName: form.name,
+      email: form.email,
+      phone: form.phone,
+      gender: form.gender,
+      dob: form.dob,
+      university: form.university,
+      faculty: form.faculty,
+      department: form.department,
+      program: form.program,
+      level: form.level,
+      indexNumber: form.indexNumber,
+      address: form.address,
+      submittedAt: studentRecord?.submittedAt || new Date().toISOString(),
+      nationality: form.nationality,
+      status: form.status,
+      church: form.church,
+      niche: form.niche,
+      schoolType: form.schoolType,
+      uniType: form.uniType,
+    };
+    if (idx >= 0) all[idx] = record;
+    else all.unshift(record);
+    saveStudents(all);
+
     toast.success("Profile updated");
   };
 
@@ -53,22 +120,69 @@ export default function MemberProfile() {
     setPw({ current: "", next: "", confirm: "" });
   };
 
+  const allFields: [string, string][] = [
+    ["Full Name", form.name],
+    ["Email", form.email],
+    ["Phone", form.phone],
+    ["Gender", form.gender],
+    ["Nationality", form.nationality],
+    ["Date of Birth", form.dob],
+    ["Church", form.church],
+    ["Focus Niche", form.niche],
+    ["School Type", form.schoolType],
+    ...(form.uniType ? [["Sub-type", form.uniType] as [string, string]] : []),
+    ["Institution", form.university],
+    ["Faculty", form.faculty],
+    ["Department", form.department],
+    ["Programme", form.program],
+    ["Level", form.level],
+    ["Status", form.status],
+    ["Index Number", form.indexNumber],
+    ["Address", form.address],
+  ];
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="text-3xl font-bold text-secondary">My Profile</h1>
-        <p className="text-muted-foreground">Update your personal details and account settings.</p>
+        <p className="text-muted-foreground">
+          Update your personal and academic details. Changes sync to your student record.
+        </p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList className="w-full sm:w-auto overflow-x-auto no-scrollbar">
           <TabsTrigger value="profile" className="flex-1 sm:flex-none">
-            Profile
+            Edit Profile
+          </TabsTrigger>
+          <TabsTrigger value="overview" className="flex-1 sm:flex-none">
+            Overview
           </TabsTrigger>
           <TabsTrigger value="security" className="flex-1 sm:flex-none">
             Security
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="overview">
+          <Card>
+            <div className="h-1 flag-stripe" />
+            <CardContent className="p-4 sm:p-6">
+              <h3 className="font-bold text-secondary mb-4 flex items-center gap-2">
+                <Eye className="h-4 w-4" /> Student Overview
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                {allFields.map(([k, v]) => (
+                  <div key={k}>
+                    <div className="text-muted-foreground text-xs uppercase tracking-wider">
+                      {k}
+                    </div>
+                    <div className="font-medium text-secondary mt-0.5">{v || "—"}</div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="profile">
           <Card>
@@ -118,50 +232,242 @@ export default function MemberProfile() {
                     />
                   </div>
                   <div>
-                    <Label>University</Label>
+                    <Label>Gender</Label>
                     <Select
-                      value={form.university}
-                      onValueChange={(v) => setForm({ ...form, university: v })}
+                      value={form.gender}
+                      onValueChange={(v) => setForm({ ...form, gender: v })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select university" />
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {UNIVERSITIES.map((u) => (
-                          <SelectItem key={u} value={u}>
-                            {u}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="sm:col-span-2">
-                    <Label>Department</Label>
-                    <Select
-                      value={form.department}
-                      onValueChange={(v) => setForm({ ...form, department: v })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select department" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {DEPARTMENTS.map((d) => (
-                          <SelectItem key={d} value={d}>
-                            {d}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <Label>Bio</Label>
-                    <Textarea
-                      rows={4}
-                      value={form.bio}
-                      onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                      placeholder="Tell the community a bit about yourself..."
+                  <div>
+                    <Label>Nationality</Label>
+                    <Input
+                      value={form.nationality}
+                      onChange={(e) => setForm({ ...form, nationality: e.target.value })}
                     />
                   </div>
+                  <div>
+                    <Label>Date of Birth</Label>
+                    <Input
+                      type="date"
+                      value={form.dob}
+                      onChange={(e) => setForm({ ...form, dob: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="font-bold text-secondary mb-4 text-sm">Academic Details</h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label>School Type</Label>
+                      <Select
+                        value={form.schoolType}
+                        onValueChange={(v) => setForm({ ...form, schoolType: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="University">University</SelectItem>
+                          <SelectItem value="Nursing & Midwifery">Nursing & Midwifery</SelectItem>
+                          <SelectItem value="College of Education">College of Education</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {form.schoolType === "University" && (
+                      <div>
+                        <Label>Sub-type</Label>
+                        <Select
+                          value={form.uniType || ""}
+                          onValueChange={(v) => setForm({ ...form, uniType: v })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Public">Public Universities</SelectItem>
+                            <SelectItem value="Technical">Technical Universities</SelectItem>
+                            <SelectItem value="Private">Private Universities</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    <div>
+                      <Label>Institution</Label>
+                      <Input
+                        value={form.university}
+                        onChange={(e) => setForm({ ...form, university: e.target.value })}
+                        placeholder="Your institution"
+                      />
+                    </div>
+                    <div>
+                      <Label>Faculty</Label>
+                      <Select
+                        value={form.faculty}
+                        onValueChange={(v) => setForm({ ...form, faculty: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select faculty" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {FACULTIES.map((f) => (
+                            <SelectItem key={f} value={f}>
+                              {f}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Department</Label>
+                      <Select
+                        value={form.department}
+                        onValueChange={(v) => setForm({ ...form, department: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select department" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DEPARTMENTS.map((d) => (
+                            <SelectItem key={d} value={d}>
+                              {d}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Programme</Label>
+                      <Select
+                        value={form.program}
+                        onValueChange={(v) => setForm({ ...form, program: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select programme" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PROGRAMMES.map((p) => (
+                            <SelectItem key={p} value={p}>
+                              {p}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Level</Label>
+                      <Select
+                        value={form.level}
+                        onValueChange={(v) => setForm({ ...form, level: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LEVELS.map((l) => (
+                            <SelectItem key={l} value={l}>
+                              {l === "Alumni" || l === "Graduate" || l === "Completed"
+                                ? l
+                                : `Level ${l}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Status</Label>
+                      <Select
+                        value={form.status}
+                        onValueChange={(v) => setForm({ ...form, status: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Active Student">Active Student</SelectItem>
+                          <SelectItem value="Alumni">Alumni</SelectItem>
+                          <SelectItem value="Completed">Completed Study</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Index / Student Number</Label>
+                      <Input
+                        value={form.indexNumber}
+                        onChange={(e) => setForm({ ...form, indexNumber: e.target.value })}
+                        placeholder="Index number"
+                      />
+                    </div>
+                    <div>
+                      <Label>Address</Label>
+                      <Input
+                        value={form.address}
+                        onChange={(e) => setForm({ ...form, address: e.target.value })}
+                        placeholder="Your contact address"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="font-bold text-secondary mb-4 text-sm">Affiliation & Focus</h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Church Affiliation</Label>
+                      <Select
+                        value={form.church}
+                        onValueChange={(v) => setForm({ ...form, church: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select church" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CHURCHES.map((ch) => (
+                            <SelectItem key={ch} value={ch}>
+                              {ch}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Focus Niche</Label>
+                      <Select
+                        value={form.niche}
+                        onValueChange={(v) => setForm({ ...form, niche: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select niche" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {NICHES.map((n) => (
+                            <SelectItem key={n} value={n}>
+                              {n}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <Label>Bio</Label>
+                  <Textarea
+                    rows={3}
+                    value={form.bio}
+                    onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                    placeholder="Tell the community a bit about yourself..."
+                  />
                 </div>
 
                 <Button type="submit">Save changes</Button>
