@@ -5,8 +5,51 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Hero from "@/components/Hero";
-import { getAnnouncements, getBlogs, UNIVERSITIES } from "@/lib/data";
+import { getAnnouncements, getBlogs } from "@/lib/data";
 import cardPattern from "@/assets/card-pattern.jpg";
+
+const PARTNER_UNIVERSITIES = [
+  {
+    name: "University of Ghana",
+    logo: "https://www.ug.edu.gh/sites/default/files/ug_standard_new_sl_1.png",
+  },
+  {
+    name: "Kwame Nkrumah University of Science and Technology",
+    logo: "https://www.knust.edu.gh/themes/custom/adepts/images/knustlogo.png",
+  },
+  {
+    name: "University of Cape Coast",
+    logo: "https://www.ucc.edu.gh/sites/default/files/ucc_logo_new.png",
+  },
+  {
+    name: "University of Education, Winneba",
+    logo: "https://www.uew.edu.gh/sites/default/files/uew_logo_web.png",
+  },
+  {
+    name: "University for Development Studies",
+    logo: "https://uds.edu.gh/images/uds_emblem.png",
+  },
+  {
+    name: "Ghana Institute of Management and Public Administration",
+    logo: "https://www.gimpa.edu.gh/wp-content/themes/GIMPS/images/logo_g.png",
+  },
+  {
+    name: "Ashesi University",
+    logo: "https://www.ashesi.edu.gh/images/logo-mobile_colored.png",
+  },
+  {
+    name: "Central University",
+    logo: "https://www.central.edu.gh/virgin/images/Central-Uni-logo.png",
+  },
+  {
+    name: "University of Professional Studies",
+    logo: "https://upsa.edu.gh/wp-content/uploads/2020/11/upsa-logoacbsp.png",
+  },
+  {
+    name: "Ho Technical University",
+    logo: "https://htu.edu.gh/images/logo.jpg",
+  },
+];
 
 const testimonials = [
   {
@@ -212,13 +255,20 @@ export default function Home() {
             From regional technical universities to leading private colleges and public research
             institutions across Ghana.
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {UNIVERSITIES.map((u) => (
+          <div className="flex flex-wrap justify-center gap-4">
+            {PARTNER_UNIVERSITIES.map((u) => (
               <div
-                key={u}
-                className="px-4 py-2 bg-slate-50 rounded-xl text-xs sm:text-sm font-bold text-secondary border border-slate-100 hover:border-primary hover:text-primary hover:-translate-y-0.5 transition-all duration-200 cursor-default"
+                key={u.name}
+                className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 rounded-xl text-xs sm:text-sm font-bold text-secondary border border-slate-100 hover:border-primary hover:text-primary hover:bg-slate-50/50 hover:-translate-y-0.5 transition-all duration-200 cursor-default shadow-sm"
               >
-                {u}
+                <div className="h-7 w-7 flex items-center justify-center bg-white rounded-lg p-0.5 border border-slate-100 shrink-0">
+                  <img
+                    src={u.logo}
+                    alt={`${u.name} logo`}
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+                <span>{u.name}</span>
               </div>
             ))}
           </div>
