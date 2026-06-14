@@ -27,19 +27,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAnnouncements, Announcement } from "@/lib/data";
 
 const items = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true },
   { to: "/admin/students", label: "Students", icon: Users },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/admin/announcements", label: "Announcements", icon: Megaphone },
+  { to: "/admin/analytics?tab=announcements", label: "Announcements", icon: Megaphone },
   { to: "/admin/blog", label: "Blog Posts", icon: BookOpen },
   { to: "/admin/messages", label: "Messages", icon: Mail },
 ];
 
 function SidebarContent({ onClose }: { onClose?: () => void }) {
   const navigate = useNavigate();
+  const location = useLocation();
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-white/10 flex items-center justify-between">
@@ -53,21 +55,30 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto no-scrollbar">
-        {items.map((i) => (
-          <NavLink
-            key={i.to}
-            to={i.to}
-            end={i.end}
-            onClick={onClose}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-smooth ${
-                isActive ? "bg-accent text-accent-foreground" : "text-white/80 hover:bg-white/10"
-              }`
-            }
-          >
-            <i.icon className="h-4 w-4" /> {i.label}
-          </NavLink>
-        ))}
+        {items.map((i) => {
+          const [path, query] = i.to.split("?");
+          const isLinkActive = query
+            ? location.pathname === path && location.search.includes(query)
+            : i.end
+              ? location.pathname === path
+              : location.pathname === path && !location.search.includes("tab=");
+          return (
+            <NavLink
+              key={i.to}
+              to={i.to}
+              onClick={onClose}
+              className={() =>
+                `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-smooth ${
+                  isLinkActive
+                    ? "bg-accent text-accent-foreground font-bold"
+                    : "text-white/80 hover:bg-white/10"
+                }`
+              }
+            >
+              <i.icon className="h-4 w-4" /> {i.label}
+            </NavLink>
+          );
+        })}
       </nav>
 
       <div className="p-4 border-t border-white/10">
@@ -92,6 +103,31 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Notification states
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [readIds, setReadIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Load announcements
+    setAnnouncements(getAnnouncements().filter((a) => a.published));
+
+    // Load read announcements
+    const stored = localStorage.getItem("tnu_read_announcements");
+    if (stored) {
+      setReadIds(JSON.parse(stored));
+    }
+  }, [location.pathname]);
+
+  const unreadAnnouncements = announcements.filter((a) => !readIds.includes(a.id));
+  const unreadCount = unreadAnnouncements.length;
+
+  const markAsRead = (id: string) => {
+    const next = [...readIds, id];
+    setReadIds(next);
+    localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
+    navigate(`/announcements/${id}`);
+  };
 
   const getPageTitle = () => {
     const item = items.find((i) => i.to === location.pathname);
@@ -137,16 +173,69 @@ export default function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative text-muted-foreground hover:text-secondary hidden sm:flex"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2 h-2 w-2 bg-ghana-red rounded-full border-2 border-white"></span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative text-muted-foreground hover:text-secondary flex cursor-pointer"
+                >
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 h-4 w-4 bg-ghana-red text-[9px] font-black text-white rounded-full flex items-center justify-center border border-white">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-80 max-h-[350px] overflow-y-auto no-scrollbar"
+              >
+                <DropdownMenuLabel className="font-bold flex items-center justify-between">
+                  <span>Announcements</span>
+                  {unreadCount > 0 && (
+                    <span className="text-[10px] text-ghana-red bg-ghana-red/5 px-2 py-0.5 rounded">
+                      {unreadCount} unread
+                    </span>
+                  )}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {announcements.length === 0 ? (
+                  <div className="p-4 text-center text-xs text-muted-foreground">
+                    No announcements available.
+                  </div>
+                ) : (
+                  announcements.map((a) => {
+                    const isUnread = !readIds.includes(a.id);
+                    return (
+                      <DropdownMenuItem
+                        key={a.id}
+                        onClick={() => markAsRead(a.id)}
+                        className={`p-3 cursor-pointer flex flex-col items-start gap-1 text-xs hover:bg-slate-50 border-b last:border-0 ${isUnread ? "bg-primary/5 font-semibold" : ""}`}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-[10px] text-accent-foreground bg-accent/40 px-1.5 py-0.2 rounded uppercase font-bold tracking-wider">
+                            {a.category}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {new Date(a.date).toLocaleDateString("en-GB")}
+                          </span>
+                        </div>
+                        <div className="text-secondary leading-snug truncate w-full">{a.title}</div>
+                        {isUnread && (
+                          <div className="text-[10px] text-primary flex items-center gap-1 font-bold">
+                            ● New Announcement
+                          </div>
+                        )}
+                      </DropdownMenuItem>
+                    );
+                  })
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            <div className="h-8 w-px bg-border mx-1 hidden sm:block"></div>
+            <div className="h-8 w-px bg-border mx-1"></div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

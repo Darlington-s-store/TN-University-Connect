@@ -33,7 +33,6 @@ import StudentForm from "@/pages/member/StudentForm";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminStudents from "@/pages/admin/Students";
 import AdminAnalytics from "@/pages/admin/Analytics";
-import AdminAnnouncements from "@/pages/admin/Announcements";
 import AdminBlog from "@/pages/admin/Blog";
 import AdminMessages from "@/pages/admin/Messages";
 import AdminSettings from "@/pages/admin/Settings";
@@ -97,7 +96,6 @@ export default function App() {
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/students" element={<AdminStudents />} />
                 <Route path="/admin/analytics" element={<AdminAnalytics />} />
-                <Route path="/admin/announcements" element={<AdminAnnouncements />} />
                 <Route path="/admin/blog" element={<AdminBlog />} />
                 <Route path="/admin/messages" element={<AdminMessages />} />
                 <Route path="/admin/settings" element={<AdminSettings />} />
