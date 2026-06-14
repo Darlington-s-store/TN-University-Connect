@@ -142,6 +142,7 @@ import blog1 from "@/assets/blog-1.jpg";
 import blog2 from "@/assets/blog-2.jpg";
 import blog3 from "@/assets/blog-3.jpg";
 import blog4 from "@/assets/blog-4.jpg";
+import blog5 from "@/assets/blog-5.jpg";
 
 const BLOG_KEY = "tnu_blogs_v3";
 const blogSeed: BlogPost[] = [
@@ -165,7 +166,7 @@ const blogSeed: BlogPost[] = [
     date: "2026-05-20",
     excerpt: "Practical advice for students considering exchange programs.",
     body: "Studying abroad opens doors, but maintaining connections at home matters too. We spoke with five returning students about scholarships, visas, homesickness, and how to keep your roots while spreading your wings.\n\nKey takeaways: start the scholarship search at least 12 months out, build a weekly check-in habit with family, and find at least one Ghanaian student association at your destination campus before you arrive.",
-    image: blog3,
+    image: blog5,
     published: true,
   },
   {

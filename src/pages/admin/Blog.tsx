@@ -230,16 +230,18 @@ export default function AdminBlog() {
                   )}
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                  {["blog-1.jpg", "blog-2.jpg", "blog-3.jpg", "blog-4.jpg"].map((img) => (
-                    <button
-                      type="button"
-                      key={img}
-                      onClick={() => setEditing({ ...editing, image: `/src/assets/${img}` })}
-                      className={`px-2 py-1 text-xs rounded border transition-colors ${editing.image === `/src/assets/${img}` ? "bg-primary text-white border-primary font-bold" : "bg-muted text-slate-600 hover:bg-slate-200"}`}
-                    >
-                      {img}
-                    </button>
-                  ))}
+                  {["blog-1.jpg", "blog-2.jpg", "blog-3.jpg", "blog-4.jpg", "blog-5.jpg"].map(
+                    (img) => (
+                      <button
+                        type="button"
+                        key={img}
+                        onClick={() => setEditing({ ...editing, image: `/src/assets/${img}` })}
+                        className={`px-2 py-1 text-xs rounded border transition-colors ${editing.image === `/src/assets/${img}` ? "bg-primary text-white border-primary font-bold" : "bg-muted text-slate-600 hover:bg-slate-200"}`}
+                      >
+                        {img}
+                      </button>
+                    ),
+                  )}
                 </div>
                 {editing.image && editing.image.startsWith("data:") && (
                   <div className="mt-2 rounded-xl overflow-hidden border">
