@@ -95,9 +95,10 @@ function write<T>(key: string, value: T) {
 }
 
 import annDimes from "@/assets/ann-dimes.jpg";
+import annLegal from "@/assets/ann-legal.jpg";
 
 // ---------- Announcements ----------
-const ANN_KEY = "tnu_announcements_v2";
+const ANN_KEY = "tnu_announcements_v3";
 const announcementSeed: Announcement[] = [
   {
     id: "a1",
@@ -112,11 +113,13 @@ const announcementSeed: Announcement[] = [
   },
   {
     id: "a2",
-    title: "New mentorship program pairs alumni with first-year students",
-    category: "Programs",
-    date: "2026-05-15",
-    excerpt: "Over 200 alumni have signed up to mentor incoming students this academic year.",
-    body: "Our new mentorship initiative connects experienced alumni with first-year students across member universities. Mentees are paired by program of study and career interest. Apply through the member dashboard before 30 June.",
+    title: "GLC Approves 19 Law Faculties for Direct Pre-Bar Progression",
+    category: "Governance",
+    date: "2026-06-14",
+    excerpt:
+      "The General Legal Council has approved 19 accredited law faculties to run both LLB and Pre-Bar programmes, introducing a new pathway that removes the entrance exam from 2026.",
+    body: "The General Legal Council has approved 19 accredited law faculties to run both LLB and Pre-Bar programmes, introducing a new pathway that removes the traditional entrance exam and allows direct progression into a one-year Pre-Bar Course from 2026.\n\nThe move is expected to ease the long-standing backlog of law graduates and expand access to professional legal training nationwide ❗👀",
+    image: annLegal,
     published: true,
   },
   {
