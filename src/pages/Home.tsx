@@ -19,21 +19,21 @@ const PARTNER_UNIVERSITIES = [
   },
   {
     name: "Kwame Nkrumah University of Science and Technology",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/f/f5/KNUST.png",
+    logo: "https://upload.wikimedia.org/wikipedia/en/b/b5/Knust_seal.jpg",
     initials: "KNUST",
     bg: "#006B2D",
     text: "#F5C518",
   },
   {
     name: "University of Cape Coast",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/1/15/UCC_logo.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e1/University_of_Cape_Coast_crest.png",
     initials: "UCC",
     bg: "#004494",
     text: "#F5C518",
   },
   {
     name: "University of Education, Winneba",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b6/Logo_of_the_University_of_Education%2C_Winneba.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b6/University_of_Education%2C_Winneba_logo.jpg",
     initials: "UEW",
     bg: "#D71920",
     text: "#ffffff",
@@ -54,14 +54,14 @@ const PARTNER_UNIVERSITIES = [
   },
   {
     name: "Ashesi University",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/8/81/Ashesi_University_Logo.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/8/81/Ashesi_University_logo.png",
     initials: "ASHESI",
     bg: "#7A1C1C",
     text: "#F5C518",
   },
   {
     name: "Central University",
-    logo: "https://central.edu.gh/virgin/images/Central-Uni-logo.png",
+    logo: "https://upload.wikimedia.org/wikipedia/en/1/14/Central_University_%28Ghana%29.jpg",
     initials: "CU",
     bg: "#0B3C5D",
     text: "#F5C518",
@@ -75,7 +75,7 @@ const PARTNER_UNIVERSITIES = [
   },
   {
     name: "Ho Technical University",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Ho_Technical_University_logo.png/240px-Ho_Technical_University_logo.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/f/ff/Ho_Technical_University_logo.png",
     initials: "HTU",
     bg: "#008A4B",
     text: "#F5C518",
@@ -99,8 +99,8 @@ function UniversityLogo({
 
   return (
     <div
-      className="h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-xl p-1 shrink-0 border shadow-inner transition-colors duration-300"
-      style={{ backgroundColor: error ? bg : "#ffffff", borderColor: error ? bg : "#e2e8f0" }}
+      className="h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center rounded-2xl p-2 shrink-0 border bg-white shadow-soft transition-all duration-300 group-hover:scale-105"
+      style={{ backgroundColor: error ? bg : "#ffffff", borderColor: error ? bg : "#f1f5f9" }}
     >
       {error ? (
         <span
@@ -325,11 +325,11 @@ export default function Home() {
             From regional technical universities to leading private colleges and public research
             institutions across Ghana.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 max-w-5xl mx-auto">
             {PARTNER_UNIVERSITIES.map((u) => (
               <div
                 key={u.name}
-                className="flex items-center gap-3.5 px-4 py-3 bg-slate-50 rounded-2xl text-xs sm:text-sm font-bold text-secondary border border-slate-100 hover:border-primary hover:text-primary hover:bg-slate-50/50 hover:-translate-y-0.5 transition-all duration-200 cursor-default shadow-sm"
+                className="group flex flex-col items-center justify-center p-5 bg-slate-50/50 rounded-2xl border border-slate-100 hover:border-primary/30 hover:bg-white hover:shadow-elegant hover:-translate-y-1 transition-all duration-300 cursor-default"
               >
                 <UniversityLogo
                   name={u.name}
@@ -338,7 +338,7 @@ export default function Home() {
                   bg={u.bg}
                   text={u.text}
                 />
-                <span className="text-left font-extrabold max-w-[200px] leading-tight">
+                <span className="text-center font-extrabold text-xs sm:text-sm text-secondary mt-4 leading-tight line-clamp-2 h-10 flex items-center justify-center">
                   {u.name}
                 </span>
               </div>
