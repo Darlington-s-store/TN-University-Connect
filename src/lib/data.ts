@@ -138,11 +138,12 @@ export const getAnnouncements = () => read(ANN_KEY, announcementSeed);
 export const saveAnnouncements = (list: Announcement[]) => write(ANN_KEY, list);
 
 // ---------- Blog ----------
+import blog1 from "@/assets/blog-1.jpg";
 import blog2 from "@/assets/blog-2.jpg";
 import blog3 from "@/assets/blog-3.jpg";
 import blog4 from "@/assets/blog-4.jpg";
 
-const BLOG_KEY = "tnu_blogs_v2";
+const BLOG_KEY = "tnu_blogs_v3";
 const blogSeed: BlogPost[] = [
   {
     id: "b1",
@@ -152,8 +153,7 @@ const blogSeed: BlogPost[] = [
     date: "2026-06-01",
     excerpt: "A look at the cross-institutional research networks emerging across Ghana.",
     body: "Over the last decade, Ghanaian universities have moved from siloed research to vibrant collaboration networks. From shared labs to joint publications, the country's higher-education ecosystem is becoming a model for the region.\n\nThis piece explores three case studies that show what is working — and what still needs to change. We examine the joint biotech program between UG and KNUST, the West African Climate Research Consortium led by UCC, and the new shared computing grid hosted at GIMPA.\n\nWhat unites these efforts is a shift in mindset: institutions are no longer competing for limited prestige, they are pooling resources to amplify impact. The result is faster publication cycles, larger grant wins, and graduate students who get exposure to a much wider network of mentors.",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDbxQ3OQiFisbn_HxuwVKZMKFwHnmrv7rJz68NVZoSQ4awnVIHU4KnloY&s=10",
+    image: blog1,
     featured: true,
     published: true,
   },
