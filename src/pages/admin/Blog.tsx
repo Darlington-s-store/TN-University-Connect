@@ -71,6 +71,11 @@ export default function AdminBlog() {
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 max-w-6xl">
         {list.map((b) => (
           <Card key={b.id} className="hover:shadow-soft transition-smooth">
+            {b.image && (
+              <div className="aspect-[16/9] overflow-hidden bg-slate-100 rounded-t-xl">
+                <img src={b.image} alt="" className="h-full w-full object-contain" />
+              </div>
+            )}
             <CardContent className="p-5">
               <div className="flex justify-between items-start gap-2 mb-2">
                 <Badge variant="secondary">{b.category}</Badge>

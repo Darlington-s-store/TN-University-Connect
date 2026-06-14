@@ -97,9 +97,10 @@ function write<T>(key: string, value: T) {
 import annDimes from "@/assets/ann-dimes.jpg";
 import annLegal from "@/assets/ann-legal.jpg";
 import annHyundaiStem from "@/assets/ann-hyundai-stem.png";
+import annAgm from "@/assets/ann-agm.jpg";
 
 // ---------- Announcements ----------
-const ANN_KEY = "tnu_announcements_v4";
+const ANN_KEY = "tnu_announcements_v5";
 const announcementSeed: Announcement[] = [
   {
     id: "a1",
@@ -141,6 +142,7 @@ const announcementSeed: Announcement[] = [
     date: "2026-04-10",
     excerpt: "Members may submit agenda items for the 2026 AGM until 1 June.",
     body: "Our annual general meeting will take place on 22 July in Kumasi. We invite all registered members to submit agenda items via the contact form by 1 June 2026.",
+    image: annAgm,
     published: true,
   },
 ];
