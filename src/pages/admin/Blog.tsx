@@ -68,7 +68,7 @@ export default function AdminBlog() {
         </Button>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 max-w-6xl">
         {list.map((b) => (
           <Card key={b.id} className="hover:shadow-soft transition-smooth">
             <CardContent className="p-5">
@@ -193,13 +193,43 @@ export default function AdminBlog() {
               </div>
               <div>
                 <Label>Cover Image</Label>
-                <Input
-                  value={editing.image || ""}
-                  onChange={(e) => setEditing({ ...editing, image: e.target.value })}
-                  placeholder="Image URL or local asset path (e.g. /src/assets/blog-1.jpg)"
-                  className="mb-2"
-                />
-                <div className="flex gap-2">
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    value={editing.image || ""}
+                    onChange={(e) => setEditing({ ...editing, image: e.target.value })}
+                    placeholder="Paste image URL or asset path…"
+                    className="flex-1"
+                  />
+                  <Label className="flex cursor-pointer items-center gap-1.5 px-3 py-2 rounded-lg border bg-muted text-xs font-medium hover:bg-slate-200 transition-colors shrink-0">
+                    Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = () =>
+                            setEditing({ ...editing, image: reader.result as string });
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </Label>
+                  {editing.image && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 shrink-0 text-destructive"
+                      onClick={() => setEditing({ ...editing, image: undefined })}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="flex gap-2 flex-wrap">
                   {["blog-1.jpg", "blog-2.jpg", "blog-3.jpg", "blog-4.jpg"].map((img) => (
                     <button
                       type="button"
@@ -211,6 +241,15 @@ export default function AdminBlog() {
                     </button>
                   ))}
                 </div>
+                {editing.image && editing.image.startsWith("data:") && (
+                  <div className="mt-2 rounded-xl overflow-hidden border">
+                    <img
+                      src={editing.image}
+                      alt="preview"
+                      className="h-32 w-full object-contain bg-slate-100"
+                    />
+                  </div>
+                )}
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
                 <Checkbox

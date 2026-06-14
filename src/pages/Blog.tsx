@@ -173,50 +173,41 @@ export default function Blog() {
 
               <div className="grid sm:grid-cols-2 gap-8">
                 {filtered.map((b) => (
-                  <Link key={b.id} to={`/blog/${b.id}`} className="group">
-                    <Card className="h-full border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col">
-                      <div className="aspect-[16/9] relative overflow-hidden bg-muted">
+                  <Link key={b.id} to={`/blog/${b.id}`} className="group flex">
+                    <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 overflow-hidden bg-white rounded-2xl flex flex-col w-full hover:-translate-y-1">
+                      <div className="aspect-[16/10] relative overflow-hidden bg-muted">
                         {b.image ? (
                           <img
                             src={resolveBlogImage(b.image)}
                             alt={b.title}
                             loading="lazy"
-                            className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
                           />
                         ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 group-hover:scale-105 transition-transform duration-500 grid place-items-center">
-                            <BookOpen className="h-10 w-10 text-secondary opacity-20" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 grid place-items-center">
+                            <BookOpen className="h-10 w-10 text-primary/30" />
                           </div>
                         )}
-                        <div className="absolute top-4 left-4">
-                          <Badge
-                            variant="secondary"
-                            className="bg-white/90 backdrop-blur shadow-sm border-none"
-                          >
+                        <div className="absolute top-3 left-3">
+                          <Badge className="bg-accent text-accent-foreground font-bold border-0 shadow-md px-2.5 py-0.5 text-[10px]">
                             {b.category}
                           </Badge>
                         </div>
                       </div>
-                      <CardContent className="p-6 flex-1 flex flex-col">
-                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                          {new Date(b.date).toLocaleDateString("en-GB", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </div>
-                        <h3 className="text-xl font-bold text-secondary mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                          {b.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground line-clamp-3 mb-6 flex-1 leading-relaxed">
-                          {b.excerpt}
-                        </p>
-                        <div className="flex items-center justify-between pt-4 border-t border-border/50 mt-auto">
-                          <span className="text-xs font-bold text-secondary">{b.author}</span>
-                          <div className="flex items-center gap-1 text-primary font-bold text-xs uppercase tracking-tighter">
-                            Read Article{" "}
-                            <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                      <CardContent className="p-5 flex-1 flex flex-col justify-between">
+                        <div className="space-y-2">
+                          <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                            By {b.author} · {new Date(b.date).toLocaleDateString("en-GB")}
                           </div>
+                          <h3 className="font-extrabold text-base text-secondary group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                            {b.title}
+                          </h3>
+                          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                            {b.excerpt}
+                          </p>
+                        </div>
+                        <div className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary group-hover:gap-2.5 transition-all w-fit">
+                          Read article <ArrowRight className="h-3 w-3" />
                         </div>
                       </CardContent>
                     </Card>

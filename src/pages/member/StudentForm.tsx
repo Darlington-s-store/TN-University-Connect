@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { CheckCircle2, Eye, Pencil, Upload, ArrowRight, ArrowLeft } from "lucide-react";
@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -17,7 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
-import { UNIVERSITIES, DEPARTMENTS, getStudents, saveStudents, Student } from "@/lib/data";
+import { getStudents, saveStudents, Student } from "@/lib/data";
+import {
+  FACULTIES,
+  DEPARTMENTS,
+  PROGRAMMES,
+  LEVELS,
+  CHURCHES,
+  NICHES,
+  getGhanaSchools,
+  GhanaSchool,
+} from "@/lib/schools";
 
 const schema = z.object({
   fullName: z.string().trim().min(2).max(120),
@@ -25,33 +34,71 @@ const schema = z.object({
   phone: z.string().trim().min(7).max(20),
   gender: z.enum(["male", "female", "other"]),
   dob: z.string().min(1, "Date of birth required"),
-  university: z.string().min(1, "University required"),
+  nationality: z.string().min(1, "Nationality required"),
+  church: z.string().min(1, "Church required"),
+  niche: z.string().min(1, "Niche required"),
+  schoolType: z.string().min(1, "School type required"),
+  uniType: z.string().optional(),
+  university: z.string().min(1, "Institution required"),
+  faculty: z.string().min(1, "Faculty required"),
   department: z.string().min(1, "Department required"),
-  program: z.string().min(2),
-  level: z.string().min(1),
-  indexNumber: z.string().min(3),
-  address: z.string().min(2),
+  program: z.string().min(1, "Program required"),
+  level: z.string().min(1, "Level required"),
+  status: z.string().min(1, "Status required"),
+  indexNumber: z.string().min(3, "Index number required"),
+  address: z.string().min(2, "Address required"),
 });
 
 export default function StudentForm() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const existing = useMemo(() => getStudents().find((s) => s.email === user?.email), [user?.email]);
+  const [schools, setSchools] = useState<GhanaSchool[]>([]);
 
   const [step, setStep] = useState<"form" | "preview" | "done">(existing ? "done" : "form");
-  const [form, setForm] = useState<Omit<Student, "id" | "submittedAt">>({
+  const [form, setForm] = useState({
     fullName: existing?.fullName || user?.name || "",
     email: existing?.email || user?.email || "",
     phone: existing?.phone || user?.phone || "",
-    gender: existing?.gender || "male",
+    gender: existing?.gender || user?.gender || "male",
     dob: existing?.dob || "",
+    nationality: existing?.nationality || user?.nationality || "Ghanaian",
+    church: existing?.church || user?.church || "",
+    niche: existing?.niche || user?.niche || "",
+    schoolType: existing?.schoolType || user?.schoolType || "",
+    uniType: existing?.uniType || user?.uniType || "",
     university: existing?.university || user?.university || "",
+    faculty: existing?.faculty || user?.faculty || "",
     department: existing?.department || user?.department || "",
-    program: existing?.program || "",
-    level: existing?.level || "",
+    program: existing?.program || user?.program || "",
+    level: existing?.level || user?.level || "",
+    status: existing?.status || user?.status || "Active Student",
     indexNumber: existing?.indexNumber || "",
     address: existing?.address || "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    setSchools(getGhanaSchools());
+  }, []);
+
+  useEffect(() => {
+    setForm((f) => ({ ...f, uniType: "", university: "" }));
+  }, [form.schoolType]);
+
+  useEffect(() => {
+    setForm((f) => ({ ...f, university: "" }));
+  }, [form.uniType]);
+
+  const filteredSchools = useMemo(() => {
+    if (!form.schoolType) return [];
+    return schools.filter((s) => {
+      if (s.type !== form.schoolType) return false;
+      if (form.schoolType === "University") {
+        return form.uniType ? s.uniType === form.uniType : true;
+      }
+      return true;
+    });
+  }, [schools, form.schoolType, form.uniType]);
 
   const goPreview = () => {
     const result = schema.safeParse(form);
@@ -70,16 +117,68 @@ export default function StudentForm() {
     const all = getStudents();
     const idx = all.findIndex((s) => s.email === form.email);
     const record: Student = {
-      ...form,
       id: existing?.id || `s-${Date.now()}`,
+      userId: existing?.userId || user?.id,
+      fullName: form.fullName,
+      email: form.email,
+      phone: form.phone,
+      gender: form.gender,
+      dob: form.dob,
+      university: form.university,
+      faculty: form.faculty,
+      department: form.department,
+      program: form.program,
+      level: form.level,
+      indexNumber: form.indexNumber,
+      address: form.address,
       submittedAt: new Date().toISOString(),
+      nationality: form.nationality,
+      status: form.status,
+      church: form.church,
+      niche: form.niche,
+      schoolType: form.schoolType,
+      uniType: form.uniType,
     };
     if (idx >= 0) all[idx] = record;
     else all.unshift(record);
     saveStudents(all);
+
+    updateUser({
+      name: form.fullName,
+      phone: form.phone,
+      gender: form.gender,
+      nationality: form.nationality,
+      church: form.church,
+      niche: form.niche,
+      schoolType: form.schoolType,
+      uniType: form.uniType || undefined,
+      university: form.university,
+      faculty: form.faculty,
+      department: form.department,
+      program: form.program,
+      level: form.level,
+      status: form.status,
+    });
+
     toast.success(existing ? "Information updated" : "Information submitted");
     setStep("done");
   };
+
+  const Field = ({
+    label,
+    error,
+    children,
+  }: {
+    label: string;
+    error?: string;
+    children: React.ReactNode;
+  }) => (
+    <div>
+      <Label>{label}</Label>
+      {children}
+      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
+    </div>
+  );
 
   if (step === "done") {
     return (
@@ -91,7 +190,7 @@ export default function StudentForm() {
         </div>
         <Card className="border-0 shadow-elegant">
           <div className="h-1 flag-stripe" />
-          <CardContent className="p-8 text-center">
+          <CardContent className="p-4 sm:p-8 text-center">
             <div className="h-16 w-16 rounded-full bg-primary/10 grid place-items-center mx-auto mb-4">
               <CheckCircle2 className="h-8 w-8 text-primary" />
             </div>
@@ -124,17 +223,24 @@ export default function StudentForm() {
           <p className="text-muted-foreground">Check everything is correct before submitting.</p>
         </div>
         <Card>
-          <CardContent className="p-6 grid sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+          <CardContent className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
             {[
               ["Full name", form.fullName],
               ["Email", form.email],
               ["Phone", form.phone],
               ["Gender", form.gender],
               ["Date of birth", form.dob],
-              ["University", form.university],
+              ["Nationality", form.nationality],
+              ["Church", form.church],
+              ["Niche", form.niche],
+              ["School type", form.schoolType],
+              ...(form.uniType ? [["Sub-type", form.uniType] as const] : []),
+              ["Institution", form.university],
+              ["Faculty", form.faculty],
               ["Department", form.department],
               ["Program", form.program],
               ["Level", form.level],
+              ["Status", form.status],
               ["Index number", form.indexNumber],
               ["Address", form.address],
             ].map(([k, v]) => (
@@ -170,10 +276,11 @@ export default function StudentForm() {
       </div>
 
       <Card>
-        <CardContent className="p-6 space-y-8">
+        <CardContent className="p-4 sm:p-6 space-y-8">
+          {/* Personal details */}
           <section>
             <h3 className="font-bold text-secondary mb-4">Personal details</h3>
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Full name" error={errors.fullName}>
                 <Input
                   value={form.fullName}
@@ -200,6 +307,26 @@ export default function StudentForm() {
                   onChange={(e) => setForm({ ...form, dob: e.target.value })}
                 />
               </Field>
+              <Field label="Nationality" error={errors.nationality}>
+                <Input
+                  value={form.nationality}
+                  onChange={(e) => setForm({ ...form, nationality: e.target.value })}
+                />
+              </Field>
+              <Field label="Church Affiliation" error={errors.church}>
+                <Select value={form.church} onValueChange={(v) => setForm({ ...form, church: v })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Church" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CHURCHES.map((ch) => (
+                      <SelectItem key={ch} value={ch}>
+                        {ch}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
               <div className="sm:col-span-2">
                 <Label>Gender</Label>
                 <RadioGroup
@@ -207,7 +334,7 @@ export default function StudentForm() {
                   onValueChange={(v) =>
                     setForm({ ...form, gender: v as "male" | "female" | "other" })
                   }
-                  className="flex gap-6 mt-2"
+                  className="flex flex-wrap gap-4 mt-2"
                 >
                   {(["male", "female", "other"] as const).map((g) => (
                     <label key={g} className="flex items-center gap-2 cursor-pointer">
@@ -219,26 +346,110 @@ export default function StudentForm() {
             </div>
           </section>
 
+          {/* Focus Niche */}
           <section>
-            <h3 className="font-bold text-secondary mb-4">Academic details</h3>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <Field label="University" error={errors.university}>
-                <Select
-                  value={form.university}
-                  onValueChange={(v) => setForm({ ...form, university: v })}
-                >
+            <h3 className="font-bold text-secondary mb-4">Focus & Affiliation</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Focus Niche / Category" error={errors.niche}>
+                <Select value={form.niche} onValueChange={(v) => setForm({ ...form, niche: v })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select university" />
+                    <SelectValue placeholder="Select niche" />
                   </SelectTrigger>
                   <SelectContent>
-                    {UNIVERSITIES.map((u) => (
-                      <SelectItem key={u} value={u}>
-                        {u}
+                    {NICHES.map((n) => (
+                      <SelectItem key={n} value={n}>
+                        {n}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </Field>
+            </div>
+          </section>
+
+          {/* Academic details */}
+          <section>
+            <h3 className="font-bold text-secondary mb-4">Academic details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="School Type" error={errors.schoolType}>
+                <Select
+                  value={form.schoolType}
+                  onValueChange={(v) => setForm({ ...form, schoolType: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="University">University</SelectItem>
+                    <SelectItem value="Nursing & Midwifery">Nursing & Midwifery</SelectItem>
+                    <SelectItem value="College of Education">College of Education</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {form.schoolType === "University" && (
+                <Field label="University Sub-type" error={errors.uniType}>
+                  <Select
+                    value={form.uniType}
+                    onValueChange={(v) => setForm({ ...form, uniType: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Public">Public Universities</SelectItem>
+                      <SelectItem value="Technical">Technical Universities</SelectItem>
+                      <SelectItem value="Private">Private Universities</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+              )}
+
+              <div className="sm:col-span-2">
+                <Field label="Institution Name" error={errors.university}>
+                  <Select
+                    value={form.university}
+                    onValueChange={(v) => setForm({ ...form, university: v })}
+                    disabled={
+                      !form.schoolType || (form.schoolType === "University" && !form.uniType)
+                    }
+                  >
+                    <SelectTrigger className="text-left whitespace-normal h-auto py-2">
+                      <SelectValue
+                        placeholder={
+                          !form.schoolType ? "Select school type first" : "Select institution"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {filteredSchools.map((s) => (
+                        <SelectItem key={s.name} value={s.name}>
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+              </div>
+
+              <Field label="Faculty" error={errors.faculty}>
+                <Select
+                  value={form.faculty}
+                  onValueChange={(v) => setForm({ ...form, faculty: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select faculty" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FACULTIES.map((f) => (
+                      <SelectItem key={f} value={f}>
+                        {f}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
               <Field label="Department" error={errors.department}>
                 <Select
                   value={form.department}
@@ -256,33 +467,60 @@ export default function StudentForm() {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Program / Degree" error={errors.program}>
-                <Input
+
+              <Field label="Programme" error={errors.program}>
+                <Select
                   value={form.program}
-                  onChange={(e) => setForm({ ...form, program: e.target.value })}
-                  placeholder="e.g. BSc Computer Science"
-                />
-              </Field>
-              <Field label="Level" error={errors.level}>
-                <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v })}>
+                  onValueChange={(v) => setForm({ ...form, program: v })}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
+                    <SelectValue placeholder="Select programme" />
                   </SelectTrigger>
                   <SelectContent>
-                    {["100", "200", "300", "400", "500", "600"].map((l) => (
-                      <SelectItem key={l} value={l}>
-                        {l}
+                    {PROGRAMMES.map((p) => (
+                      <SelectItem key={p} value={p}>
+                        {p}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </Field>
+
+              <Field label="Current Level" error={errors.level}>
+                <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LEVELS.map((l) => (
+                      <SelectItem key={l} value={l}>
+                        {l === "Alumni" || l === "Graduate" || l === "Completed" ? l : `Level ${l}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              <Field label="Student / Professional Status" error={errors.status}>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active Student">Active Student</SelectItem>
+                    <SelectItem value="Alumni">Alumni</SelectItem>
+                    <SelectItem value="Completed">Completed Study</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+
               <Field label="Index / Student number" error={errors.indexNumber}>
                 <Input
                   value={form.indexNumber}
                   onChange={(e) => setForm({ ...form, indexNumber: e.target.value })}
                 />
               </Field>
+
               <Field label="Contact address" error={errors.address}>
                 <Input
                   value={form.address}
@@ -292,12 +530,13 @@ export default function StudentForm() {
             </div>
           </section>
 
+          {/* Documents */}
           <section>
             <h3 className="font-bold text-secondary mb-4">
               Documents{" "}
               <span className="text-xs font-normal text-muted-foreground">(optional)</span>
             </h3>
-            <label className="block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-smooth">
+            <label className="block border-2 border-dashed rounded-lg p-6 sm:p-8 text-center cursor-pointer hover:border-primary transition-smooth">
               <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
               <div className="text-sm font-medium text-secondary">
                 Click to upload supporting documents
@@ -314,24 +553,6 @@ export default function StudentForm() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
-}
-
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <Label>{label}</Label>
-      {children}
-      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
     </div>
   );
 }

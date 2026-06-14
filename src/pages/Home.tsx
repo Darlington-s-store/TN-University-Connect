@@ -146,7 +146,9 @@ const testimonials = [
 ];
 
 export default function Home() {
-  const announcements = getAnnouncements().slice(0, 3);
+  const announcements = getAnnouncements()
+    .filter((a) => a.published)
+    .slice(0, 3);
   const blogs = getBlogs().slice(0, 3);
 
   return (
@@ -192,7 +194,7 @@ export default function Home() {
                 <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
                   <div className="relative h-36 overflow-hidden">
                     <img
-                      src={cardPattern}
+                      src={a.image || cardPattern}
                       alt=""
                       aria-hidden="true"
                       className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"

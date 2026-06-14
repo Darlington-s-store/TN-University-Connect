@@ -26,7 +26,15 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
 import { motion, AnimatePresence } from "framer-motion";
-import { GHANA_SCHOOLS, FACULTIES, DEPARTMENTS, PROGRAMMES, LEVELS, CHURCHES } from "@/lib/schools";
+import {
+  GHANA_SCHOOLS,
+  FACULTIES,
+  DEPARTMENTS,
+  PROGRAMMES,
+  LEVELS,
+  CHURCHES,
+  NICHES,
+} from "@/lib/schools";
 import { sendVerificationCode, verifyCode } from "@/lib/verification";
 
 // Step 1 schema
@@ -48,6 +56,7 @@ const step2Schema = z.object({
   gender: z.enum(["male", "female", "other"], { required_error: "Gender is required" }),
   nationality: z.string().trim().min(2, "Nationality is required"),
   church: z.string().min(1, "Please select your church"),
+  niche: z.string().min(1, "Please select your focus niche"),
 });
 
 // Step 3 schema
@@ -90,6 +99,7 @@ export default function Register() {
     gender: "",
     nationality: "Ghanaian",
     church: "",
+    niche: "",
     schoolType: "",
     uniType: "",
     school: "",
@@ -158,6 +168,7 @@ export default function Register() {
         gender: form.gender,
         nationality: form.nationality,
         church: form.church,
+        niche: form.niche,
       });
       if (!result.success) {
         const errs: Record<string, string> = {};
@@ -276,11 +287,17 @@ export default function Register() {
     >
       <div className="mb-6">
         <Progress value={stepPercentage} className="h-2" />
-        <div className="flex justify-between text-xs text-muted-foreground mt-2 font-medium">
-          <span className={step >= 1 ? "text-primary font-bold" : ""}>Credentials</span>
-          <span className={step >= 2 ? "text-primary font-bold" : ""}>Personal</span>
-          <span className={step >= 3 ? "text-primary font-bold" : ""}>School</span>
-          <span className={step >= 4 ? "text-primary font-bold" : ""}>Verification</span>
+        <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground mt-2 font-medium gap-1">
+          <span className={`${step >= 1 ? "text-primary font-bold" : ""} text-center`}>
+            Credentials
+          </span>
+          <span className={`${step >= 2 ? "text-primary font-bold" : ""} text-center`}>
+            Personal
+          </span>
+          <span className={`${step >= 3 ? "text-primary font-bold" : ""} text-center`}>School</span>
+          <span className={`${step >= 4 ? "text-primary font-bold" : ""} text-center`}>
+            Verification
+          </span>
         </div>
       </div>
 
@@ -367,7 +384,7 @@ export default function Register() {
                 </div>
               </div>
 
-              <Button onClick={nextStep} className="w-full mt-4 h-11">
+              <Button onClick={nextStep} className="w-full mt-4 h-12 sm:h-11">
                 Continue <ArrowRight className="h-4 w-4 ml-1.5" />
               </Button>
             </motion.div>
@@ -426,11 +443,32 @@ export default function Register() {
                 {errors.church && <p className="text-xs text-destructive">{errors.church}</p>}
               </div>
 
+              <div className="space-y-1">
+                <Label htmlFor="niche">Focus Niche / Category</Label>
+                <Select value={form.niche} onValueChange={(v) => setForm({ ...form, niche: v })}>
+                  <SelectTrigger id="niche">
+                    <SelectValue placeholder="Select Niche Focus" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {NICHES.map((n) => (
+                      <SelectItem key={n} value={n}>
+                        {n}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.niche && <p className="text-xs text-destructive">{errors.niche}</p>}
+              </div>
+
               <div className="flex gap-3 mt-6">
-                <Button variant="outline" onClick={prevStep} className="w-1/3 h-11">
+                <Button
+                  variant="outline"
+                  onClick={prevStep}
+                  className="flex-1 sm:w-1/3 sm:flex-none h-11"
+                >
                   <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
                 </Button>
-                <Button onClick={nextStep} className="w-2/3 h-11">
+                <Button onClick={nextStep} className="flex-1 sm:w-2/3 sm:flex-none h-11">
                   Continue <ArrowRight className="h-4 w-4 ml-1.5" />
                 </Button>
               </div>
@@ -612,10 +650,18 @@ export default function Register() {
               </div>
 
               <div className="flex gap-3 mt-4">
-                <Button variant="outline" onClick={prevStep} className="w-1/3 h-11">
+                <Button
+                  variant="outline"
+                  onClick={prevStep}
+                  className="flex-1 sm:w-1/3 sm:flex-none h-11"
+                >
                   <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
                 </Button>
-                <Button onClick={nextStep} disabled={verificationLoading} className="w-2/3 h-11">
+                <Button
+                  onClick={nextStep}
+                  disabled={verificationLoading}
+                  className="flex-1 sm:w-2/3 sm:flex-none h-11"
+                >
                   {verificationLoading ? "Sending Code..." : "Continue"}{" "}
                   <ArrowRight className="h-4 w-4 ml-1.5" />
                 </Button>
@@ -681,12 +727,16 @@ export default function Register() {
                     type="button"
                     variant="outline"
                     onClick={prevStep}
-                    className="w-1/3 h-11"
+                    className="flex-1 sm:w-1/3 sm:flex-none h-11"
                     disabled={loading}
                   >
                     <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
                   </Button>
-                  <Button type="submit" disabled={loading} className="w-2/3 h-11">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 sm:w-2/3 sm:flex-none h-11"
+                  >
                     <UserPlus className="h-4 w-4 mr-1.5" />{" "}
                     {loading ? "Creating..." : "Confirm & Sign Up"}
                   </Button>

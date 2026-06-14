@@ -5,6 +5,7 @@ import { Target, Eye, CheckCircle2, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { UNIVERSITIES } from "@/lib/data";
 import Logo from "@/components/Logo";
+import cardPattern from "@/assets/card-pattern.jpg";
 
 const team = [
   { name: "Dr. Kofi Owusu", role: "Executive Director", initials: "KO" },
@@ -50,16 +51,26 @@ export default function About() {
 
       {/* MISSION & VISION - MODERN GRID */}
       <section className="py-24 -mt-12 relative z-20">
-        <div className="container mx-auto px-4 sm:px-6">
+        <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
           <div className="grid lg:grid-cols-2 gap-8">
-            <Card className="border-none shadow-xl bg-white overflow-hidden group hover:-translate-y-1 transition-all duration-300">
-              <div className="h-2 bg-primary" />
-              <CardContent className="p-10">
-                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Target className="h-7 w-7 text-primary" />
+            <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
+              <div className="relative h-40 overflow-hidden">
+                <img
+                  src={cardPattern}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
+                <div className="absolute bottom-4 left-6">
+                  <div className="h-12 w-12 rounded-xl bg-primary/20 backdrop-blur-md flex items-center justify-center border border-primary/30">
+                    <Target className="h-6 w-6 text-primary" />
+                  </div>
                 </div>
-                <h2 className="text-3xl font-bold text-secondary mb-4">Our Mission</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
+              </div>
+              <CardContent className="p-8 flex-1">
+                <h2 className="text-2xl font-extrabold text-secondary mb-3">Our Mission</h2>
+                <p className="text-muted-foreground leading-relaxed text-sm">
                   To create a unified, accessible ecosystem that empowers every Ghanaian student
                   with the connections, resources, and networks required to excel in a globalized
                   economy.
@@ -67,14 +78,24 @@ export default function About() {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-xl bg-white overflow-hidden group hover:-translate-y-1 transition-all duration-300">
-              <div className="h-2 bg-ghana-red" />
-              <CardContent className="p-10">
-                <div className="h-14 w-14 rounded-2xl bg-ghana-red/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Eye className="h-7 w-7 text-ghana-red" />
+            <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
+              <div className="relative h-40 overflow-hidden">
+                <img
+                  src={cardPattern}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
+                <div className="absolute bottom-4 left-6">
+                  <div className="h-12 w-12 rounded-xl bg-ghana-red/20 backdrop-blur-md flex items-center justify-center border border-ghana-red/30">
+                    <Eye className="h-6 w-6 text-ghana-red" />
+                  </div>
                 </div>
-                <h2 className="text-3xl font-bold text-secondary mb-4">Our Vision</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
+              </div>
+              <CardContent className="p-8 flex-1">
+                <h2 className="text-2xl font-extrabold text-secondary mb-3">Our Vision</h2>
+                <p className="text-muted-foreground leading-relaxed text-sm">
                   A future where institutional boundaries disappear, allowing knowledge to flow
                   freely and ensuring higher education remains the primary driver of national
                   innovation and prosperity.

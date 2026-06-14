@@ -46,6 +46,7 @@ export interface RegisterData {
 
 type AuthCtx = {
   user: User | null;
+  initializing: boolean;
   login: (email: string, password: string) => Promise<User>;
   register: (data: RegisterData) => Promise<User>;
   logout: () => void;
@@ -104,11 +105,13 @@ function writeUsers(u: Array<User & { password?: string }>) {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
     readUsers();
     const raw = localStorage.getItem(KEY);
     if (raw) setUser(JSON.parse(raw));
+    setInitializing(false);
   }, []);
 
   const login = async (email: string, password: string): Promise<User> => {
@@ -206,7 +209,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ user, login, register, logout, updateUser }}>{children}</Ctx.Provider>
+    <Ctx.Provider value={{ user, initializing, login, register, logout, updateUser }}>
+      {children}
+    </Ctx.Provider>
   );
 }
 

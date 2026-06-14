@@ -55,12 +55,12 @@ export default function BlogDetail() {
             <Share2 className="h-4 w-4" /> Share
           </button>
         </div>
-        <div className="aspect-video rounded-lg overflow-hidden mb-8 bg-muted">
+        <div className="aspect-video rounded-lg overflow-hidden mb-8 bg-slate-100">
           {post.image ? (
             <img
               src={resolveBlogImage(post.image)}
               alt={post.title}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain"
             />
           ) : (
             <div className="h-full w-full bg-gradient-to-br from-primary/20 via-accent/10 to-secondary/20 grid place-items-center">

@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getAnnouncements } from "@/lib/data";
+import cardPattern from "@/assets/card-pattern.jpg";
 
 const PAGE_SIZE = 6;
 
@@ -113,39 +114,42 @@ export default function Announcements() {
               </p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {items.map((a) => (
-                <Link key={a.id} to={`/announcements/${a.id}`} className="group">
-                  <Card className="h-full border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col">
-                    <div className="h-1 bg-gradient-to-r from-primary/50 to-ghana-red/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <CardContent className="p-8 flex-1 flex flex-col">
-                      <div className="flex items-center justify-between mb-4">
-                        <Badge
-                          variant="secondary"
-                          className="bg-primary/5 text-primary border-none hover:bg-primary/10 px-3 py-1"
-                        >
+                <Link key={a.id} to={`/announcements/${a.id}`} className="group flex">
+                  <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
+                    <div className="relative h-36 overflow-hidden">
+                      <img
+                        src={a.image || cardPattern}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
+                      <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white">
+                        <Badge className="bg-ghana-red text-white border-0 font-bold text-[10px]">
                           {a.category}
                         </Badge>
-                        <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                          <Calendar className="h-3.5 w-3.5" />
+                        <span className="text-[11px] font-semibold flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
                           {new Date(a.date).toLocaleDateString("en-GB", {
                             day: "numeric",
                             month: "short",
                           })}
-                        </div>
+                        </span>
                       </div>
-
-                      <h3 className="text-xl font-bold text-secondary mb-4 group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                        {a.title}
-                      </h3>
-
-                      <p className="text-muted-foreground line-clamp-3 mb-6 flex-1 text-sm leading-relaxed">
-                        {a.excerpt}
-                      </p>
-
-                      <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                        <span>Read full article</span>
-                        <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+                    </div>
+                    <CardContent className="p-5 flex-1 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <h3 className="font-extrabold text-base text-secondary group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                          {a.title}
+                        </h3>
+                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                          {a.excerpt}
+                        </p>
+                      </div>
+                      <div className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary group-hover:gap-2.5 transition-all w-fit">
+                        Read more <ArrowRight className="h-3 w-3" />
                       </div>
                     </CardContent>
                   </Card>

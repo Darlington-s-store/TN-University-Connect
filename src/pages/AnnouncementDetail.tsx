@@ -7,7 +7,7 @@ import cardPattern from "@/assets/card-pattern.jpg";
 
 export default function AnnouncementDetail() {
   const { id } = useParams();
-  const item = getAnnouncements().find((a) => a.id === id);
+  const item = getAnnouncements().find((a) => a.id === id && a.published);
 
   if (!item) {
     return (
@@ -66,19 +66,25 @@ export default function AnnouncementDetail() {
       {/* Body */}
       <section className="py-16">
         <div className="container mx-auto px-4 sm:px-6 max-w-3xl">
-          <div className="aspect-[16/7] rounded-2xl overflow-hidden mb-10 shadow-soft">
-            <div className="h-full w-full relative">
-              <img
-                src={cardPattern}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-tr from-secondary/70 via-primary/30 to-transparent" />
-              <div className="absolute inset-0 grid place-items-center">
-                <Megaphone className="h-14 w-14 text-white/80" />
+          {item.image ? (
+            <div className="aspect-[16/7] rounded-2xl overflow-hidden mb-10 shadow-soft bg-slate-100">
+              <img src={item.image} alt="" className="h-full w-full object-contain" />
+            </div>
+          ) : (
+            <div className="aspect-[16/7] rounded-2xl overflow-hidden mb-10 shadow-soft">
+              <div className="h-full w-full relative">
+                <img
+                  src={cardPattern}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-secondary/70 via-primary/30 to-transparent" />
+                <div className="absolute inset-0 grid place-items-center">
+                  <Megaphone className="h-14 w-14 text-white/80" />
+                </div>
               </div>
             </div>
-          </div>
+          )}
           <div className="prose prose-lg max-w-none">
             <p className="text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap">
               {item.body}

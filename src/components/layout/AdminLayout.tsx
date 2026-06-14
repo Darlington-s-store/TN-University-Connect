@@ -34,7 +34,7 @@ const items = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true },
   { to: "/admin/students", label: "Students", icon: Users },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/admin/analytics?tab=announcements", label: "Announcements", icon: Megaphone },
+  { to: "/admin/announcements", label: "Announcements", icon: Megaphone },
   { to: "/admin/blog", label: "Blog Posts", icon: BookOpen },
   { to: "/admin/messages", label: "Messages", icon: Mail },
 ];

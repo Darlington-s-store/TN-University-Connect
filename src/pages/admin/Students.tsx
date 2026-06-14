@@ -7,10 +7,8 @@ import {
   Trash2,
   ShieldAlert,
   Plus,
-  Save,
-  Settings,
   Key,
-  BookOpen,
+  Undo2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,16 +34,33 @@ import { toast } from "sonner";
 import {
   getGhanaSchools,
   saveCustomSchools,
+  getHiddenSchools,
+  saveHiddenSchools,
+  getFaculties,
+  getCustomFaculties,
+  saveCustomFaculties,
+  getHiddenFaculties,
+  saveHiddenFaculties,
+  getProgrammes,
+  getCustomProgrammes,
+  saveCustomProgrammes,
+  getHiddenProgrammes,
+  saveHiddenProgrammes,
+  getLevels,
+  getCustomLevels,
+  saveCustomLevels,
+  getHiddenLevels,
+  saveHiddenLevels,
   GHANA_SCHOOLS,
   GhanaSchool,
   SchoolType,
   UniType,
   NICHES,
-  LEVELS,
+  LEVELS as DEFAULT_LEVELS,
   CHURCHES,
-  FACULTIES,
+  FACULTIES as DEFAULT_FACULTIES,
   DEPARTMENTS,
-  PROGRAMMES,
+  PROGRAMMES as DEFAULT_PROGRAMMES,
 } from "@/lib/schools";
 import { Student } from "@/lib/data";
 import { User } from "@/lib/auth";
@@ -72,6 +87,8 @@ interface FullStudent {
   niche: string;
   password?: string; // from tnu_users
   joinedAt?: string;
+  schoolType?: string;
+  uniType?: string;
 }
 
 export default function AdminStudents() {
@@ -88,6 +105,40 @@ export default function AdminStudents() {
   const [viewingStudent, setViewingStudent] = useState<FullStudent | null>(null);
   const [editingStudent, setEditingStudent] = useState<FullStudent | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [resetPasswordStudent, setResetPasswordStudent] = useState<FullStudent | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+
+  const isEditingExisting = useMemo(() => {
+    if (!editingStudent) return false;
+    return students.some((s) => s.email.toLowerCase() === editingStudent.email.toLowerCase());
+  }, [editingStudent, students]);
+
+  const openNewStudent = () => {
+    setEditingStudent({
+      id: `s-${Date.now()}`,
+      userId: `u-${Date.now()}`,
+      fullName: "",
+      email: "",
+      phone: "+233 ",
+      gender: "male",
+      dob: new Date().toISOString().slice(0, 10),
+      university: schools[0]?.name || "Not Chosen",
+      faculty: DEFAULT_FACULTIES[0] || "Not Chosen",
+      department: DEPARTMENTS[0] || "Not Chosen",
+      program: DEFAULT_PROGRAMMES[0] || "Not Chosen",
+      level: DEFAULT_LEVELS[0] || "100",
+      indexNumber: "",
+      address: "Accra, Ghana",
+      nationality: "Ghanaian",
+      status: "Active Student",
+      church: CHURCHES[0] || "None",
+      niche: NICHES[0] || "General Studies",
+      schoolType: "University",
+      uniType: "Public",
+      password: "student123",
+      submittedAt: new Date().toISOString(),
+    });
+  };
 
   // Custom School Form State
   const [newSchool, setNewSchool] = useState({
@@ -96,12 +147,38 @@ export default function AdminStudents() {
     uniType: "Public" as UniType,
   });
 
-  // Sandbox settings form state
-  const [sandbox, setSandbox] = useState({
-    resendKey: "",
-    arkeselKey: "",
-    arkeselSender: "TN Connect",
-  });
+  // School management state
+  const [schoolSearch, setSchoolSearch] = useState("");
+  const [editingSchool, setEditingSchool] = useState<GhanaSchool | null>(null);
+  const [showHidden, setShowHidden] = useState(false);
+  const [hiddenSchools, setHiddenSchools] = useState<string[]>([]);
+
+  // Faculties state
+  const [faculties, setFaculties] = useState<string[]>([]);
+  const [facultySearch, setFacultySearch] = useState("");
+  const [newFaculty, setNewFaculty] = useState("");
+  const [editingFaculty, setEditingFaculty] = useState<string | null>(null);
+  const [editFacultyVal, setEditFacultyVal] = useState("");
+  const [showHiddenFaculties, setShowHiddenFaculties] = useState(false);
+  const [hiddenFaculties, setHiddenFaculties] = useState<string[]>([]);
+
+  // Programmes state
+  const [programmes, setProgrammes] = useState<string[]>([]);
+  const [programmeSearch, setProgrammeSearch] = useState("");
+  const [newProgramme, setNewProgramme] = useState("");
+  const [editingProgramme, setEditingProgramme] = useState<string | null>(null);
+  const [editProgrammeVal, setEditProgrammeVal] = useState("");
+  const [showHiddenProgrammes, setShowHiddenProgrammes] = useState(false);
+  const [hiddenProgrammes, setHiddenProgrammes] = useState<string[]>([]);
+
+  // Levels state
+  const [levels, setLevels] = useState<string[]>([]);
+  const [levelSearch, setLevelSearch] = useState("");
+  const [newLevel, setNewLevel] = useState("");
+  const [editingLevel, setEditingLevel] = useState<string | null>(null);
+  const [editLevelVal, setEditLevelVal] = useState("");
+  const [showHiddenLevels, setShowHiddenLevels] = useState(false);
+  const [hiddenLevels, setHiddenLevels] = useState<string[]>([]);
 
   // Load Data
   const loadData = () => {
@@ -114,61 +191,71 @@ export default function AdminStudents() {
     const usersList = rawUsers ? JSON.parse(rawUsers) : [];
 
     // Merge
-    const merged: FullStudent[] = stuList.map((s: Student) => {
-      const user = usersList.find(
-        (u: User & { password?: string }) =>
-          u.email.toLowerCase() === s.email.toLowerCase() || u.id === s.userId,
-      );
-      return {
-        ...s,
-        password: user?.password || "No Password Found",
-        joinedAt: user?.joinedAt || s.submittedAt,
-        church: s.church || user?.church || "None",
-        niche: s.niche || user?.niche || "General Studies",
-        nationality: s.nationality || user?.nationality || "Ghanaian",
-        status: s.status || user?.status || "Active Student",
-      };
-    });
+    const merged: FullStudent[] = stuList.map(
+      (s: Student & { schoolType?: string; uniType?: string; faculty?: string }) => {
+        const user = usersList.find(
+          (u: User & { password?: string }) =>
+            u.email.toLowerCase() === s.email.toLowerCase() || u.id === s.userId,
+        );
+        return {
+          ...s,
+          password: user?.password || "No Password Found",
+          joinedAt: user?.joinedAt || s.submittedAt,
+          church: s.church || user?.church || "None",
+          niche: s.niche || user?.niche || "General Studies",
+          nationality: s.nationality || user?.nationality || "Ghanaian",
+          status: s.status || user?.status || "Active Student",
+          schoolType: s.schoolType || user?.schoolType || "University",
+          uniType: s.uniType || user?.uniType || "Public",
+          faculty: s.faculty || user?.faculty || DEFAULT_FACULTIES[0],
+        };
+      },
+    );
 
     // Also include registered users who haven't completed student profile form yet
-    usersList.forEach((u: User & { password?: string; role?: string }) => {
-      if (u.role === "admin") return;
-      const alreadyMerged = merged.some((m) => m.email.toLowerCase() === u.email.toLowerCase());
-      if (!alreadyMerged) {
-        merged.push({
-          id: `s-mock-${u.id}`,
-          userId: u.id,
-          fullName: u.name,
-          email: u.email,
-          phone: u.phone || "No Phone",
-          gender: u.gender || "other",
-          dob: "N/A",
-          university: u.university || "Not Chosen",
-          department: u.department || "Not Chosen",
-          program: u.program || "Not Chosen",
-          level: u.level || "N/A",
-          indexNumber: "N/A",
-          address: "N/A",
-          submittedAt: u.joinedAt,
-          joinedAt: u.joinedAt,
-          password: u.password,
-          nationality: u.nationality || "Ghanaian",
-          status: u.status || "Active Student",
-          church: u.church || "None",
-          niche: u.niche || "General Studies",
-        });
-      }
-    });
+    usersList.forEach(
+      (u: User & { password?: string; role?: string; schoolType?: string; uniType?: string }) => {
+        if (u.role === "admin") return;
+        const alreadyMerged = merged.some((m) => m.email.toLowerCase() === u.email.toLowerCase());
+        if (!alreadyMerged) {
+          merged.push({
+            id: `s-mock-${u.id}`,
+            userId: u.id,
+            fullName: u.name,
+            email: u.email,
+            phone: u.phone || "No Phone",
+            gender: u.gender || "other",
+            dob: "N/A",
+            university: u.university || "Not Chosen",
+            faculty: u.faculty || DEFAULT_FACULTIES[0],
+            department: u.department || "Not Chosen",
+            program: u.program || "Not Chosen",
+            level: u.level || "N/A",
+            indexNumber: "N/A",
+            address: "N/A",
+            submittedAt: u.joinedAt,
+            joinedAt: u.joinedAt,
+            password: u.password,
+            nationality: u.nationality || "Ghanaian",
+            status: u.status || "Active Student",
+            church: u.church || "None",
+            niche: u.niche || "General Studies",
+            schoolType: u.schoolType || "University",
+            uniType: u.uniType || "Public",
+          });
+        }
+      },
+    );
 
     setStudents(merged);
     setSchools(getGhanaSchools());
-
-    // Load sandbox keys
-    setSandbox({
-      resendKey: localStorage.getItem("resend_api_key") || "",
-      arkeselKey: localStorage.getItem("arkesel_api_key") || "",
-      arkeselSender: localStorage.getItem("arkesel_sender_id") || "TN Connect",
-    });
+    setHiddenSchools(getHiddenSchools());
+    setFaculties(getFaculties());
+    setHiddenFaculties(getHiddenFaculties());
+    setProgrammes(getProgrammes());
+    setHiddenProgrammes(getHiddenProgrammes());
+    setLevels(getLevels());
+    setHiddenLevels(getHiddenLevels());
   };
 
   useEffect(() => {
@@ -207,6 +294,16 @@ export default function AdminStudents() {
   const saveStudentEdit = () => {
     if (!editingStudent) return;
 
+    if (!editingStudent.fullName.trim() || !editingStudent.email.trim()) {
+      toast.error("Full Name and Email are required");
+      return;
+    }
+
+    // Resolve school type and uniType based on selected university
+    const schoolDetails = schools.find((sch) => sch.name === editingStudent.university);
+    const resolvedSchoolType = schoolDetails?.type || editingStudent.schoolType || "University";
+    const resolvedUniType = schoolDetails?.uniType || editingStudent.uniType || "";
+
     // 1. Update tnu_students
     const rawStu = localStorage.getItem("tnu_students");
     const stuList = rawStu ? JSON.parse(rawStu) : [];
@@ -220,6 +317,7 @@ export default function AdminStudents() {
       phone: editingStudent.phone,
       gender: editingStudent.gender,
       university: editingStudent.university,
+      faculty: editingStudent.faculty,
       department: editingStudent.department,
       program: editingStudent.program,
       level: editingStudent.level,
@@ -227,14 +325,20 @@ export default function AdminStudents() {
       status: editingStudent.status,
       church: editingStudent.church,
       niche: editingStudent.niche,
+      schoolType: resolvedSchoolType,
+      uniType: resolvedUniType,
     };
 
     if (stuIdx >= 0) {
       stuList[stuIdx] = { ...stuList[stuIdx], ...updatedStu };
-    } else if (!editingStudent.id.startsWith("s-mock")) {
+    } else {
+      const finalStudentId = editingStudent.id.startsWith("s-mock")
+        ? `s-${Date.now()}`
+        : editingStudent.id;
+
       stuList.push({
-        id: editingStudent.id,
-        userId: editingStudent.userId,
+        id: finalStudentId,
+        userId: editingStudent.userId || `u-${Date.now()}`,
         ...updatedStu,
         dob: editingStudent.dob || new Date().toISOString().slice(0, 10),
         indexNumber:
@@ -254,6 +358,18 @@ export default function AdminStudents() {
         u.id === editingStudent.userId,
     );
 
+    // Verify if email is already in use (for new students only)
+    const isNew = stuIdx < 0 && !editingStudent.id.startsWith("s-mock");
+    if (isNew) {
+      const emailInUse = usersList.some(
+        (u: User) => u.email.toLowerCase() === editingStudent.email.toLowerCase(),
+      );
+      if (emailInUse) {
+        toast.error("A user with this email is already registered.");
+        return;
+      }
+    }
+
     if (userIdx >= 0) {
       usersList[userIdx] = {
         ...usersList[userIdx],
@@ -261,6 +377,7 @@ export default function AdminStudents() {
         phone: editingStudent.phone,
         gender: editingStudent.gender,
         university: editingStudent.university,
+        faculty: editingStudent.faculty,
         department: editingStudent.department,
         program: editingStudent.program,
         level: editingStudent.level,
@@ -268,16 +385,77 @@ export default function AdminStudents() {
         status: editingStudent.status,
         church: editingStudent.church,
         niche: editingStudent.niche,
+        schoolType: resolvedSchoolType,
+        uniType: resolvedUniType,
       };
       if (editingStudent.password) {
         usersList[userIdx].password = editingStudent.password;
       }
-      localStorage.setItem("tnu_users", JSON.stringify(usersList));
+    } else {
+      usersList.push({
+        id: editingStudent.userId || `u-${Date.now()}`,
+        name: editingStudent.fullName,
+        email: editingStudent.email.toLowerCase(),
+        password: editingStudent.password || "student123",
+        role: "member",
+        phone: editingStudent.phone,
+        gender: editingStudent.gender,
+        university: editingStudent.university,
+        faculty: editingStudent.faculty,
+        schoolType: resolvedSchoolType,
+        uniType: resolvedUniType,
+        department: editingStudent.department,
+        program: editingStudent.program,
+        level: editingStudent.level,
+        nationality: editingStudent.nationality,
+        status: editingStudent.status,
+        church: editingStudent.church,
+        niche: editingStudent.niche,
+        joinedAt: new Date().toISOString(),
+        profileComplete: true,
+      });
     }
+    localStorage.setItem("tnu_users", JSON.stringify(usersList));
 
-    toast.success("Student information updated successfully");
+    toast.success(
+      isNew ? "Student registered successfully" : "Student information updated successfully",
+    );
     setEditingStudent(null);
     loadData();
+  };
+
+  const handleResetPassword = () => {
+    if (!resetPasswordStudent) return;
+    if (!newPassword.trim()) {
+      toast.error("Please enter or generate a password");
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return;
+    }
+
+    // Update tnu_users
+    const rawUsers = localStorage.getItem("tnu_users");
+    const usersList = rawUsers ? JSON.parse(rawUsers) : [];
+    const userIdx = usersList.findIndex(
+      (u: User) =>
+        u.email.toLowerCase() === resetPasswordStudent.email.toLowerCase() ||
+        u.id === resetPasswordStudent.userId,
+    );
+
+    if (userIdx >= 0) {
+      usersList[userIdx].password = newPassword.trim();
+      localStorage.setItem("tnu_users", JSON.stringify(usersList));
+
+      toast.success(
+        `Password for ${resetPasswordStudent.fullName} successfully updated to "${newPassword.trim()}"`,
+      );
+      setResetPasswordStudent(null);
+      loadData();
+    } else {
+      toast.error("User account not found to update password");
+    }
   };
 
   // Delete student
@@ -331,58 +509,347 @@ export default function AdminStudents() {
     loadData();
   };
 
-  // Delete Custom Institution
-  const deleteCustomInstitution = (name: string) => {
-    if (confirm(`Remove "${name}" from custom database?`)) {
-      const customRaw = localStorage.getItem("tnu_custom_schools");
-      if (customRaw) {
-        const list: GhanaSchool[] = JSON.parse(customRaw);
-        const filtered = list.filter((s) => s.name !== name);
-        saveCustomSchools(filtered);
-        toast.success("Institution removed");
-        loadData();
+  // Delete school (custom or hide default)
+  const deleteSchool = (name: string) => {
+    const isDefault = GHANA_SCHOOLS.some((g) => g.name === name);
+    const label = isDefault
+      ? `Hide "${name}" from the directory? You can restore it later.`
+      : `Remove "${name}" from the database?`;
+    if (confirm(label)) {
+      if (isDefault) {
+        const hidden = getHiddenSchools();
+        if (!hidden.includes(name)) {
+          hidden.push(name);
+          saveHiddenSchools(hidden);
+        }
+      } else {
+        const customRaw = localStorage.getItem("tnu_custom_schools");
+        if (customRaw) {
+          const list: GhanaSchool[] = JSON.parse(customRaw);
+          saveCustomSchools(list.filter((s) => s.name !== name));
+        }
       }
+      toast.success(`"${name}" removed`);
+      loadData();
     }
   };
 
-  // Save Sandbox credentials
-  const saveSandboxSettings = () => {
-    localStorage.setItem("resend_api_key", sandbox.resendKey.trim());
-    localStorage.setItem("arkesel_api_key", sandbox.arkeselKey.trim());
-    localStorage.setItem("arkesel_sender_id", sandbox.arkeselSender.trim());
-    toast.success("Sandbox API Keys saved successfully!");
+  // Restore a hidden default school
+  const restoreSchool = (name: string) => {
+    const hidden = getHiddenSchools().filter((h) => h !== name);
+    saveHiddenSchools(hidden);
+    toast.success(`"${name}" restored`);
+    loadData();
   };
+
+  // Edit school
+  const saveSchoolEdit = () => {
+    if (!editingSchool || !editingSchool.name.trim()) {
+      toast.error("School name is required");
+      return;
+    }
+
+    const isDefault = GHANA_SCHOOLS.some((g) => g.name === editingSchool.name);
+    if (!isDefault) {
+      const customRaw = localStorage.getItem("tnu_custom_schools");
+      if (customRaw) {
+        const list: GhanaSchool[] = JSON.parse(customRaw);
+        const idx = list.findIndex((s) => s.name === editingSchool.name);
+        if (idx >= 0) {
+          list[idx] = { ...editingSchool };
+          saveCustomSchools(list);
+        }
+      }
+    }
+
+    toast.success("School updated");
+    setEditingSchool(null);
+    loadData();
+  };
+
+  // ── Faculties CRUD ───────────────────────────────
+  const addFaculty = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = newFaculty.trim();
+    if (!val) return toast.error("Faculty name is required");
+    if (faculties.some((f) => f.toLowerCase() === val.toLowerCase()))
+      return toast.error("Faculty already exists");
+    const custom = getCustomFaculties();
+    custom.push(val);
+    saveCustomFaculties(custom);
+    toast.success(`Faculty "${val}" added`);
+    setNewFaculty("");
+    loadData();
+  };
+
+  const deleteFaculty = (name: string) => {
+    const isDefault = DEFAULT_FACULTIES.includes(name);
+    if (isDefault) {
+      const hidden = getHiddenFaculties();
+      if (!hidden.includes(name)) {
+        hidden.push(name);
+        saveHiddenFaculties(hidden);
+      }
+    } else {
+      const custom = getCustomFaculties().filter((f) => f !== name);
+      saveCustomFaculties(custom);
+    }
+    toast.success(`"${name}" removed`);
+    loadData();
+  };
+
+  const restoreFaculty = (name: string) => {
+    saveHiddenFaculties(getHiddenFaculties().filter((h) => h !== name));
+    toast.success(`"${name}" restored`);
+    loadData();
+  };
+
+  const saveFacultyEdit = () => {
+    if (!editFacultyVal.trim()) return toast.error("Faculty name is required");
+    const old = editingFaculty!;
+    const isDefault = DEFAULT_FACULTIES.includes(old);
+
+    if (isDefault) {
+      const hidden = getHiddenFaculties();
+      if (hidden.includes(old)) {
+        saveHiddenFaculties(hidden.filter((h) => h !== old));
+      }
+    } else {
+      const custom = getCustomFaculties();
+      const idx = custom.findIndex((f) => f === old);
+      if (idx >= 0) {
+        custom[idx] = editFacultyVal.trim();
+        saveCustomFaculties(custom);
+      }
+    }
+    toast.success("Faculty updated");
+    setEditingFaculty(null);
+    loadData();
+  };
+
+  // ── Programmes CRUD ──────────────────────────────
+  const addProgramme = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = newProgramme.trim();
+    if (!val) return toast.error("Programme name is required");
+    if (programmes.some((p) => p.toLowerCase() === val.toLowerCase()))
+      return toast.error("Programme already exists");
+    const custom = getCustomProgrammes();
+    custom.push(val);
+    saveCustomProgrammes(custom);
+    toast.success(`Programme "${val}" added`);
+    setNewProgramme("");
+    loadData();
+  };
+
+  const deleteProgramme = (name: string) => {
+    const isDefault = DEFAULT_PROGRAMMES.includes(name);
+    if (isDefault) {
+      const hidden = getHiddenProgrammes();
+      if (!hidden.includes(name)) {
+        hidden.push(name);
+        saveHiddenProgrammes(hidden);
+      }
+    } else {
+      saveCustomProgrammes(getCustomProgrammes().filter((p) => p !== name));
+    }
+    toast.success(`"${name}" removed`);
+    loadData();
+  };
+
+  const restoreProgramme = (name: string) => {
+    saveHiddenProgrammes(getHiddenProgrammes().filter((h) => h !== name));
+    toast.success(`"${name}" restored`);
+    loadData();
+  };
+
+  const saveProgrammeEdit = () => {
+    if (!editProgrammeVal.trim()) return toast.error("Programme name is required");
+    const old = editingProgramme!;
+    const isDefault = DEFAULT_PROGRAMMES.includes(old);
+
+    if (isDefault) {
+      const hidden = getHiddenProgrammes();
+      if (hidden.includes(old)) {
+        saveHiddenProgrammes(hidden.filter((h) => h !== old));
+      }
+    } else {
+      const custom = getCustomProgrammes();
+      const idx = custom.findIndex((p) => p === old);
+      if (idx >= 0) {
+        custom[idx] = editProgrammeVal.trim();
+        saveCustomProgrammes(custom);
+      }
+    }
+    toast.success("Programme updated");
+    setEditingProgramme(null);
+    loadData();
+  };
+
+  // ── Levels CRUD ──────────────────────────────────
+  const addLevel = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = newLevel.trim();
+    if (!val) return toast.error("Level name is required");
+    if (levels.some((l) => l.toLowerCase() === val.toLowerCase()))
+      return toast.error("Level already exists");
+    const custom = getCustomLevels();
+    custom.push(val);
+    saveCustomLevels(custom);
+    toast.success(`Level "${val}" added`);
+    setNewLevel("");
+    loadData();
+  };
+
+  const deleteLevel = (name: string) => {
+    const isDefault = DEFAULT_LEVELS.includes(name);
+    if (isDefault) {
+      const hidden = getHiddenLevels();
+      if (!hidden.includes(name)) {
+        hidden.push(name);
+        saveHiddenLevels(hidden);
+      }
+    } else {
+      saveCustomLevels(getCustomLevels().filter((l) => l !== name));
+    }
+    toast.success(`"${name}" removed`);
+    loadData();
+  };
+
+  const restoreLevel = (name: string) => {
+    saveHiddenLevels(getHiddenLevels().filter((h) => h !== name));
+    toast.success(`"${name}" restored`);
+    loadData();
+  };
+
+  const saveLevelEdit = () => {
+    if (!editLevelVal.trim()) return toast.error("Level name is required");
+    const old = editingLevel!;
+    const isDefault = DEFAULT_LEVELS.includes(old);
+
+    if (isDefault) {
+      const hidden = getHiddenLevels();
+      if (hidden.includes(old)) {
+        saveHiddenLevels(hidden.filter((h) => h !== old));
+      }
+    } else {
+      const custom = getCustomLevels();
+      const idx = custom.findIndex((l) => l === old);
+      if (idx >= 0) {
+        custom[idx] = editLevelVal.trim();
+        saveCustomLevels(custom);
+      }
+    }
+    toast.success("Level updated");
+    setEditingLevel(null);
+    loadData();
+  };
+
+  const isDefaultFaculty = (v: string) => DEFAULT_FACULTIES.includes(v);
+  const isDefaultProgramme = (v: string) => DEFAULT_PROGRAMMES.includes(v);
+  const isDefaultLevel = (v: string) => DEFAULT_LEVELS.includes(v);
+
+  const AcademicRow = ({
+    name,
+    isDefault,
+    onEdit,
+    onDelete,
+    onRestore,
+  }: {
+    name: string;
+    isDefault: boolean;
+    onEdit: () => void;
+    onDelete: () => void;
+    onRestore?: () => void;
+  }) => (
+    <tr className="hover:bg-slate-50/30 transition-colors">
+      <td className="py-3 px-4 font-bold text-secondary">{name}</td>
+      <td className="py-3 px-4">
+        <Badge
+          className={`border-0 font-bold text-[10px] ${isDefault ? "bg-primary/10 text-primary" : "bg-accent/20 text-accent-foreground"}`}
+        >
+          {isDefault ? "Default" : "Custom"}
+        </Badge>
+      </td>
+      <td className="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+        {onRestore ? (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onRestore}
+            className="h-8 text-xs font-bold text-primary"
+          >
+            <Undo2 className="h-3.5 w-3.5 mr-1" /> Restore
+          </Button>
+        ) : (
+          <>
+            <Button size="sm" variant="ghost" onClick={onEdit} className="h-8 w-8 p-0" title="Edit">
+              <Pencil className="h-4 w-4 text-primary" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={onDelete}
+              className="h-8 w-8 p-0"
+              title="Remove"
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </>
+        )}
+      </td>
+    </tr>
+  );
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1.5">
-        <h1 className="text-3xl font-bold text-secondary">Student Management Console</h1>
-        <p className="text-muted-foreground text-sm">
-          Review credentials, monitor passwords, update niches, and manage school listings.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex flex-col gap-1.5">
+          <h1 className="text-3xl font-bold text-secondary">Student Management Console</h1>
+          <p className="text-muted-foreground text-sm">
+            Review credentials, monitor passwords, update niches, and manage school listings.
+          </p>
+        </div>
+        <Button onClick={openNewStudent} className="gap-1.5 font-bold shrink-0">
+          <Plus className="h-4 w-4" /> Add New Student
+        </Button>
       </div>
 
       <Tabs defaultValue="students" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 max-w-xl h-11 bg-slate-100 p-1 rounded-xl">
-          <TabsTrigger
-            value="students"
-            className="rounded-lg font-bold text-xs uppercase tracking-wider"
-          >
-            Registered Students
-          </TabsTrigger>
-          <TabsTrigger
-            value="institutions"
-            className="rounded-lg font-bold text-xs uppercase tracking-wider"
-          >
-            Manage Schools
-          </TabsTrigger>
-          <TabsTrigger
-            value="sandbox"
-            className="rounded-lg font-bold text-xs uppercase tracking-wider"
-          >
-            Sandbox API Keys
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-1">
+          <TabsList className="w-fit h-11 bg-slate-100 p-1 rounded-xl inline-flex">
+            <TabsTrigger
+              value="students"
+              className="rounded-lg font-bold text-xs uppercase tracking-wider whitespace-nowrap"
+            >
+              Registered Students
+            </TabsTrigger>
+            <TabsTrigger
+              value="institutions"
+              className="rounded-lg font-bold text-xs uppercase tracking-wider whitespace-nowrap"
+            >
+              Institutions
+            </TabsTrigger>
+            <TabsTrigger
+              value="faculties"
+              className="rounded-lg font-bold text-xs uppercase tracking-wider whitespace-nowrap"
+            >
+              Faculties
+            </TabsTrigger>
+            <TabsTrigger
+              value="programmes"
+              className="rounded-lg font-bold text-xs uppercase tracking-wider whitespace-nowrap"
+            >
+              Programmes
+            </TabsTrigger>
+            <TabsTrigger
+              value="levels"
+              className="rounded-lg font-bold text-xs uppercase tracking-wider whitespace-nowrap"
+            >
+              Levels
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* TAB 1: STUDENTS DIRECTORY */}
         <TabsContent value="students" className="space-y-4 pt-4">
@@ -497,6 +964,7 @@ export default function AdminStudents() {
                               setViewingStudent(s);
                               setShowPassword(false);
                             }}
+                            title="View Student details"
                           >
                             <Eye className="h-4 w-4 text-slate-500" />
                           </Button>
@@ -504,7 +972,20 @@ export default function AdminStudents() {
                             size="sm"
                             variant="ghost"
                             className="h-8 w-8 p-0"
+                            onClick={() => {
+                              setResetPasswordStudent(s);
+                              setNewPassword("");
+                            }}
+                            title="Reset Student password"
+                          >
+                            <Key className="h-4 w-4 text-amber-500" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
                             onClick={() => setEditingStudent({ ...s })}
+                            title="Edit Student info"
                           >
                             <Pencil className="h-4 w-4 text-primary" />
                           </Button>
@@ -513,6 +994,7 @@ export default function AdminStudents() {
                             variant="ghost"
                             className="h-8 w-8 p-0"
                             onClick={() => deleteStudent(s.email)}
+                            title="Delete Student"
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
@@ -611,61 +1093,311 @@ export default function AdminStudents() {
                     Ghanaian Institutions Registry
                   </CardTitle>
                   <CardDescription>
-                    Custom schools currently appended to default Ghanaian directory.
+                    All institutions in the directory. Default schools can be hidden; custom schools
+                    can be edited or removed.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="p-0">
-                  <div className="overflow-y-auto max-h-[500px]">
+                <CardContent className="space-y-4 p-6">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        placeholder="Search institutions..."
+                        value={schoolSearch}
+                        onChange={(e) => setSchoolSearch(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      className={`gap-1.5 font-bold shrink-0 ${showHidden ? "border-primary text-primary" : ""}`}
+                      onClick={() => setShowHidden(!showHidden)}
+                    >
+                      <Undo2 className="h-4 w-4" />{" "}
+                      {showHidden ? "Showing hidden" : "Hidden schools"}
+                      {hiddenSchools.length > 0 && !showHidden && (
+                        <Badge className="ml-1 bg-destructive text-destructive-foreground border-0 text-[10px] h-5 px-1.5">
+                          {hiddenSchools.length}
+                        </Badge>
+                      )}
+                    </Button>
+                  </div>
+
+                  <div className="overflow-y-auto max-h-[500px] border rounded-xl">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-left text-muted-foreground border-b border-slate-100 bg-slate-50/50 sticky top-0">
+                        <tr className="text-left text-muted-foreground border-b bg-slate-50/80 sticky top-0">
                           <th className="py-3 px-4 font-bold">Institution Name</th>
                           <th className="py-3 px-4 font-bold">Category</th>
                           <th className="py-3 px-4 font-bold">Ownership</th>
-                          <th className="py-3 px-4 font-bold text-right">Action</th>
+                          <th className="py-3 px-4 font-bold">Source</th>
+                          <th className="py-3 px-4 font-bold text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {schools.filter((s) => !GHANA_SCHOOLS.some((g) => g.name === s.name))
-                          .length === 0 ? (
+                      <tbody className="divide-y">
+                        {showHidden
+                          ? GHANA_SCHOOLS.filter((s) => hiddenSchools.includes(s.name))
+                              .filter(
+                                (s) =>
+                                  !schoolSearch ||
+                                  s.name.toLowerCase().includes(schoolSearch.toLowerCase()),
+                              )
+                              .map((s) => (
+                                <tr key={s.name} className="bg-red-50/30">
+                                  <td className="py-3 px-4 font-bold text-secondary line-through opacity-60">
+                                    {s.name}
+                                  </td>
+                                  <td className="py-3 px-4 text-xs font-semibold text-slate-600">
+                                    {s.type}
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    {s.uniType ? (
+                                      <Badge className="bg-slate-100 text-slate-800 border-0 font-bold text-[10px]">
+                                        {s.uniType}
+                                      </Badge>
+                                    ) : (
+                                      <span className="text-xs text-muted-foreground">—</span>
+                                    )}
+                                  </td>
+                                  <td className="py-3 px-4 text-xs text-muted-foreground">
+                                    Default
+                                  </td>
+                                  <td className="py-3 px-4 text-right">
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => restoreSchool(s.name)}
+                                      className="h-8 text-xs font-bold text-primary"
+                                    >
+                                      <Undo2 className="h-3.5 w-3.5 mr-1" /> Restore
+                                    </Button>
+                                  </td>
+                                </tr>
+                              ))
+                          : schools
+                              .filter(
+                                (s) =>
+                                  !schoolSearch ||
+                                  s.name.toLowerCase().includes(schoolSearch.toLowerCase()),
+                              )
+                              .map((s) => {
+                                const isDefault = GHANA_SCHOOLS.some((g) => g.name === s.name);
+                                return (
+                                  <tr
+                                    key={s.name}
+                                    className="hover:bg-slate-50/30 transition-colors"
+                                  >
+                                    <td className="py-3 px-4 font-bold text-secondary">{s.name}</td>
+                                    <td className="py-3 px-4 text-xs font-semibold text-slate-600">
+                                      {s.type}
+                                    </td>
+                                    <td className="py-3 px-4">
+                                      {s.uniType ? (
+                                        <Badge className="bg-slate-100 text-slate-800 border-0 font-bold text-[10px]">
+                                          {s.uniType}
+                                        </Badge>
+                                      ) : (
+                                        <span className="text-xs text-muted-foreground">—</span>
+                                      )}
+                                    </td>
+                                    <td className="py-3 px-4">
+                                      <Badge
+                                        className={`border-0 font-bold text-[10px] ${isDefault ? "bg-primary/10 text-primary" : "bg-accent/20 text-accent-foreground"}`}
+                                      >
+                                        {isDefault ? "Default" : "Custom"}
+                                      </Badge>
+                                    </td>
+                                    <td className="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => setEditingSchool({ ...s })}
+                                        className="h-8 w-8 p-0"
+                                        title="Edit school"
+                                      >
+                                        <Pencil className="h-4 w-4 text-primary" />
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => deleteSchool(s.name)}
+                                        className="h-8 w-8 p-0"
+                                        title="Remove school"
+                                      >
+                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                      </Button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                        {!showHidden &&
+                          schools.filter(
+                            (s) =>
+                              !schoolSearch ||
+                              s.name.toLowerCase().includes(schoolSearch.toLowerCase()),
+                          ).length === 0 && (
+                            <tr>
+                              <td
+                                colSpan={5}
+                                className="text-center py-16 text-muted-foreground font-medium"
+                              >
+                                {schoolSearch
+                                  ? "No institutions match your search."
+                                  : "No institutions found in the directory."}
+                              </td>
+                            </tr>
+                          )}
+                        {showHidden &&
+                          GHANA_SCHOOLS.filter((s) => hiddenSchools.includes(s.name)).filter(
+                            (s) =>
+                              !schoolSearch ||
+                              s.name.toLowerCase().includes(schoolSearch.toLowerCase()),
+                          ).length === 0 && (
+                            <tr>
+                              <td
+                                colSpan={5}
+                                className="text-center py-16 text-muted-foreground font-medium"
+                              >
+                                {schoolSearch
+                                  ? "No hidden schools match your search."
+                                  : "No schools are currently hidden."}
+                              </td>
+                            </tr>
+                          )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* TAB 3: FACULTIES */}
+        <TabsContent value="faculties" className="space-y-6 pt-4">
+          <div className="grid lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4">
+              <Card className="border-none shadow-soft sticky top-20">
+                <CardHeader>
+                  <CardTitle className="font-extrabold text-lg">Add New Faculty</CardTitle>
+                  <CardDescription>Add a faculty to the academic directory.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={addFaculty} className="space-y-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="newFaculty">Faculty Name</Label>
+                      <Input
+                        id="newFaculty"
+                        value={newFaculty}
+                        onChange={(e) => setNewFaculty(e.target.value)}
+                        placeholder="e.g. Faculty of Pharmacy"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full font-bold gap-1.5 h-11">
+                      <Plus className="h-4 w-4" /> Add Faculty
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="lg:col-span-8">
+              <Card className="border-none shadow-soft">
+                <CardHeader>
+                  <CardTitle className="font-extrabold text-lg">Faculties Registry</CardTitle>
+                  <CardDescription>Manage all faculties used across the platform.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 p-6">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        placeholder="Search faculties..."
+                        value={facultySearch}
+                        onChange={(e) => setFacultySearch(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      className={`gap-1.5 font-bold shrink-0 ${showHiddenFaculties ? "border-primary text-primary" : ""}`}
+                      onClick={() => setShowHiddenFaculties(!showHiddenFaculties)}
+                    >
+                      <Undo2 className="h-4 w-4" /> Hidden
+                      {hiddenFaculties.length > 0 && !showHiddenFaculties && (
+                        <Badge className="ml-1 bg-destructive text-destructive-foreground border-0 text-[10px] h-5 px-1.5">
+                          {hiddenFaculties.length}
+                        </Badge>
+                      )}
+                    </Button>
+                  </div>
+                  <div className="overflow-y-auto max-h-[500px] border rounded-xl">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-muted-foreground border-b bg-slate-50/80 sticky top-0">
+                          <th className="py-3 px-4 font-bold">Faculty Name</th>
+                          <th className="py-3 px-4 font-bold">Source</th>
+                          <th className="py-3 px-4 font-bold text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {showHiddenFaculties
+                          ? DEFAULT_FACULTIES.filter((f) => hiddenFaculties.includes(f))
+                              .filter(
+                                (f) =>
+                                  !facultySearch ||
+                                  f.toLowerCase().includes(facultySearch.toLowerCase()),
+                              )
+                              .map((f) => (
+                                <AcademicRow
+                                  key={f}
+                                  name={f}
+                                  isDefault
+                                  onEdit={() => {}}
+                                  onDelete={() => {}}
+                                  onRestore={() => restoreFaculty(f)}
+                                />
+                              ))
+                          : faculties
+                              .filter(
+                                (f) =>
+                                  !facultySearch ||
+                                  f.toLowerCase().includes(facultySearch.toLowerCase()),
+                              )
+                              .map((f) => (
+                                <AcademicRow
+                                  key={f}
+                                  name={f}
+                                  isDefault={isDefaultFaculty(f)}
+                                  onEdit={() => {
+                                    setEditingFaculty(f);
+                                    setEditFacultyVal(f);
+                                  }}
+                                  onDelete={() => deleteFaculty(f)}
+                                />
+                              ))}
+                        {((showHiddenFaculties &&
+                          DEFAULT_FACULTIES.filter((f) => hiddenFaculties.includes(f)).filter(
+                            (f) =>
+                              !facultySearch ||
+                              f.toLowerCase().includes(facultySearch.toLowerCase()),
+                          ).length === 0) ||
+                          (!showHiddenFaculties &&
+                            faculties.filter(
+                              (f) =>
+                                !facultySearch ||
+                                f.toLowerCase().includes(facultySearch.toLowerCase()),
+                            ).length === 0)) && (
                           <tr>
                             <td
-                              colSpan={4}
+                              colSpan={3}
                               className="text-center py-16 text-muted-foreground font-medium"
                             >
-                              No custom schools have been added yet. Add some on the left!
+                              {showHiddenFaculties
+                                ? "No hidden faculties."
+                                : "No faculties match your search."}
                             </td>
                           </tr>
-                        ) : (
-                          schools
-                            .filter((s) => !GHANA_SCHOOLS.some((g) => g.name === s.name))
-                            .map((s) => (
-                              <tr key={s.name} className="hover:bg-slate-50/30">
-                                <td className="py-3.5 px-4 font-bold text-secondary">{s.name}</td>
-                                <td className="py-3.5 px-4 text-xs font-semibold text-slate-600">
-                                  {s.type}
-                                </td>
-                                <td className="py-3.5 px-4">
-                                  {s.uniType ? (
-                                    <Badge className="bg-slate-100 text-slate-800 border-0 font-bold text-[10px]">
-                                      {s.uniType}
-                                    </Badge>
-                                  ) : (
-                                    <span className="text-xs text-white/0">-</span>
-                                  )}
-                                </td>
-                                <td className="py-3.5 px-4 text-right">
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    onClick={() => deleteCustomInstitution(s.name)}
-                                    className="h-8 w-8 text-destructive hover:bg-destructive/5"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </td>
-                              </tr>
-                            ))
                         )}
                       </tbody>
                     </table>
@@ -676,97 +1408,418 @@ export default function AdminStudents() {
           </div>
         </TabsContent>
 
-        {/* TAB 3: VERIFICATION CONFIG */}
-        <TabsContent value="sandbox" className="pt-4 max-w-2xl">
-          <Card className="border-none shadow-soft">
-            <CardHeader>
-              <CardTitle className="font-extrabold text-lg flex items-center gap-2">
-                <Settings className="h-5 w-5 text-primary" /> Live API Integrations
-              </CardTitle>
-              <CardDescription>
-                Configure credentials for SMS and email verification. Enter keys below to switch
-                from sandbox simulation to live dispatches.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="p-4 bg-muted/60 border rounded-2xl flex gap-3 text-slate-800">
-                <ShieldAlert className="h-5 w-5 text-accent-foreground shrink-0 mt-0.5" />
-                <div className="text-xs leading-relaxed">
-                  <strong>Sandbox Simulator Override:</strong> If fields below are blank, the
-                  register panel operates in simulation mode, generating popups in the browser with
-                  verification codes. Fill these fields to send real emails/SMS.
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1.5">
-                    <Key className="h-3.5 w-3.5 text-slate-400" /> Resend API Key (Email)
-                  </Label>
-                  <Input
-                    type="password"
-                    placeholder="re_xxxxxxxxxxxxxxxxxxxxx"
-                    value={sandbox.resendKey}
-                    onChange={(e) => setSandbox({ ...sandbox, resendKey: e.target.value })}
-                  />
-                  <p className="text-[10px] text-muted-foreground">
-                    Obtain a free key at{" "}
-                    <a
-                      href="https://resend.com"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-primary hover:underline"
+        {/* TAB 4: PROGRAMMES */}
+        <TabsContent value="programmes" className="space-y-6 pt-4">
+          <div className="grid lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4">
+              <Card className="border-none shadow-soft sticky top-20">
+                <CardHeader>
+                  <CardTitle className="font-extrabold text-lg">Add New Programme</CardTitle>
+                  <CardDescription>Add a programme of study to the directory.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={addProgramme} className="space-y-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="newProgramme">Programme Name</Label>
+                      <Input
+                        id="newProgramme"
+                        value={newProgramme}
+                        onChange={(e) => setNewProgramme(e.target.value)}
+                        placeholder="e.g. BSc Biomedical Engineering"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full font-bold gap-1.5 h-11">
+                      <Plus className="h-4 w-4" /> Add Programme
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="lg:col-span-8">
+              <Card className="border-none shadow-soft">
+                <CardHeader>
+                  <CardTitle className="font-extrabold text-lg">Programmes Registry</CardTitle>
+                  <CardDescription>
+                    Manage all degree programmes used across the platform.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 p-6">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        placeholder="Search programmes..."
+                        value={programmeSearch}
+                        onChange={(e) => setProgrammeSearch(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      className={`gap-1.5 font-bold shrink-0 ${showHiddenProgrammes ? "border-primary text-primary" : ""}`}
+                      onClick={() => setShowHiddenProgrammes(!showHiddenProgrammes)}
                     >
-                      resend.com
-                    </a>
-                    . Sent emails will deploy from `onboarding@resend.dev`.
-                  </p>
-                </div>
+                      <Undo2 className="h-4 w-4" /> Hidden
+                      {hiddenProgrammes.length > 0 && !showHiddenProgrammes && (
+                        <Badge className="ml-1 bg-destructive text-destructive-foreground border-0 text-[10px] h-5 px-1.5">
+                          {hiddenProgrammes.length}
+                        </Badge>
+                      )}
+                    </Button>
+                  </div>
+                  <div className="overflow-y-auto max-h-[500px] border rounded-xl">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-muted-foreground border-b bg-slate-50/80 sticky top-0">
+                          <th className="py-3 px-4 font-bold">Programme Name</th>
+                          <th className="py-3 px-4 font-bold">Source</th>
+                          <th className="py-3 px-4 font-bold text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {showHiddenProgrammes
+                          ? DEFAULT_PROGRAMMES.filter((p) => hiddenProgrammes.includes(p))
+                              .filter(
+                                (p) =>
+                                  !programmeSearch ||
+                                  p.toLowerCase().includes(programmeSearch.toLowerCase()),
+                              )
+                              .map((p) => (
+                                <AcademicRow
+                                  key={p}
+                                  name={p}
+                                  isDefault
+                                  onEdit={() => {}}
+                                  onDelete={() => {}}
+                                  onRestore={() => restoreProgramme(p)}
+                                />
+                              ))
+                          : programmes
+                              .filter(
+                                (p) =>
+                                  !programmeSearch ||
+                                  p.toLowerCase().includes(programmeSearch.toLowerCase()),
+                              )
+                              .map((p) => (
+                                <AcademicRow
+                                  key={p}
+                                  name={p}
+                                  isDefault={isDefaultProgramme(p)}
+                                  onEdit={() => {
+                                    setEditingProgramme(p);
+                                    setEditProgrammeVal(p);
+                                  }}
+                                  onDelete={() => deleteProgramme(p)}
+                                />
+                              ))}
+                        {((showHiddenProgrammes &&
+                          DEFAULT_PROGRAMMES.filter((p) => hiddenProgrammes.includes(p)).filter(
+                            (p) =>
+                              !programmeSearch ||
+                              p.toLowerCase().includes(programmeSearch.toLowerCase()),
+                          ).length === 0) ||
+                          (!showHiddenProgrammes &&
+                            programmes.filter(
+                              (p) =>
+                                !programmeSearch ||
+                                p.toLowerCase().includes(programmeSearch.toLowerCase()),
+                            ).length === 0)) && (
+                          <tr>
+                            <td
+                              colSpan={3}
+                              className="text-center py-16 text-muted-foreground font-medium"
+                            >
+                              {showHiddenProgrammes
+                                ? "No hidden programmes."
+                                : "No programmes match your search."}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
 
-                <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1.5">
-                    <Key className="h-3.5 w-3.5 text-slate-400" /> Arkesel API Key (SMS)
-                  </Label>
-                  <Input
-                    type="password"
-                    placeholder="Arkesel API Key"
-                    value={sandbox.arkeselKey}
-                    onChange={(e) => setSandbox({ ...sandbox, arkeselKey: e.target.value })}
-                  />
-                  <p className="text-[10px] text-muted-foreground">
-                    Obtain an SMS API key at{" "}
-                    <a
-                      href="https://arkesel.com"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-primary hover:underline"
+        {/* TAB 5: LEVELS */}
+        <TabsContent value="levels" className="space-y-6 pt-4">
+          <div className="grid lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4">
+              <Card className="border-none shadow-soft sticky top-20">
+                <CardHeader>
+                  <CardTitle className="font-extrabold text-lg">Add New Level</CardTitle>
+                  <CardDescription>Add a level or academic stage to the directory.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={addLevel} className="space-y-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="newLevel">Level Name</Label>
+                      <Input
+                        id="newLevel"
+                        value={newLevel}
+                        onChange={(e) => setNewLevel(e.target.value)}
+                        placeholder="e.g. Postgraduate"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full font-bold gap-1.5 h-11">
+                      <Plus className="h-4 w-4" /> Add Level
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="lg:col-span-8">
+              <Card className="border-none shadow-soft">
+                <CardHeader>
+                  <CardTitle className="font-extrabold text-lg">Levels Registry</CardTitle>
+                  <CardDescription>
+                    Manage all academic levels used across the platform.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 p-6">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        placeholder="Search levels..."
+                        value={levelSearch}
+                        onChange={(e) => setLevelSearch(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      className={`gap-1.5 font-bold shrink-0 ${showHiddenLevels ? "border-primary text-primary" : ""}`}
+                      onClick={() => setShowHiddenLevels(!showHiddenLevels)}
                     >
-                      arkesel.com
-                    </a>
-                    .
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label>Arkesel Sender ID</Label>
-                  <Input
-                    placeholder="e.g. TN Connect"
-                    value={sandbox.arkeselSender}
-                    onChange={(e) => setSandbox({ ...sandbox, arkeselSender: e.target.value })}
-                  />
-                  <p className="text-[10px] text-muted-foreground">
-                    Must be verified in your Arkesel console (max 11 characters).
-                  </p>
-                </div>
-
-                <Button onClick={saveSandboxSettings} className="w-full font-bold gap-1.5 h-11">
-                  <Save className="h-4 w-4" /> Save Sandbox Configurations
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                      <Undo2 className="h-4 w-4" /> Hidden
+                      {hiddenLevels.length > 0 && !showHiddenLevels && (
+                        <Badge className="ml-1 bg-destructive text-destructive-foreground border-0 text-[10px] h-5 px-1.5">
+                          {hiddenLevels.length}
+                        </Badge>
+                      )}
+                    </Button>
+                  </div>
+                  <div className="overflow-y-auto max-h-[500px] border rounded-xl">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-muted-foreground border-b bg-slate-50/80 sticky top-0">
+                          <th className="py-3 px-4 font-bold">Level Name</th>
+                          <th className="py-3 px-4 font-bold">Source</th>
+                          <th className="py-3 px-4 font-bold text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {showHiddenLevels
+                          ? DEFAULT_LEVELS.filter((l) => hiddenLevels.includes(l))
+                              .filter(
+                                (l) =>
+                                  !levelSearch ||
+                                  l.toLowerCase().includes(levelSearch.toLowerCase()),
+                              )
+                              .map((l) => (
+                                <AcademicRow
+                                  key={l}
+                                  name={l}
+                                  isDefault
+                                  onEdit={() => {}}
+                                  onDelete={() => {}}
+                                  onRestore={() => restoreLevel(l)}
+                                />
+                              ))
+                          : levels
+                              .filter(
+                                (l) =>
+                                  !levelSearch ||
+                                  l.toLowerCase().includes(levelSearch.toLowerCase()),
+                              )
+                              .map((l) => (
+                                <AcademicRow
+                                  key={l}
+                                  name={l}
+                                  isDefault={isDefaultLevel(l)}
+                                  onEdit={() => {
+                                    setEditingLevel(l);
+                                    setEditLevelVal(l);
+                                  }}
+                                  onDelete={() => deleteLevel(l)}
+                                />
+                              ))}
+                        {((showHiddenLevels &&
+                          DEFAULT_LEVELS.filter((l) => hiddenLevels.includes(l)).filter(
+                            (l) =>
+                              !levelSearch || l.toLowerCase().includes(levelSearch.toLowerCase()),
+                          ).length === 0) ||
+                          (!showHiddenLevels &&
+                            levels.filter(
+                              (l) =>
+                                !levelSearch || l.toLowerCase().includes(levelSearch.toLowerCase()),
+                            ).length === 0)) && (
+                          <tr>
+                            <td
+                              colSpan={3}
+                              className="text-center py-16 text-muted-foreground font-medium"
+                            >
+                              {showHiddenLevels
+                                ? "No hidden levels."
+                                : "No levels match your search."}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
+
+      {/* DIALOG: EDIT SCHOOL */}
+      <Dialog open={!!editingSchool} onOpenChange={(o) => !o && setEditingSchool(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-secondary">Edit Institution</DialogTitle>
+          </DialogHeader>
+          {editingSchool && (
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label>Institution Name</Label>
+                <Input
+                  value={editingSchool.name}
+                  onChange={(e) => setEditingSchool({ ...editingSchool, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Institution Type</Label>
+                <Select
+                  value={editingSchool.type}
+                  onValueChange={(v: SchoolType) => setEditingSchool({ ...editingSchool, type: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="University">University</SelectItem>
+                    <SelectItem value="Nursing & Midwifery">Nursing & Midwifery</SelectItem>
+                    <SelectItem value="College of Education">College of Education</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {editingSchool.type === "University" && (
+                <div className="space-y-1.5">
+                  <Label>Sub-Type</Label>
+                  <Select
+                    value={editingSchool.uniType || "Public"}
+                    onValueChange={(v: UniType) =>
+                      setEditingSchool({ ...editingSchool, uniType: v })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Public">Public Universities</SelectItem>
+                      <SelectItem value="Technical">Technical Universities</SelectItem>
+                      <SelectItem value="Private">Private Universities</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingSchool(null)} className="font-bold">
+              Cancel
+            </Button>
+            <Button onClick={saveSchoolEdit} className="font-bold">
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG: EDIT FACULTY */}
+      <Dialog open={!!editingFaculty} onOpenChange={(o) => !o && setEditingFaculty(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-secondary">Edit Faculty</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label>Faculty Name</Label>
+              <Input value={editFacultyVal} onChange={(e) => setEditFacultyVal(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingFaculty(null)} className="font-bold">
+              Cancel
+            </Button>
+            <Button onClick={saveFacultyEdit} className="font-bold">
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG: EDIT PROGRAMME */}
+      <Dialog open={!!editingProgramme} onOpenChange={(o) => !o && setEditingProgramme(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-secondary">Edit Programme</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label>Programme Name</Label>
+              <Input
+                value={editProgrammeVal}
+                onChange={(e) => setEditProgrammeVal(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setEditingProgramme(null)}
+              className="font-bold"
+            >
+              Cancel
+            </Button>
+            <Button onClick={saveProgrammeEdit} className="font-bold">
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG: EDIT LEVEL */}
+      <Dialog open={!!editingLevel} onOpenChange={(o) => !o && setEditingLevel(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-secondary">Edit Level</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label>Level Name</Label>
+              <Input value={editLevelVal} onChange={(e) => setEditLevelVal(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingLevel(null)} className="font-bold">
+              Cancel
+            </Button>
+            <Button onClick={saveLevelEdit} className="font-bold">
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* DIALOG: VIEW DETAILS (Exposes password!) */}
       <Dialog open={!!viewingStudent} onOpenChange={(o) => !o && setViewingStudent(null)}>
@@ -835,6 +1888,8 @@ export default function AdminStudents() {
               {/* Academic Details */}
               <div className="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-xs bg-slate-50/50 p-4 border rounded-2xl">
                 {[
+                  ["School Type", viewingStudent.schoolType || "University"],
+                  ["Ownership / Sub-type", viewingStudent.uniType || "N/A"],
                   ["School / Institution", viewingStudent.university],
                   ["Faculty", viewingStudent.faculty || "Not Specified"],
                   ["Department", viewingStudent.department],
@@ -867,13 +1922,13 @@ export default function AdminStudents() {
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto no-scrollbar">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-secondary">
-              Edit Profile: {editingStudent?.fullName}
+              {isEditingExisting ? `Edit Profile: ${editingStudent?.fullName}` : "Add New Student"}
             </DialogTitle>
           </DialogHeader>
 
           {editingStudent && (
             <div className="space-y-4 py-2 text-xs">
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                   <Label>Full Name</Label>
                   <Input
@@ -881,6 +1936,18 @@ export default function AdminStudents() {
                     onChange={(e) =>
                       setEditingStudent({ ...editingStudent, fullName: e.target.value })
                     }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Email Address</Label>
+                  <Input
+                    type="email"
+                    value={editingStudent.email}
+                    onChange={(e) =>
+                      setEditingStudent({ ...editingStudent, email: e.target.value })
+                    }
+                    disabled={isEditingExisting}
+                    className={isEditingExisting ? "bg-slate-100 cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -962,9 +2029,9 @@ export default function AdminStudents() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {LEVELS.map((l) => (
+                      {levels.map((l) => (
                         <SelectItem key={l} value={l}>
-                          Level {l}
+                          {["Alumni", "Graduate", "Completed"].includes(l) ? l : `Level ${l}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -972,23 +2039,41 @@ export default function AdminStudents() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label>School / Institution</Label>
-                <Select
-                  value={editingStudent.university}
-                  onValueChange={(v) => setEditingStudent({ ...editingStudent, university: v })}
-                >
-                  <SelectTrigger className="text-left py-2 h-auto whitespace-normal">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[200px]">
-                    {schools.map((s) => (
-                      <SelectItem key={s.name} value={s.name}>
-                        {s.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>School / Institution</Label>
+                  <Select
+                    value={editingStudent.university}
+                    onValueChange={(v) => setEditingStudent({ ...editingStudent, university: v })}
+                  >
+                    <SelectTrigger className="text-left py-2 h-auto whitespace-normal">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {schools.map((s) => (
+                        <SelectItem key={s.name} value={s.name}>
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>School Type</Label>
+                  <Select
+                    value={editingStudent.schoolType || "University"}
+                    onValueChange={(v) => setEditingStudent({ ...editingStudent, schoolType: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="University">University</SelectItem>
+                      <SelectItem value="Nursing & Midwifery">Nursing & Midwifery</SelectItem>
+                      <SelectItem value="College of Education">College of Education</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
@@ -1002,9 +2087,27 @@ export default function AdminStudents() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {FACULTIES.map((f) => (
+                      {faculties.map((f: string) => (
                         <SelectItem key={f} value={f}>
                           {f}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Programme</Label>
+                  <Select
+                    value={editingStudent.program}
+                    onValueChange={(v) => setEditingStudent({ ...editingStudent, program: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {programmes.map((p: string) => (
+                        <SelectItem key={p} value={p}>
+                          {p}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -1030,24 +2133,30 @@ export default function AdminStudents() {
                 </div>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <Label>Programme</Label>
+                  <Label>Ownership / Sub-type</Label>
                   <Select
-                    value={editingStudent.program}
-                    onValueChange={(v) => setEditingStudent({ ...editingStudent, program: v })}
+                    value={editingStudent.uniType || "Public"}
+                    onValueChange={(v) => setEditingStudent({ ...editingStudent, uniType: v })}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {PROGRAMMES.map((p) => (
-                        <SelectItem key={p} value={p}>
-                          {p}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="Public">Public</SelectItem>
+                      <SelectItem value="Technical">Technical</SelectItem>
+                      <SelectItem value="Private">Private</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Date of Birth</Label>
+                  <Input
+                    type="date"
+                    value={editingStudent.dob || ""}
+                    onChange={(e) => setEditingStudent({ ...editingStudent, dob: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Index Number</Label>
@@ -1112,7 +2221,69 @@ export default function AdminStudents() {
               Cancel
             </Button>
             <Button onClick={saveStudentEdit} className="font-bold">
-              Save Modifications
+              {isEditingExisting ? "Save Modifications" : "Register Student"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG: RESET PASSWORD */}
+      <Dialog
+        open={!!resetPasswordStudent}
+        onOpenChange={(o) => !o && setResetPasswordStudent(null)}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-secondary flex items-center gap-2">
+              <Key className="h-5 w-5 text-amber-500" /> Reset Password
+            </DialogTitle>
+          </DialogHeader>
+          {resetPasswordStudent && (
+            <div className="space-y-4 py-2 text-xs">
+              <p className="text-sm text-muted-foreground">
+                Reset password for student <strong>{resetPasswordStudent.fullName}</strong> (
+                {resetPasswordStudent.email}).
+              </p>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="newPassword">New Password</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="newPassword"
+                    type="text"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    className="flex-1 font-mono text-sm"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      const rand = "TN-" + Math.floor(100000 + Math.random() * 900000);
+                      setNewPassword(rand);
+                    }}
+                    className="font-bold shrink-0"
+                  >
+                    Generate
+                  </Button>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  At least 8 characters. You can click Generate to create a temporary password.
+                </p>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setResetPasswordStudent(null)}
+              className="font-bold"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleResetPassword} className="font-bold">
+              Reset Password
             </Button>
           </DialogFooter>
         </DialogContent>

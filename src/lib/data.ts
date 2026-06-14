@@ -7,6 +7,7 @@ export type Announcement = {
   date: string;
   excerpt: string;
   body: string;
+  image?: string;
   published: boolean;
 };
 
@@ -42,6 +43,7 @@ export type Student = {
   gender: string;
   dob: string;
   university: string;
+  faculty?: string;
   department: string;
   program: string;
   level: string;
@@ -52,6 +54,8 @@ export type Student = {
   status?: string;
   church?: string;
   niche?: string;
+  schoolType?: string;
+  uniType?: string;
 };
 
 export const UNIVERSITIES = [

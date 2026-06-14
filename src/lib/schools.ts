@@ -193,27 +193,168 @@ export const CHURCHES = [
 ];
 
 export const NICHES = [
-  "Tech & STEM Enthusiasts",
-  "Healthcare & Life Sciences",
-  "Business & Entrepreneurship",
-  "Education & Pedagogy",
-  "Arts & Creative Writing",
-  "Social Action & Leadership",
-  "Sports & Athletic Excellence",
+  "Corporate Events & Protocol Personnel",
+  "Marketing, Publicity & Brand Awareness",
+  "Healthcare, Wellness & Safety",
+  "Technical, Engineering & IT Support",
+  "Media Production & Post-Production",
+  "Professional Grooming & Aesthetics",
+  "Enterprise, Leadership & Business Strategy",
+  "Voice & Audio Branding",
+  "Field Sales & Market Activations",
+  "Performance & Commercial Talent",
 ];
 
-export function getGhanaSchools(): GhanaSchool[] {
-  const raw = localStorage.getItem("tnu_custom_schools");
+export function getHiddenSchools(): string[] {
+  const raw = localStorage.getItem("tnu_hidden_schools");
   if (raw) {
     try {
-      return [...GHANA_SCHOOLS, ...JSON.parse(raw)];
+      return JSON.parse(raw);
     } catch (e) {
       console.error(e);
     }
   }
-  return GHANA_SCHOOLS;
+  return [];
+}
+
+export function saveHiddenSchools(hidden: string[]) {
+  localStorage.setItem("tnu_hidden_schools", JSON.stringify(hidden));
+}
+
+export function getGhanaSchools(): GhanaSchool[] {
+  const hidden = getHiddenSchools();
+  const raw = localStorage.getItem("tnu_custom_schools");
+  let all = [...GHANA_SCHOOLS];
+  if (raw) {
+    try {
+      all = [...all, ...JSON.parse(raw)];
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return all.filter((s) => !hidden.includes(s.name));
 }
 
 export function saveCustomSchools(custom: GhanaSchool[]) {
   localStorage.setItem("tnu_custom_schools", JSON.stringify(custom));
+}
+
+// ── Faculties ──────────────────────────────────────────
+
+export function getFaculties(): string[] {
+  const custom = getCustomFaculties();
+  const hidden = getHiddenFaculties();
+  return [...FACULTIES, ...custom].filter((f) => !hidden.includes(f));
+}
+
+export function getCustomFaculties(): string[] {
+  const raw = localStorage.getItem("tnu_custom_faculties");
+  if (raw) {
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return [];
+}
+
+export function saveCustomFaculties(list: string[]) {
+  localStorage.setItem("tnu_custom_faculties", JSON.stringify(list));
+}
+
+export function getHiddenFaculties(): string[] {
+  const raw = localStorage.getItem("tnu_hidden_faculties");
+  if (raw) {
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return [];
+}
+
+export function saveHiddenFaculties(hidden: string[]) {
+  localStorage.setItem("tnu_hidden_faculties", JSON.stringify(hidden));
+}
+
+// ── Programmes ─────────────────────────────────────────
+
+export function getProgrammes(): string[] {
+  const custom = getCustomProgrammes();
+  const hidden = getHiddenProgrammes();
+  return [...PROGRAMMES, ...custom].filter((p) => !hidden.includes(p));
+}
+
+export function getCustomProgrammes(): string[] {
+  const raw = localStorage.getItem("tnu_custom_programmes");
+  if (raw) {
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return [];
+}
+
+export function saveCustomProgrammes(list: string[]) {
+  localStorage.setItem("tnu_custom_programmes", JSON.stringify(list));
+}
+
+export function getHiddenProgrammes(): string[] {
+  const raw = localStorage.getItem("tnu_hidden_programmes");
+  if (raw) {
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return [];
+}
+
+export function saveHiddenProgrammes(hidden: string[]) {
+  localStorage.setItem("tnu_hidden_programmes", JSON.stringify(hidden));
+}
+
+// ── Levels ─────────────────────────────────────────────
+
+export function getLevels(): string[] {
+  const custom = getCustomLevels();
+  const hidden = getHiddenLevels();
+  return [...LEVELS, ...custom].filter((l) => !hidden.includes(l));
+}
+
+export function getCustomLevels(): string[] {
+  const raw = localStorage.getItem("tnu_custom_levels");
+  if (raw) {
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return [];
+}
+
+export function saveCustomLevels(list: string[]) {
+  localStorage.setItem("tnu_custom_levels", JSON.stringify(list));
+}
+
+export function getHiddenLevels(): string[] {
+  const raw = localStorage.getItem("tnu_hidden_levels");
+  if (raw) {
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return [];
+}
+
+export function saveHiddenLevels(hidden: string[]) {
+  localStorage.setItem("tnu_hidden_levels", JSON.stringify(hidden));
 }

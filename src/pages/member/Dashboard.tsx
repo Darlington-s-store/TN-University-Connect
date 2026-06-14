@@ -25,7 +25,9 @@ export default function MemberDashboard() {
     (user?.department ? 25 : 0) +
     (myStudent ? 25 : 0);
 
-  const announcements = getAnnouncements().slice(0, 3);
+  const announcements = getAnnouncements()
+    .filter((a) => a.published)
+    .slice(0, 3);
   const blogs = getBlogs().slice(0, 2);
 
   return (
