@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, Quote, Calendar } from "lucide-react";
@@ -11,45 +12,114 @@ import cardPattern from "@/assets/card-pattern.jpg";
 const PARTNER_UNIVERSITIES = [
   {
     name: "University of Ghana",
-    logo: "https://www.ug.edu.gh/sites/default/files/ug_standard_new_sl_1.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/6/64/University_of_Ghana.png",
+    initials: "UG",
+    bg: "#0B1F3A",
+    text: "#F5C518",
   },
   {
     name: "Kwame Nkrumah University of Science and Technology",
-    logo: "https://www.knust.edu.gh/themes/custom/adepts/images/knustlogo.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/f/f5/KNUST.png",
+    initials: "KNUST",
+    bg: "#006B2D",
+    text: "#F5C518",
   },
   {
     name: "University of Cape Coast",
-    logo: "https://www.ucc.edu.gh/sites/default/files/ucc_logo_new.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/15/UCC_logo.png",
+    initials: "UCC",
+    bg: "#004494",
+    text: "#F5C518",
   },
   {
     name: "University of Education, Winneba",
-    logo: "https://www.uew.edu.gh/sites/default/files/uew_logo_web.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b6/Logo_of_the_University_of_Education%2C_Winneba.png",
+    initials: "UEW",
+    bg: "#D71920",
+    text: "#ffffff",
   },
   {
     name: "University for Development Studies",
     logo: "https://uds.edu.gh/images/uds_emblem.png",
+    initials: "UDS",
+    bg: "#005A2C",
+    text: "#F5C518",
   },
   {
     name: "Ghana Institute of Management and Public Administration",
-    logo: "https://www.gimpa.edu.gh/wp-content/themes/GIMPS/images/logo_g.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d9/GIMPA_%28Ghana_Institute_of_Management_and_Public_Administration%29_logo.jpg",
+    initials: "GIMPA",
+    bg: "#0A2540",
+    text: "#F5C518",
   },
   {
     name: "Ashesi University",
-    logo: "https://www.ashesi.edu.gh/images/logo-mobile_colored.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/8/81/Ashesi_University_Logo.png",
+    initials: "ASHESI",
+    bg: "#7A1C1C",
+    text: "#F5C518",
   },
   {
     name: "Central University",
-    logo: "https://www.central.edu.gh/virgin/images/Central-Uni-logo.png",
+    logo: "https://central.edu.gh/virgin/images/Central-Uni-logo.png",
+    initials: "CU",
+    bg: "#0B3C5D",
+    text: "#F5C518",
   },
   {
     name: "University of Professional Studies",
     logo: "https://upsa.edu.gh/wp-content/uploads/2020/11/upsa-logoacbsp.png",
+    initials: "UPSA",
+    bg: "#002D62",
+    text: "#F5C518",
   },
   {
     name: "Ho Technical University",
-    logo: "https://htu.edu.gh/images/logo.jpg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Ho_Technical_University_logo.png/240px-Ho_Technical_University_logo.png",
+    initials: "HTU",
+    bg: "#008A4B",
+    text: "#F5C518",
   },
 ];
+
+function UniversityLogo({
+  name,
+  logo,
+  initials,
+  bg,
+  text,
+}: {
+  name: string;
+  logo: string;
+  initials: string;
+  bg: string;
+  text: string;
+}) {
+  const [error, setError] = useState(false);
+
+  return (
+    <div
+      className="h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-xl p-1 shrink-0 border shadow-inner transition-colors duration-300"
+      style={{ backgroundColor: error ? bg : "#ffffff", borderColor: error ? bg : "#e2e8f0" }}
+    >
+      {error ? (
+        <span
+          className="text-xs sm:text-sm font-black tracking-wider text-center"
+          style={{ color: text }}
+        >
+          {initials}
+        </span>
+      ) : (
+        <img
+          src={logo}
+          alt={`${name} logo`}
+          className="h-full w-full object-contain"
+          onError={() => setError(true)}
+        />
+      )}
+    </div>
+  );
+}
 
 const testimonials = [
   {
@@ -259,16 +329,18 @@ export default function Home() {
             {PARTNER_UNIVERSITIES.map((u) => (
               <div
                 key={u.name}
-                className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 rounded-xl text-xs sm:text-sm font-bold text-secondary border border-slate-100 hover:border-primary hover:text-primary hover:bg-slate-50/50 hover:-translate-y-0.5 transition-all duration-200 cursor-default shadow-sm"
+                className="flex items-center gap-3.5 px-4 py-3 bg-slate-50 rounded-2xl text-xs sm:text-sm font-bold text-secondary border border-slate-100 hover:border-primary hover:text-primary hover:bg-slate-50/50 hover:-translate-y-0.5 transition-all duration-200 cursor-default shadow-sm"
               >
-                <div className="h-7 w-7 flex items-center justify-center bg-white rounded-lg p-0.5 border border-slate-100 shrink-0">
-                  <img
-                    src={u.logo}
-                    alt={`${u.name} logo`}
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <span>{u.name}</span>
+                <UniversityLogo
+                  name={u.name}
+                  logo={u.logo}
+                  initials={u.initials}
+                  bg={u.bg}
+                  text={u.text}
+                />
+                <span className="text-left font-extrabold max-w-[200px] leading-tight">
+                  {u.name}
+                </span>
               </div>
             ))}
           </div>
