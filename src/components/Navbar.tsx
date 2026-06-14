@@ -1,9 +1,17 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Menu, X, LogIn, UserPlus } from "lucide-react";
+import { Menu, X, LogIn, UserPlus, ChevronDown, ShieldCheck, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const links = [
   { to: "/", label: "Home", end: true },
@@ -15,11 +23,11 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur-md">
       <div className="h-1 flag-stripe" />
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <Logo />
@@ -52,14 +60,39 @@ export default function Navbar() {
               {user.role === "admin" ? "Admin Panel" : "Dashboard"}
             </Button>
           ) : (
-            <>
-              <Button variant="ghost" onClick={() => navigate("/login")}>
-                <LogIn className="h-4 w-4" /> Login
-              </Button>
-              <Button onClick={() => navigate("/register")} className="shadow-elegant">
-                <UserPlus className="h-4 w-4" /> Join Now
-              </Button>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="shadow-elegant gap-1.5">
+                  <UserIcon className="h-4 w-4" />
+                  Account
+                  <ChevronDown className="h-3.5 w-3.5 opacity-80" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+                  Get started
+                </DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => navigate("/login")}
+                  className="cursor-pointer gap-2 font-semibold"
+                >
+                  <LogIn className="h-4 w-4 text-primary" /> Login
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => navigate("/register")}
+                  className="cursor-pointer gap-2 font-semibold"
+                >
+                  <UserPlus className="h-4 w-4 text-primary" /> Join Now
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => navigate("/admin/login")}
+                  className="cursor-pointer gap-2 text-xs text-muted-foreground"
+                >
+                  <ShieldCheck className="h-3.5 w-3.5" /> Admin Login
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
 
@@ -90,38 +123,48 @@ export default function Navbar() {
                 {l.label}
               </NavLink>
             ))}
-            <div className="flex gap-2 pt-2 border-t border-border mt-2">
+            <div className="pt-3 mt-2 border-t border-border space-y-2">
               {user ? (
                 <Button
                   onClick={() => {
                     setOpen(false);
                     navigate(user.role === "admin" ? "/admin" : "/dashboard");
                   }}
-                  className="flex-1"
+                  className="w-full"
                 >
                   {user.role === "admin" ? "Admin Panel" : "Dashboard"}
                 </Button>
               ) : (
                 <>
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold px-1">
+                    Account
+                  </div>
                   <Button
                     variant="outline"
-                    className="flex-1"
+                    className="w-full justify-start gap-2"
                     onClick={() => {
                       setOpen(false);
                       navigate("/login");
                     }}
                   >
-                    Login
+                    <LogIn className="h-4 w-4" /> Login
                   </Button>
                   <Button
-                    className="flex-1"
+                    className="w-full justify-start gap-2"
                     onClick={() => {
                       setOpen(false);
                       navigate("/register");
                     }}
                   >
-                    Join Now
+                    <UserPlus className="h-4 w-4" /> Join Now
                   </Button>
+                  <Link
+                    to="/admin/login"
+                    onClick={() => setOpen(false)}
+                    className="text-xs text-muted-foreground flex items-center gap-1.5 px-1 pt-1"
+                  >
+                    <ShieldCheck className="h-3 w-3" /> Admin Login
+                  </Link>
                 </>
               )}
             </div>
