@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Search, BookOpen, ArrowRight, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -50,7 +51,12 @@ export default function Blog() {
   return (
     <div className="bg-white min-h-screen">
       {/* MODERN HERO */}
-      <section className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28"
+      >
         <div className="absolute inset-0 z-0">
           <img
             src="https://www.ug.edu.gh/sites/default/files/inline-images/IMG_7281.jpg"
@@ -72,11 +78,16 @@ export default function Blog() {
             future of African higher education.
           </p>
         </div>
-      </section>
+      </motion.section>
 
       {/* FEATURED POST - MODERN DESIGN */}
       {featured && (
-        <section className="py-12 -mt-10 relative z-20">
+        <motion.section
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="py-12 -mt-10 relative z-20"
+        >
           <div className="container mx-auto px-4 sm:px-6">
             <Card className="overflow-hidden border-none shadow-2xl bg-white rounded-3xl group">
               <div className="grid lg:grid-cols-2">
@@ -142,11 +153,16 @@ export default function Blog() {
               </div>
             </Card>
           </div>
-        </section>
+        </motion.section>
       )}
 
       {/* MAIN BLOG SECTION */}
-      <section className="py-20">
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="py-20"
+      >
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex flex-col lg:flex-row gap-12">
             {/* ARTICLES COLUMN */}
@@ -184,46 +200,52 @@ export default function Blog() {
               </div>
 
               <div className="grid sm:grid-cols-2 gap-8">
-                {filtered.map((b) => (
-                  <Link key={b.id} to={`/blog/${b.id}`} className="group flex">
-                    <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 overflow-hidden bg-white rounded-2xl flex flex-col w-full hover:-translate-y-1">
-                      <div className="aspect-[16/10] relative overflow-hidden bg-muted">
-                        {b.image ? (
-                          <img
-                            src={resolveBlogImage(b.image)}
-                            alt={b.title}
-                            loading="lazy"
-                            className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 grid place-items-center">
-                            <BookOpen className="h-10 w-10 text-primary/30" />
+                {filtered.map((b, i) => (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.05 }}
+                  >
+                    <Link key={b.id} to={`/blog/${b.id}`} className="group flex">
+                      <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 overflow-hidden bg-white rounded-2xl flex flex-col w-full hover:-translate-y-1">
+                        <div className="aspect-[16/10] relative overflow-hidden bg-muted">
+                          {b.image ? (
+                            <img
+                              src={resolveBlogImage(b.image)}
+                              alt={b.title}
+                              loading="lazy"
+                              className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 grid place-items-center">
+                              <BookOpen className="h-10 w-10 text-primary/30" />
+                            </div>
+                          )}
+                          <div className="absolute top-3 left-3">
+                            <Badge className="bg-accent text-accent-foreground font-bold border-0 shadow-md px-2.5 py-0.5 text-[10px]">
+                              {b.category}
+                            </Badge>
                           </div>
-                        )}
-                        <div className="absolute top-3 left-3">
-                          <Badge className="bg-accent text-accent-foreground font-bold border-0 shadow-md px-2.5 py-0.5 text-[10px]">
-                            {b.category}
-                          </Badge>
                         </div>
-                      </div>
-                      <CardContent className="p-5 flex-1 flex flex-col justify-between">
-                        <div className="space-y-2">
-                          <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
-                            By {b.author} · {new Date(b.date).toLocaleDateString("en-GB")}
+                        <CardContent className="p-5 flex-1 flex flex-col justify-between">
+                          <div className="space-y-2">
+                            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                              By {b.author} · {new Date(b.date).toLocaleDateString("en-GB")}
+                            </div>
+                            <h3 className="font-extrabold text-base text-secondary group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                              {b.title}
+                            </h3>
+                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                              {b.excerpt}
+                            </p>
                           </div>
-                          <h3 className="font-extrabold text-base text-secondary group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                            {b.title}
-                          </h3>
-                          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                            {b.excerpt}
-                          </p>
-                        </div>
-                        <div className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary group-hover:gap-2.5 transition-all w-fit">
-                          Read article <ArrowRight className="h-3 w-3" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                          <div className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary group-hover:gap-2.5 transition-all w-fit">
+                            Read article <ArrowRight className="h-3 w-3" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
               {filtered.length === 0 && (
@@ -286,7 +308,7 @@ export default function Blog() {
             </aside>
           </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

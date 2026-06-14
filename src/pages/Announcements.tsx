@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Search, Calendar, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -41,7 +42,12 @@ export default function Announcements() {
   return (
     <div className="bg-white min-h-screen">
       {/* MODERN HERO */}
-      <section className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28"
+      >
         <div className="absolute inset-0 z-0">
           <img
             src="https://www.ug.edu.gh/sites/default/files/inline-images/261A0513.jpg"
@@ -63,10 +69,15 @@ export default function Announcements() {
             across the Ghanaian academic landscape.
           </p>
         </div>
-      </section>
+      </motion.section>
 
       {/* FILTER & SEARCH - MODERN COMPACT */}
-      <section className="py-12 -mt-10 relative z-20">
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="py-12 -mt-10 relative z-20"
+      >
         <div className="container mx-auto px-4 sm:px-6">
           <div className="bg-white p-4 rounded-2xl shadow-xl border border-border flex flex-col md:flex-row gap-4 items-center">
             <div className="relative flex-1 w-full">
@@ -104,10 +115,15 @@ export default function Announcements() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* RESULTS GRID */}
-      <section className="pb-24 pt-8">
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="pb-24 pt-8"
+      >
         <div className="container mx-auto px-4 sm:px-6">
           {items.length === 0 ? (
             <div className="text-center py-32">
@@ -121,45 +137,51 @@ export default function Announcements() {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {items.map((a) => (
-                <Link key={a.id} to={`/announcements/${a.id}`} className="group flex">
-                  <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
-                    <div className="relative h-56 overflow-hidden bg-slate-100">
-                      <img
-                        src={a.image || cardPattern}
-                        alt=""
-                        aria-hidden="true"
-                        className="absolute inset-0 h-full w-full object-contain group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
-                      <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white">
-                        <Badge className="bg-ghana-red text-white border-0 font-bold text-[10px]">
-                          {a.category}
-                        </Badge>
-                        <span className="text-[11px] font-semibold flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(a.date).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </span>
+              {items.map((a, i) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                >
+                  <Link key={a.id} to={`/announcements/${a.id}`} className="group flex">
+                    <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
+                      <div className="relative h-56 overflow-hidden bg-slate-100">
+                        <img
+                          src={a.image || cardPattern}
+                          alt=""
+                          aria-hidden="true"
+                          className="absolute inset-0 h-full w-full object-contain group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
+                        <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white">
+                          <Badge className="bg-ghana-red text-white border-0 font-bold text-[10px]">
+                            {a.category}
+                          </Badge>
+                          <span className="text-[11px] font-semibold flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(a.date).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <CardContent className="p-5 flex-1 flex flex-col justify-between">
-                      <div className="space-y-2">
-                        <h3 className="font-extrabold text-base text-secondary group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                          {a.title}
-                        </h3>
-                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                          {a.excerpt}
-                        </p>
-                      </div>
-                      <div className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary group-hover:gap-2.5 transition-all w-fit">
-                        Read more <ArrowRight className="h-3 w-3" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+                      <CardContent className="p-5 flex-1 flex flex-col justify-between">
+                        <div className="space-y-2">
+                          <h3 className="font-extrabold text-base text-secondary group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                            {a.title}
+                          </h3>
+                          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                            {a.excerpt}
+                          </p>
+                        </div>
+                        <div className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary group-hover:gap-2.5 transition-all w-fit">
+                          Read more <ArrowRight className="h-3 w-3" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           )}
@@ -202,7 +224,7 @@ export default function Announcements() {
             </div>
           )}
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

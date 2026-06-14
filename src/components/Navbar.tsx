@@ -1,5 +1,6 @@
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   Menu,
   X,
@@ -63,7 +64,12 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur-md">
+    <motion.header
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur-md"
+    >
       <div className="h-1 flag-stripe" />
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <Logo />
@@ -260,6 +266,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </header>
+    </motion.header>
   );
 }

@@ -1,10 +1,16 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Facebook, Twitter, Linkedin, Instagram, Mail, MapPin, Phone } from "lucide-react";
 import Logo from "@/components/Logo";
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary text-secondary-foreground">
+    <motion.footer
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="bg-secondary text-secondary-foreground"
+    >
       <div className="container mx-auto px-4 sm:px-6 py-14 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
           <Logo variant="light" />
@@ -98,6 +104,6 @@ export default function Footer() {
           </span>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }

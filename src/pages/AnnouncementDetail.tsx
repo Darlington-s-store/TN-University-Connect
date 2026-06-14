@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Share2, Megaphone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,9 +26,19 @@ export default function AnnouncementDetail() {
     .slice(0, 3);
 
   return (
-    <article className="bg-white min-h-screen">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white min-h-screen"
+    >
       {/* Hero header */}
-      <section className="relative overflow-hidden bg-secondary text-white py-16 lg:py-20">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="relative overflow-hidden bg-secondary text-white py-16 lg:py-20"
+      >
         <div className="absolute inset-0">
           <img
             src={cardPattern}
@@ -61,7 +72,7 @@ export default function AnnouncementDetail() {
             </button>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Body */}
       <section className="py-16">
@@ -120,6 +131,6 @@ export default function AnnouncementDetail() {
           </div>
         </section>
       )}
-    </article>
+    </motion.div>
   );
 }
