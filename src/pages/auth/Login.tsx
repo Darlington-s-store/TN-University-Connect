@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/lib/auth";
-import { decodeGoogleCredential, CLIENT_ID } from "@/lib/google";
+import { decodeGoogleCredential, CLIENT_ID, isMockClientId } from "@/lib/google-utils";
+import { MockGoogleButton } from "@/lib/google";
 
 const schema = z.object({
   email: z.string().trim().email("Enter a valid email"),
@@ -149,6 +150,10 @@ export default function Login() {
                   </svg>
                   Signing in...
                 </Button>
+              ) : isMockClientId(CLIENT_ID) ? (
+                <MockGoogleButton
+                  onClick={() => handleGoogleSuccess({ credential: "mock-credential" })}
+                />
               ) : (
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}

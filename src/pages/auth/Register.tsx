@@ -25,7 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
-import { decodeGoogleCredential, CLIENT_ID } from "@/lib/google";
+import { decodeGoogleCredential, CLIENT_ID, isMockClientId } from "@/lib/google-utils";
+import { MockGoogleButton } from "@/lib/google";
 import { GoogleLogin } from "@react-oauth/google";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -316,25 +317,41 @@ export default function Register() {
             >
               {CLIENT_ID && (
                 <>
-                  <div className="flex justify-center">
-                    <GoogleLogin
-                      onSuccess={(response) => {
-                        const profile = decodeGoogleCredential(response.credential || "");
-                        if (!profile) return;
-                        setForm((f) => ({
-                          ...f,
-                          name: profile.name,
-                          email: profile.email,
-                        }));
-                        toast.success("Google account linked! Fill in your details to continue.");
-                      }}
-                      onError={() => toast.error("Google sign-up failed")}
-                      theme="outline"
-                      size="large"
-                      text="signup_with"
-                      shape="rectangular"
-                      width="100%"
-                    />
+                  <div className="flex justify-center w-full">
+                    {isMockClientId(CLIENT_ID) ? (
+                      <MockGoogleButton
+                        onClick={() => {
+                          const profile = decodeGoogleCredential("mock-credential");
+                          if (!profile) return;
+                          setForm((f) => ({
+                            ...f,
+                            name: profile.name,
+                            email: profile.email,
+                          }));
+                          toast.success("Google account linked! Fill in your details to continue.");
+                        }}
+                        text="Sign up with Google"
+                      />
+                    ) : (
+                      <GoogleLogin
+                        onSuccess={(response) => {
+                          const profile = decodeGoogleCredential(response.credential || "");
+                          if (!profile) return;
+                          setForm((f) => ({
+                            ...f,
+                            name: profile.name,
+                            email: profile.email,
+                          }));
+                          toast.success("Google account linked! Fill in your details to continue.");
+                        }}
+                        onError={() => toast.error("Google sign-up failed")}
+                        theme="outline"
+                        size="large"
+                        text="signup_with"
+                        shape="rectangular"
+                        width="100%"
+                      />
+                    )}
                   </div>
                   <div className="relative py-2">
                     <div className="absolute inset-0 flex items-center">

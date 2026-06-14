@@ -3,15 +3,33 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Target, Eye, CheckCircle2, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-import { UNIVERSITIES } from "@/lib/data";
 import Logo from "@/components/Logo";
-import cardPattern from "@/assets/card-pattern.jpg";
 
 const team = [
-  { name: "Dr. Kofi Owusu", role: "Executive Director", initials: "KO" },
-  { name: "Ama Boateng", role: "Director of Programs", initials: "AB" },
-  { name: "Yaw Mensah", role: "Head of Partnerships", initials: "YM" },
-  { name: "Akosua Asante", role: "Communications Lead", initials: "AA" },
+  {
+    name: "Dr. Kofi Owusu",
+    role: "Executive Director",
+    initials: "KO",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=500&fit=crop",
+  },
+  {
+    name: "Ama Boateng",
+    role: "Director of Programs",
+    initials: "AB",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=500&fit=crop",
+  },
+  {
+    name: "Yaw Mensah",
+    role: "Head of Partnerships",
+    initials: "YM",
+    image: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&h=500&fit=crop",
+  },
+  {
+    name: "Akosua Asante",
+    role: "Communications Lead",
+    initials: "AA",
+    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=500&fit=crop",
+  },
 ];
 
 const objectives = [
@@ -28,6 +46,12 @@ export default function About() {
       {/* MODERN HERO */}
       <section className="relative overflow-hidden bg-secondary text-white py-24 lg:py-32">
         <div className="absolute inset-0 z-0">
+          <img
+            src="https://www.ug.edu.gh/sites/default/files/inline-images/IMG_7281.jpg"
+            alt=""
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-secondary/20" />
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4" />
         </div>
@@ -56,7 +80,7 @@ export default function About() {
             <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
               <div className="relative h-40 overflow-hidden">
                 <img
-                  src={cardPattern}
+                  src="https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=600&h=300&fit=crop"
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -81,7 +105,7 @@ export default function About() {
             <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
               <div className="relative h-40 overflow-hidden">
                 <img
-                  src={cardPattern}
+                  src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=300&fit=crop"
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -158,10 +182,13 @@ export default function About() {
             {team.map((m) => (
               <div key={m.name} className="group">
                 <div className="relative aspect-[4/5] rounded-2xl overflow-hidden mb-6 bg-muted">
+                  <img
+                    src={m.image}
+                    alt={m.name}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20 group-hover:scale-110 transition-transform duration-500">
-                    <span className="text-4xl font-bold text-secondary/30">{m.initials}</span>
-                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-secondary group-hover:text-primary transition-colors">
                   {m.name}
