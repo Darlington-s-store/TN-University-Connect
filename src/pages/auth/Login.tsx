@@ -159,9 +159,6 @@ export default function Login() {
             />
           )}
         </div>
-        <div className="text-xs text-center text-muted-foreground pt-2 border-t mt-4 pt-4">
-          <strong>Demo account:</strong> kwame@tnuc.gh / member123
-        </div>
       </form>
     </AuthShell>
   );
