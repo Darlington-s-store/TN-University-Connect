@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import Preloader from "@/components/Preloader";
+import "./App.css";
 
 import PublicLayout from "@/components/layout/PublicLayout";
 import MemberLayout from "@/components/layout/MemberLayout";
