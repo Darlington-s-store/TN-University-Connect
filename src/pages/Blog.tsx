@@ -57,7 +57,7 @@ export default function Blog() {
             alt=""
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-secondary/70" />
+          <div className="absolute inset-0 bg-secondary/20" />
           <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_20%,rgba(245,197,24,0.15)_0%,transparent_50%)]" />
           <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(0,107,45,0.2)_0%,transparent_50%)]" />
         </div>
