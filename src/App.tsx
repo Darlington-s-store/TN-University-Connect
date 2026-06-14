@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import Preloader from "@/components/Preloader";
+import BreakingNewsOverlay from "@/components/BreakingNewsOverlay";
 import "./App.css";
 
 import PublicLayout from "@/components/layout/PublicLayout";
@@ -55,6 +56,7 @@ export default function App() {
         <TooltipProvider>
           <Preloader />
           <BrowserRouter>
+            <BreakingNewsOverlay />
             <Routes>
               {/* Public */}
               <Route element={<PublicLayout />}>

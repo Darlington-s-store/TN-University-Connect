@@ -43,8 +43,14 @@ export default function Announcements() {
       {/* MODERN HERO */}
       <section className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28">
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(0,107,45,0.15)_0%,transparent_50%)]" />
-          <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_80%,rgba(215,25,32,0.1)_0%,transparent_50%)]" />
+          <img
+            src="https://www.ug.edu.gh/sites/default/files/inline-images/261A0513.jpg"
+            alt=""
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-secondary/70" />
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(0,107,45,0.2)_0%,transparent_50%)]" />
+          <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_80%,rgba(215,25,32,0.15)_0%,transparent_50%)]" />
         </div>
 
         <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center flex flex-col items-center">
@@ -118,12 +124,12 @@ export default function Announcements() {
               {items.map((a) => (
                 <Link key={a.id} to={`/announcements/${a.id}`} className="group flex">
                   <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
-                    <div className="relative h-36 overflow-hidden">
+                    <div className="relative h-56 overflow-hidden bg-slate-100">
                       <img
                         src={a.image || cardPattern}
                         alt=""
                         aria-hidden="true"
-                        className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="absolute inset-0 h-full w-full object-contain group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
                       <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white">

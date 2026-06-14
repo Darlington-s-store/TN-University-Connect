@@ -192,12 +192,12 @@ export default function Home() {
                 className="flex"
               >
                 <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
-                  <div className="relative h-36 overflow-hidden">
+                  <div className="relative h-56 overflow-hidden bg-slate-100">
                     <img
                       src={a.image || cardPattern}
                       alt=""
                       aria-hidden="true"
-                      className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="absolute inset-0 h-full w-full object-contain group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
                     <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white">

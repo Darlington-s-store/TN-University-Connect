@@ -46,8 +46,14 @@ export default function Blog() {
       {/* MODERN HERO */}
       <section className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28">
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_20%,rgba(245,197,24,0.05)_0%,transparent_50%)]" />
-          <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(0,107,45,0.1)_0%,transparent_50%)]" />
+          <img
+            src="https://www.ug.edu.gh/sites/default/files/inline-images/IMG_7281.jpg"
+            alt=""
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-secondary/70" />
+          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_20%,rgba(245,197,24,0.15)_0%,transparent_50%)]" />
+          <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(0,107,45,0.2)_0%,transparent_50%)]" />
         </div>
 
         <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center flex flex-col items-center">
