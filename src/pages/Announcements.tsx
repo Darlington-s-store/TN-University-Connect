@@ -25,7 +25,8 @@ function resolveAnnouncementImage(imgStr?: string) {
   if (imgStr.startsWith("http")) return imgStr;
   if (imgStr.includes("ann-agm") || imgStr.includes("agm")) return annAgm;
   if (imgStr.includes("ann-dimes") || imgStr.includes("dimes")) return annDimes;
-  if (imgStr.includes("ann-hyundai") || imgStr.includes("hyundai") || imgStr.includes("stem")) return annHyundai;
+  if (imgStr.includes("ann-hyundai") || imgStr.includes("hyundai") || imgStr.includes("stem"))
+    return annHyundai;
   if (imgStr.includes("ann-legal") || imgStr.includes("legal")) return annLegal;
   return imgStr;
 }
