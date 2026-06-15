@@ -36,7 +36,7 @@ import {
   Trash2,
   BarChart2,
 } from "lucide-react";
-import { getStudents, UNIVERSITIES, DEPARTMENTS, type Student } from "@/lib/data";
+import { getStudents, type Student } from "@/lib/data";
 
 const COLORS = ["#006B2D", "#D71920", "#F5C518", "#0B1F3A", "#888", "#5cbdb9", "#c44569"];
 
@@ -76,20 +76,7 @@ function AdminAnalytics() {
   // Reports state & logic
   const [type, setType] = useState("students");
   const [format, setFormat] = useState("csv");
-  const [history, setHistory] = useState<HistItem[]>([
-    {
-      id: "h1",
-      type: "students",
-      format: "csv",
-      date: new Date(Date.now() - 86400000 * 2).toISOString(),
-    },
-    {
-      id: "h2",
-      type: "universities",
-      format: "pdf",
-      date: new Date(Date.now() - 86400000 * 5).toISOString(),
-    },
-  ]);
+  const [history, setHistory] = useState<HistItem[]>([]);
 
   const generate = () => {
     const data = students;
@@ -142,27 +129,45 @@ function AdminAnalytics() {
   };
 
   // Analytics charts logic
-  const trend = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) => ({
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const trend = months.map((m, i) => ({
     month: m,
-    registrations: Math.round(15 + i * 12 + Math.random() * 8),
-    active: Math.round(40 + i * 18 + Math.random() * 10),
+    registrations: students.filter((s) => s.submittedAt && new Date(s.submittedAt).getMonth() === i)
+      .length,
+    active: 0,
   }));
 
   const gender = ["male", "female", "other"].map((g) => ({
     name: g.charAt(0).toUpperCase() + g.slice(1),
-    value:
-      students.filter((s) => s.gender === g).length || (g === "male" ? 3 : g === "female" ? 2 : 0),
+    value: students.filter((s) => s.gender === g).length,
   }));
 
-  const byUni = UNIVERSITIES.map((u) => ({
-    name: u.split(" ").slice(0, 2).join(" "),
-    value: students.filter((s) => s.university === u).length || Math.floor(Math.random() * 8) + 1,
-  })).slice(0, 7);
+  const byUni = [...new Set(students.map((s) => s.university).filter(Boolean))]
+    .slice(0, 7)
+    .map((u) => ({
+      name: u.split(" ").slice(0, 2).join(" "),
+      value: students.filter((s) => s.university === u).length,
+    }));
 
-  const byDept = DEPARTMENTS.map((d) => ({
-    name: d,
-    value: students.filter((s) => s.department === d).length || Math.floor(Math.random() * 10) + 1,
-  })).slice(0, 7);
+  const byDept = [...new Set(students.map((s) => s.department).filter(Boolean))]
+    .slice(0, 7)
+    .map((d) => ({
+      name: d,
+      value: students.filter((s) => s.department === d).length,
+    }));
 
   if (loading) {
     return (

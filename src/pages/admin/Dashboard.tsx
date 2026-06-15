@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   ResponsiveContainer,
   XAxis,
   YAxis,
@@ -13,11 +13,27 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from "recharts";
 import { useState, useEffect } from "react";
-import { getStudents, Student, UNIVERSITIES } from "@/lib/data";
+import { getStudents, Student } from "@/lib/data";
 import { useAuth } from "@/lib/auth";
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white/90 backdrop-blur-md border border-slate-100 p-4 rounded-xl shadow-xl flex flex-col gap-1 transition-all duration-300">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{label}</p>
+        <div className="flex items-center gap-2 mt-1">
+          <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span>
+          <p className="text-sm font-extrabold text-slate-800">
+            {payload[0].value} {payload[0].value === 1 ? 'Student' : 'Students'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -66,21 +82,37 @@ export default function AdminDashboard() {
     },
     {
       label: "Active Members",
-      value: students.length + 4,
+      value: students.filter((s) => s.status === "Active Student" || !s.status).length,
       icon: Activity,
       color: "text-secondary",
       bg: "bg-secondary/10",
     },
   ];
 
-  const byMonth = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) => ({
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const byMonth = months.slice(0, 6).map((m, i) => ({
     month: m,
-    students: Math.round(20 + i * 14 + Math.random() * 10),
+    students: students.filter((s) => s.submittedAt && new Date(s.submittedAt).getMonth() === i)
+      .length,
   }));
 
-  const byUni = UNIVERSITIES.slice(0, 5).map((u) => ({
+  const uniNames = [...new Set(students.map((s) => s.university).filter(Boolean))];
+  const byUni = uniNames.slice(0, 5).map((u) => ({
     name: u.split(" ").slice(0, 2).join(" "),
-    value: students.filter((s) => s.university === u).length || Math.floor(Math.random() * 12) + 3,
+    value: students.filter((s) => s.university === u).length,
   }));
   const COLORS = ["#006B2D", "#D71920", "#F5C518", "#0B1F3A", "#888"];
 
@@ -103,12 +135,6 @@ export default function AdminDashboard() {
                 >
                   <s.icon className="h-6 w-6" />
                 </div>
-                <Badge
-                  variant="secondary"
-                  className="bg-green-100 text-green-700 hover:bg-green-100 border-none font-medium"
-                >
-                  +12%
-                </Badge>
               </div>
               <div>
                 <div className="text-2xl font-bold text-secondary">{s.value}</div>
@@ -133,27 +159,51 @@ export default function AdminDashboard() {
                 Download Report
               </Button>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={byMonth}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+            <ResponsiveContainer width="100%" height={320}>
+              <AreaChart data={byMonth} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="regGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#006B2D" stopOpacity={0.4} />
+                    <stop offset="50%" stopColor="#006B2D" stopOpacity={0.15} />
+                    <stop offset="100%" stopColor="#006B2D" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="4 4" stroke="#e2e8f0" vertical={false} />
                 <XAxis
                   dataKey="month"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#64748b", fontSize: 12 }}
-                  dy={10}
+                  tick={{ fill: "#94a3b8", fontSize: 11, fontWeight: 500 }}
+                  dy={8}
                 />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
-                <Tooltip
-                  cursor={{ fill: "#f8fafc" }}
-                  contentStyle={{
-                    borderRadius: "8px",
-                    border: "none",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#94a3b8", fontSize: 11, fontWeight: 500 }}
+                  allowDecimals={false}
+                />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#006B2D", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                <Area
+                  type="monotone"
+                  dataKey="students"
+                  stroke="#006B2D"
+                  strokeWidth={4}
+                  fill="url(#regGradient)"
+                  activeDot={{
+                    r: 8,
+                    fill: "#006B2D",
+                    stroke: "#fff",
+                    strokeWidth: 3,
+                    style: { filter: "drop-shadow(0px 4px 8px rgba(0, 107, 45, 0.4))" }
+                  }}
+                  dot={{
+                    r: 4,
+                    fill: "#fff",
+                    stroke: "#006B2D",
+                    strokeWidth: 2.5
                   }}
                 />
-                <Bar dataKey="students" fill="#006B2D" radius={[4, 4, 0, 0]} barSize={40} />
-              </BarChart>
+              </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
