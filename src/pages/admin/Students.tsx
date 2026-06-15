@@ -9,6 +9,7 @@ import {
   Plus,
   Key,
   Undo2,
+  Mail,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -67,6 +68,7 @@ import {
   deleteStudent as apiDeleteStudent,
   saveStudentAdmin as apiSaveStudent,
   resetPasswordAdmin,
+  sendMessageAdmin,
   Student,
 } from "@/lib/data";
 import { User } from "@/lib/auth";
@@ -113,6 +115,13 @@ export default function AdminStudents() {
   const [showPassword, setShowPassword] = useState(false);
   const [resetPasswordStudent, setResetPasswordStudent] = useState<FullStudent | null>(null);
   const [newPassword, setNewPassword] = useState("");
+
+  // Message Sending States
+  const [messagingStudent, setMessagingStudent] = useState<FullStudent | null>(null);
+  const [messageSubject, setMessageSubject] = useState("");
+  const [messageBody, setMessageBody] = useState("");
+  const [messageChannel, setMessageChannel] = useState<"email" | "sms" | "both">("email");
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
 
   const isEditingExisting = useMemo(() => {
     if (!editingStudent) return false;
@@ -826,6 +835,20 @@ export default function AdminStudents() {
                             title="View Student details"
                           >
                             <Eye className="h-4 w-4 text-slate-500" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            onClick={() => {
+                              setMessagingStudent(s);
+                              setMessageSubject("Administrative Notification");
+                              setMessageBody("");
+                              setMessageChannel("email");
+                            }}
+                            title="Send message to Student"
+                          >
+                            <Mail className="h-4 w-4 text-sky-500" />
                           </Button>
                           <Button
                             size="sm"
@@ -2086,7 +2109,7 @@ export default function AdminStudents() {
         </DialogContent>
       </Dialog>
 
-      {/* DIALOG: RESET PASSWORD */}
+    {/* DIALOG: RESET PASSWORD */}
       <Dialog
         open={!!resetPasswordStudent}
         onOpenChange={(o) => !o && setResetPasswordStudent(null)}
@@ -2143,6 +2166,107 @@ export default function AdminStudents() {
             </Button>
             <Button onClick={handleResetPassword} className="font-bold">
               Reset Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG: SEND MESSAGE */}
+      <Dialog
+        open={!!messagingStudent}
+        onOpenChange={(o) => !o && setMessagingStudent(null)}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-secondary flex items-center gap-2">
+              <Mail className="h-5 w-5 text-sky-500" /> Send Message
+            </DialogTitle>
+          </DialogHeader>
+          {messagingStudent && (
+            <div className="space-y-4 py-2 text-xs">
+              <p className="text-sm text-muted-foreground">
+                Send a message to <strong>{messagingStudent.fullName}</strong>.
+              </p>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="channel">Delivery Method</Label>
+                <Select
+                  value={messageChannel}
+                  onValueChange={(v: "email" | "sms" | "both") => setMessageChannel(v)}
+                >
+                  <SelectTrigger id="channel">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="email">Email Only ({messagingStudent.email})</SelectItem>
+                    <SelectItem value="sms">SMS Only ({messagingStudent.phone})</SelectItem>
+                    <SelectItem value="both">Both Email and SMS</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {(messageChannel === "email" || messageChannel === "both") && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="msgSubject">Email Subject</Label>
+                  <Input
+                    id="msgSubject"
+                    value={messageSubject}
+                    onChange={(e) => setMessageSubject(e.target.value)}
+                    placeholder="Enter email subject"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="msgBody">Message Content</Label>
+                <textarea
+                  id="msgBody"
+                  value={messageBody}
+                  onChange={(e) => setMessageBody(e.target.value)}
+                  placeholder="Write your message here..."
+                  rows={5}
+                  className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setMessagingStudent(null)}
+              className="font-bold"
+              disabled={isSendingMessage}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                if (!messagingStudent) return;
+                if (!messageBody.trim()) {
+                  toast.error("Message content is required");
+                  return;
+                }
+                setIsSendingMessage(true);
+                try {
+                  await sendMessageAdmin({
+                    email: messagingStudent.email,
+                    phone: messagingStudent.phone,
+                    subject: messageSubject.trim(),
+                    message: messageBody.trim(),
+                    channel: messageChannel,
+                  });
+                  toast.success("Message dispatched successfully!");
+                  setMessagingStudent(null);
+                } catch (error: any) {
+                  toast.error(error.message || "Failed to send message");
+                } finally {
+                  setIsSendingMessage(false);
+                }
+              }}
+              className="font-bold"
+              disabled={isSendingMessage}
+            >
+              {isSendingMessage ? "Sending..." : "Send Message"}
             </Button>
           </DialogFooter>
         </DialogContent>

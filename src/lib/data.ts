@@ -331,6 +331,23 @@ export const saveStudentAdmin = async (student: Partial<Student>): Promise<Stude
   return data.student;
 };
 
+export const sendMessageAdmin = async (params: {
+  email?: string;
+  phone?: string;
+  subject?: string;
+  message: string;
+  channel: "email" | "sms" | "both";
+}): Promise<{ success: boolean; message: string; details: { emailSent: boolean; smsSent: boolean } }> => {
+  const res = await fetch(`${API_URL}/api/students/admin/send-message`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(params),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to send message to student");
+  return data;
+};
+
 // ---------- Settings ----------
 export const getSettings = async (): Promise<SiteSettings> => {
   const res = await fetch(`${API_URL}/api/settings`);
