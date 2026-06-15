@@ -8,6 +8,40 @@ import { Badge } from "@/components/ui/badge";
 import Hero from "@/components/Hero";
 import { getAnnouncements, getBlogs, Announcement, BlogPost } from "@/lib/data";
 import cardPattern from "@/assets/card-pattern.jpg";
+import blog1 from "@/assets/blog-1.jpg";
+import blog2 from "@/assets/blog-2.jpg";
+import blog3 from "@/assets/blog-3.jpg";
+import blog4 from "@/assets/blog-4.jpg";
+import blog5 from "@/assets/blog-5.jpg";
+import blog6 from "@/assets/blog-6.jpg";
+import blog7 from "@/assets/blog-7.jpg";
+import annAgm from "@/assets/ann-agm.jpg";
+import annDimes from "@/assets/ann-dimes.jpg";
+import annHyundai from "@/assets/ann-hyundai-stem.png";
+import annLegal from "@/assets/ann-legal.jpg";
+
+function resolveAnnouncementImage(imgStr?: string) {
+  if (!imgStr) return undefined;
+  if (imgStr.startsWith("http")) return imgStr;
+  if (imgStr.includes("ann-agm") || imgStr.includes("agm")) return annAgm;
+  if (imgStr.includes("ann-dimes") || imgStr.includes("dimes")) return annDimes;
+  if (imgStr.includes("ann-hyundai") || imgStr.includes("hyundai") || imgStr.includes("stem")) return annHyundai;
+  if (imgStr.includes("ann-legal") || imgStr.includes("legal")) return annLegal;
+  return imgStr;
+}
+
+function resolveBlogImage(imgStr?: string) {
+  if (!imgStr) return undefined;
+  if (imgStr.startsWith("http")) return imgStr;
+  if (imgStr.includes("blog-1")) return blog1;
+  if (imgStr.includes("blog-2")) return blog2;
+  if (imgStr.includes("blog-3")) return blog3;
+  if (imgStr.includes("blog-4")) return blog4;
+  if (imgStr.includes("blog-5")) return blog5;
+  if (imgStr.includes("blog-6")) return blog6;
+  if (imgStr.includes("blog-7")) return blog7;
+  return imgStr;
+}
 
 const PARTNER_UNIVERSITIES = [
   {
@@ -208,9 +242,13 @@ export default function Home() {
                 <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
                   <div className="relative h-56 overflow-hidden bg-slate-100">
                     <img
-                      src={a.image || cardPattern}
+                      src={resolveAnnouncementImage(a.image) || cardPattern}
                       alt=""
                       aria-hidden="true"
+                      onError={(e) => {
+                        if (!e.currentTarget.src.includes(cardPattern))
+                          e.currentTarget.src = cardPattern;
+                      }}
                       className="absolute inset-0 h-full w-full object-contain group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
@@ -290,7 +328,7 @@ export default function Home() {
                   <div className="aspect-[16/10] relative overflow-hidden bg-muted">
                     {b.image ? (
                       <img
-                        src={b.image}
+                        src={resolveBlogImage(b.image)}
                         alt={b.title}
                         className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />

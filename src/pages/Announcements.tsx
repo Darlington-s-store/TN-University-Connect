@@ -15,6 +15,20 @@ import {
 } from "@/components/ui/select";
 import { getAnnouncements, Announcement } from "@/lib/data";
 import cardPattern from "@/assets/card-pattern.jpg";
+import annAgm from "@/assets/ann-agm.jpg";
+import annDimes from "@/assets/ann-dimes.jpg";
+import annHyundai from "@/assets/ann-hyundai-stem.png";
+import annLegal from "@/assets/ann-legal.jpg";
+
+function resolveAnnouncementImage(imgStr?: string) {
+  if (!imgStr) return undefined;
+  if (imgStr.startsWith("http")) return imgStr;
+  if (imgStr.includes("ann-agm") || imgStr.includes("agm")) return annAgm;
+  if (imgStr.includes("ann-dimes") || imgStr.includes("dimes")) return annDimes;
+  if (imgStr.includes("ann-hyundai") || imgStr.includes("hyundai") || imgStr.includes("stem")) return annHyundai;
+  if (imgStr.includes("ann-legal") || imgStr.includes("legal")) return annLegal;
+  return imgStr;
+}
 
 const PAGE_SIZE = 6;
 
@@ -163,9 +177,13 @@ export default function Announcements() {
                     <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
                       <div className="relative h-56 overflow-hidden bg-slate-100">
                         <img
-                          src={a.image || cardPattern}
+                          src={resolveAnnouncementImage(a.image) || cardPattern}
                           alt=""
                           aria-hidden="true"
+                          onError={(e) => {
+                            if (!e.currentTarget.src.includes(cardPattern))
+                              e.currentTarget.src = cardPattern;
+                          }}
                           className="absolute inset-0 h-full w-full object-contain group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />

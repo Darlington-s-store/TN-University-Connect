@@ -19,6 +19,20 @@ import {
   deleteAnnouncement,
   Announcement,
 } from "@/lib/data";
+import annAgm from "@/assets/ann-agm.jpg";
+import annDimes from "@/assets/ann-dimes.jpg";
+import annHyundai from "@/assets/ann-hyundai-stem.png";
+import annLegal from "@/assets/ann-legal.jpg";
+
+function resolveAnnouncementImage(imgStr?: string) {
+  if (!imgStr) return undefined;
+  if (imgStr.startsWith("http")) return imgStr;
+  if (imgStr.includes("ann-agm") || imgStr.includes("agm")) return annAgm;
+  if (imgStr.includes("ann-dimes") || imgStr.includes("dimes")) return annDimes;
+  if (imgStr.includes("ann-hyundai") || imgStr.includes("hyundai") || imgStr.includes("stem")) return annHyundai;
+  if (imgStr.includes("ann-legal") || imgStr.includes("legal")) return annLegal;
+  return imgStr;
+}
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -136,7 +150,14 @@ export default function AdminAnnouncements() {
           <Card key={a.id} className="hover:shadow-soft transition-smooth">
             {a.image && (
               <div className="aspect-[16/9] overflow-hidden bg-slate-100 rounded-t-xl">
-                <img src={a.image} alt="" className="h-full w-full object-contain" />
+                <img
+                  src={resolveAnnouncementImage(a.image)}
+                  alt=""
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                  className="h-full w-full object-contain"
+                />
               </div>
             )}
             <CardContent className="p-5">

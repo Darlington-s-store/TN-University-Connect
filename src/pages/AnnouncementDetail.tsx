@@ -6,6 +6,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getAnnouncements, getAnnouncementById, Announcement } from "@/lib/data";
 import cardPattern from "@/assets/card-pattern.jpg";
+import annAgm from "@/assets/ann-agm.jpg";
+import annDimes from "@/assets/ann-dimes.jpg";
+import annHyundai from "@/assets/ann-hyundai-stem.png";
+import annLegal from "@/assets/ann-legal.jpg";
+
+function resolveAnnouncementImage(imgStr?: string) {
+  if (!imgStr) return undefined;
+  if (imgStr.startsWith("http")) return imgStr;
+  if (imgStr.includes("ann-agm") || imgStr.includes("agm")) return annAgm;
+  if (imgStr.includes("ann-dimes") || imgStr.includes("dimes")) return annDimes;
+  if (imgStr.includes("ann-hyundai") || imgStr.includes("hyundai") || imgStr.includes("stem")) return annHyundai;
+  if (imgStr.includes("ann-legal") || imgStr.includes("legal")) return annLegal;
+  return imgStr;
+}
 
 export default function AnnouncementDetail() {
   const { id } = useParams();
@@ -105,7 +119,14 @@ export default function AnnouncementDetail() {
         <div className="container mx-auto px-4 sm:px-6 max-w-3xl">
           {item.image ? (
             <div className="aspect-[16/7] rounded-2xl overflow-hidden mb-10 shadow-soft bg-slate-100">
-              <img src={item.image} alt="" className="h-full w-full object-contain" />
+              <img
+                src={resolveAnnouncementImage(item.image)}
+                alt=""
+                onError={(e) => {
+                  e.currentTarget.src = cardPattern;
+                }}
+                className="h-full w-full object-contain"
+              />
             </div>
           ) : (
             <div className="aspect-[16/7] rounded-2xl overflow-hidden mb-10 shadow-soft">

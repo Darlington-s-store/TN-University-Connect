@@ -16,6 +16,26 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getBlogsAdmin, createBlog, updateBlog, deleteBlog, BlogPost } from "@/lib/data";
+import blog1 from "@/assets/blog-1.jpg";
+import blog2 from "@/assets/blog-2.jpg";
+import blog3 from "@/assets/blog-3.jpg";
+import blog4 from "@/assets/blog-4.jpg";
+import blog5 from "@/assets/blog-5.jpg";
+import blog6 from "@/assets/blog-6.jpg";
+import blog7 from "@/assets/blog-7.jpg";
+
+function resolveBlogImage(imgStr?: string) {
+  if (!imgStr) return undefined;
+  if (imgStr.startsWith("http")) return imgStr;
+  if (imgStr.includes("blog-1")) return blog1;
+  if (imgStr.includes("blog-2")) return blog2;
+  if (imgStr.includes("blog-3")) return blog3;
+  if (imgStr.includes("blog-4")) return blog4;
+  if (imgStr.includes("blog-5")) return blog5;
+  if (imgStr.includes("blog-6")) return blog6;
+  if (imgStr.includes("blog-7")) return blog7;
+  return imgStr;
+}
 
 export default function AdminBlog() {
   const [list, setList] = useState<BlogPost[]>([]);
@@ -118,7 +138,14 @@ export default function AdminBlog() {
           <Card key={b.id} className="hover:shadow-soft transition-smooth">
             {b.image && (
               <div className="aspect-[16/9] overflow-hidden bg-slate-100 rounded-t-xl">
-                <img src={b.image} alt="" className="h-full w-full object-contain" />
+                <img
+                  src={resolveBlogImage(b.image)}
+                  alt=""
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                  className="h-full w-full object-contain"
+                />
               </div>
             )}
             <CardContent className="p-5">
