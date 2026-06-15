@@ -337,7 +337,11 @@ export const sendMessageAdmin = async (params: {
   subject?: string;
   message: string;
   channel: "email" | "sms" | "both";
-}): Promise<{ success: boolean; message: string; details: { emailSent: boolean; smsSent: boolean } }> => {
+}): Promise<{
+  success: boolean;
+  message: string;
+  details: { emailSent: boolean; smsSent: boolean };
+}> => {
   const res = await fetch(`${API_URL}/api/students/admin/send-message`, {
     method: "POST",
     headers: getAuthHeaders(),

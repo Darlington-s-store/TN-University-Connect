@@ -2109,7 +2109,7 @@ export default function AdminStudents() {
         </DialogContent>
       </Dialog>
 
-    {/* DIALOG: RESET PASSWORD */}
+      {/* DIALOG: RESET PASSWORD */}
       <Dialog
         open={!!resetPasswordStudent}
         onOpenChange={(o) => !o && setResetPasswordStudent(null)}
@@ -2172,10 +2172,7 @@ export default function AdminStudents() {
       </Dialog>
 
       {/* DIALOG: SEND MESSAGE */}
-      <Dialog
-        open={!!messagingStudent}
-        onOpenChange={(o) => !o && setMessagingStudent(null)}
-      >
+      <Dialog open={!!messagingStudent} onOpenChange={(o) => !o && setMessagingStudent(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-secondary flex items-center gap-2">
