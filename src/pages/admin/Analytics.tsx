@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,16 +36,38 @@ import {
   Trash2,
   BarChart2,
 } from "lucide-react";
-import { getStudents, UNIVERSITIES, DEPARTMENTS } from "@/lib/data";
+import { getStudents, UNIVERSITIES, DEPARTMENTS, type Student } from "@/lib/data";
 
 const COLORS = ["#006B2D", "#D71920", "#F5C518", "#0B1F3A", "#888", "#5cbdb9", "#c44569"];
 
 type HistItem = { id: string; type: string; format: string; date: string };
 
 function AdminAnalytics() {
-  const students = getStudents();
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = searchParams.get("tab") || "visuals";
+
+  useEffect(() => {
+    let active = true;
+    getStudents()
+      .then((data) => {
+        if (active) {
+          setStudents(data);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading students for analytics:", err);
+        if (active) {
+          setLoading(false);
+          toast.error("Failed to load student analytics data");
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleTabChange = (value: string) => {
     setSearchParams({ tab: value });
@@ -70,7 +92,7 @@ function AdminAnalytics() {
   ]);
 
   const generate = () => {
-    const data = getStudents();
+    const data = students;
     if (format === "csv") {
       const headers = [
         "fullName",
@@ -141,6 +163,16 @@ function AdminAnalytics() {
     name: d,
     value: students.filter((s) => s.department === d).length || Math.floor(Math.random() * 10) + 1,
   })).slice(0, 7);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <p className="text-muted-foreground animate-pulse">Loading analytics data...</p>
+      </div>
+    );
+  }
+
 
   return (
     <div className="space-y-6">
