@@ -15,7 +15,7 @@ import {
   Cell,
 } from "recharts";
 import { useState, useEffect } from "react";
-import { getStudents, Student } from "@/lib/data";
+import { getAnalyticsSummary, type AnalyticsSummary, type Student } from "@/lib/data";
 import { useAuth } from "@/lib/auth";
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -37,83 +37,75 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const [students, setStudents] = useState<Student[]>([]);
+  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadStats() {
+    async function loadData() {
       try {
-        const data = await getStudents();
-        setStudents(data);
+        const data = await getAnalyticsSummary();
+        setAnalytics(data);
       } catch (err) {
-        console.error("Failed to load students in AdminDashboard:", err);
+        console.error("Failed to load dashboard analytics:", err);
       } finally {
         setLoading(false);
       }
     }
-    loadStats();
+    loadData();
   }, []);
 
-  const uniques = new Set(students.map((s) => s.university));
+  if (loading || !analytics) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <p className="text-muted-foreground animate-pulse">Loading dashboard overview...</p>
+      </div>
+    );
+  }
+
+  const {
+    stats: backendStats,
+    registrationTrends: byMonth,
+    universityDistribution: rawByUni,
+    recentStudents,
+  } = analytics;
 
   const stats = [
     {
       label: "Total Students",
-      value: students.length,
+      value: backendStats.totalStudents,
       icon: Users,
       color: "text-primary",
       bg: "bg-primary/10",
     },
     {
       label: "Universities",
-      value: uniques.size,
+      value: backendStats.totalUniversities,
       icon: GraduationCap,
       color: "text-ghana-red",
       bg: "bg-ghana-red/10",
     },
     {
       label: "New This Month",
-      value: students.filter(
-        (s) => s.submittedAt && +new Date(s.submittedAt) > Date.now() - 30 * 86400000,
-      ).length,
+      value: backendStats.newThisMonth,
       icon: UserPlus,
       color: "text-accent-foreground",
       bg: "bg-accent/30",
     },
     {
       label: "Active Members",
-      value: students.filter((s) => s.status === "Active Student" || !s.status).length,
+      value: backendStats.activeMembers,
       icon: Activity,
       color: "text-secondary",
       bg: "bg-secondary/10",
     },
   ];
 
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const byMonth = months.slice(0, 6).map((m, i) => ({
-    month: m,
-    students: students.filter((s) => s.submittedAt && new Date(s.submittedAt).getMonth() === i)
-      .length,
+  const byUni = rawByUni.slice(0, 5).map((u) => ({
+    name: u.name.split(" ").slice(0, 2).join(" "),
+    value: u.value,
   }));
 
-  const uniNames = [...new Set(students.map((s) => s.university).filter(Boolean))];
-  const byUni = uniNames.slice(0, 5).map((u) => ({
-    name: u.split(" ").slice(0, 2).join(" "),
-    value: students.filter((s) => s.university === u).length,
-  }));
   const COLORS = ["#006B2D", "#D71920", "#F5C518", "#0B1F3A", "#888"];
 
   return (
@@ -241,7 +233,9 @@ export default function AdminDashboard() {
               </ResponsiveContainer>
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-secondary">{students.length}</div>
+                  <div className="text-2xl font-bold text-secondary">
+                    {backendStats.totalStudents}
+                  </div>
                   <div className="text-[10px] uppercase text-muted-foreground font-semibold">
                     Total
                   </div>
@@ -290,13 +284,13 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {students.slice(0, 5).map((s) => (
+                {recentStudents.map((s) => (
                   <tr key={s.id} className="hover:bg-muted/20 transition-colors">
                     <td className="px-6 py-4 font-medium text-secondary">{s.fullName}</td>
                     <td className="px-6 py-4 text-muted-foreground">{s.university}</td>
                     <td className="px-6 py-4 text-muted-foreground">{s.department}</td>
                     <td className="px-6 py-4 text-muted-foreground">
-                      {new Date(s.submittedAt).toLocaleDateString("en-GB")}
+                      {s.submittedAt ? new Date(s.submittedAt).toLocaleDateString("en-GB") : "N/A"}
                     </td>
                     <td className="px-6 py-4">
                       <Badge

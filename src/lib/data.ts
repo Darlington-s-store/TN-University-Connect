@@ -359,3 +359,40 @@ export const resetPasswordAdmin = async (userId: string, newPassword: string): P
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to reset password");
 };
+
+// ---------- Analytics ----------
+export interface AnalyticsSummary {
+  stats: {
+    totalStudents: number;
+    totalUniversities: number;
+    newThisMonth: number;
+    activeMembers: number;
+  };
+  registrationTrends: {
+    month: string;
+    students: number;
+    active: number;
+  }[];
+  genderDistribution: {
+    name: string;
+    value: number;
+  }[];
+  universityDistribution: {
+    name: string;
+    value: number;
+  }[];
+  departmentDistribution: {
+    name: string;
+    value: number;
+  }[];
+  recentStudents: Student[];
+}
+
+export const getAnalyticsSummary = async (): Promise<AnalyticsSummary> => {
+  const res = await fetch(`${API_URL}/api/analytics/admin/summary`, {
+    headers: getAuthHeaders(),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to fetch analytics summary");
+  return data;
+};

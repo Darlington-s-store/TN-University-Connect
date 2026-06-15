@@ -36,32 +36,32 @@ import {
   Trash2,
   BarChart2,
 } from "lucide-react";
-import { getStudents, type Student } from "@/lib/data";
+import { getStudents, getAnalyticsSummary, type Student, type AnalyticsSummary } from "@/lib/data";
 
 const COLORS = ["#006B2D", "#D71920", "#F5C518", "#0B1F3A", "#888", "#5cbdb9", "#c44569"];
 
 type HistItem = { id: string; type: string; format: string; date: string };
 
 function AdminAnalytics() {
-  const [students, setStudents] = useState<Student[]>([]);
+  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = searchParams.get("tab") || "visuals";
 
   useEffect(() => {
     let active = true;
-    getStudents()
+    getAnalyticsSummary()
       .then((data) => {
         if (active) {
-          setStudents(data);
+          setAnalytics(data);
           setLoading(false);
         }
       })
       .catch((err) => {
-        console.error("Error loading students for analytics:", err);
+        console.error("Error loading analytics summary:", err);
         if (active) {
           setLoading(false);
-          toast.error("Failed to load student analytics data");
+          toast.error("Failed to load analytics summary data");
         }
       });
     return () => {
@@ -78,98 +78,72 @@ function AdminAnalytics() {
   const [format, setFormat] = useState("csv");
   const [history, setHistory] = useState<HistItem[]>([]);
 
-  const generate = () => {
-    const data = students;
-    if (format === "csv") {
-      const headers = [
-        "fullName",
-        "email",
-        "phone",
-        "gender",
-        "university",
-        "department",
-        "program",
-        "level",
-        "indexNumber",
-      ];
-      const rows = [
-        headers.join(","),
-        ...data.map((s) =>
-          headers
-            .map(
-              (h) =>
-                `"${(s as unknown as Record<string, string | number | undefined | null>)[h] ?? ""}"`,
-            )
-            .join(","),
-        ),
-      ].join("\n");
-      const blob = new Blob([rows], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `report-${type}-${Date.now()}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } else if (format === "json" || format === "excel") {
-      const json = JSON.stringify(data, null, 2);
-      const blob = new Blob([json], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `report-${type}-${Date.now()}.${format === "excel" ? "xlsx.json" : "json"}`;
-      a.click();
-    } else {
-      window.print();
+  const generate = async () => {
+    toast.info("Fetching complete report data...");
+    try {
+      const data = await getStudents();
+      if (format === "csv") {
+        const headers = [
+          "fullName",
+          "email",
+          "phone",
+          "gender",
+          "university",
+          "department",
+          "program",
+          "level",
+          "indexNumber",
+        ];
+        const rows = [
+          headers.join(","),
+          ...data.map((s) =>
+            headers
+              .map(
+                (h) =>
+                  `"${(s as unknown as Record<string, string | number | undefined | null>)[h] ?? ""}"`,
+              )
+              .join(","),
+          ),
+        ].join("\n");
+        const blob = new Blob([rows], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `report-${type}-${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else if (format === "json" || format === "excel") {
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `report-${type}-${Date.now()}.${format === "excel" ? "xlsx.json" : "json"}`;
+        a.click();
+      } else {
+        window.print();
+      }
+      toast.success(`Generated ${type} report (${format.toUpperCase()})`);
+      setHistory([
+        { id: `h-${Date.now()}`, type, format, date: new Date().toISOString() },
+        ...history,
+      ]);
+    } catch (err) {
+      console.error("Failed to generate report:", err);
+      toast.error("Failed to load student profiles for report generation");
     }
-    toast.success(`Generated ${type} report (${format.toUpperCase()})`);
-    setHistory([
-      { id: `h-${Date.now()}`, type, format, date: new Date().toISOString() },
-      ...history,
-    ]);
   };
 
   // Analytics charts logic
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const trend = months.map((m, i) => ({
-    month: m,
-    registrations: students.filter((s) => s.submittedAt && new Date(s.submittedAt).getMonth() === i)
-      .length,
-    active: 0,
+  const trend = analytics?.registrationTrends || [];
+  const gender = analytics?.genderDistribution || [];
+  const byUni = (analytics?.universityDistribution || []).map((u) => ({
+    name: u.name.split(" ").slice(0, 2).join(" "),
+    value: u.value,
   }));
+  const byDept = analytics?.departmentDistribution || [];
 
-  const gender = ["male", "female", "other"].map((g) => ({
-    name: g.charAt(0).toUpperCase() + g.slice(1),
-    value: students.filter((s) => s.gender === g).length,
-  }));
-
-  const byUni = [...new Set(students.map((s) => s.university).filter(Boolean))]
-    .slice(0, 7)
-    .map((u) => ({
-      name: u.split(" ").slice(0, 2).join(" "),
-      value: students.filter((s) => s.university === u).length,
-    }));
-
-  const byDept = [...new Set(students.map((s) => s.department).filter(Boolean))]
-    .slice(0, 7)
-    .map((d) => ({
-      name: d,
-      value: students.filter((s) => s.department === d).length,
-    }));
-
-  if (loading) {
+  if (loading || !analytics) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
