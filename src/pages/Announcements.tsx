@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Calendar, ArrowRight } from "lucide-react";
@@ -13,13 +13,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAnnouncements } from "@/lib/data";
+import { getAnnouncements, Announcement } from "@/lib/data";
 import cardPattern from "@/assets/card-pattern.jpg";
 
 const PAGE_SIZE = 6;
 
 export default function Announcements() {
-  const all = getAnnouncements().filter((a) => a.published);
+  const [all, setAll] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const list = await getAnnouncements();
+        setAll(list.filter((a) => a.published));
+      } catch (err) {
+        console.error("Failed to load announcements:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
   const categories = Array.from(new Set(all.map((a) => a.category)));
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>("all");

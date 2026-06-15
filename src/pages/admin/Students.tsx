@@ -62,7 +62,13 @@ import {
   DEPARTMENTS,
   PROGRAMMES as DEFAULT_PROGRAMMES,
 } from "@/lib/schools";
-import { Student } from "@/lib/data";
+import {
+  getStudents as apiGetStudents,
+  deleteStudent as apiDeleteStudent,
+  saveStudentAdmin as apiSaveStudent,
+  resetPasswordAdmin,
+  Student,
+} from "@/lib/data";
 import { User } from "@/lib/auth";
 
 interface FullStudent {
@@ -181,73 +187,26 @@ export default function AdminStudents() {
   const [hiddenLevels, setHiddenLevels] = useState<string[]>([]);
 
   // Load Data
-  const loadData = () => {
-    // Read students profiles
-    const rawStu = localStorage.getItem("tnu_students");
-    const stuList = rawStu ? JSON.parse(rawStu) : [];
+  const loadData = async () => {
+    try {
+      const apiStudents = await apiGetStudents();
+      const merged: FullStudent[] = apiStudents.map((s: any) => ({
+        ...s,
+        password: s.password || "Protected Hash",
+        joinedAt: s.joinedAt || s.submittedAt,
+        church: s.church || "None",
+        niche: s.niche || "General Studies",
+        nationality: s.nationality || "Ghanaian",
+        status: s.status || "Active Student",
+        schoolType: s.schoolType || "University",
+        uniType: s.uniType || "Public",
+        faculty: s.faculty || DEFAULT_FACULTIES[0],
+      }));
+      setStudents(merged);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to load students");
+    }
 
-    // Read users registry (for passwords and joined dates)
-    const rawUsers = localStorage.getItem("tnu_users");
-    const usersList = rawUsers ? JSON.parse(rawUsers) : [];
-
-    // Merge
-    const merged: FullStudent[] = stuList.map(
-      (s: Student & { schoolType?: string; uniType?: string; faculty?: string }) => {
-        const user = usersList.find(
-          (u: User & { password?: string }) =>
-            u.email.toLowerCase() === s.email.toLowerCase() || u.id === s.userId,
-        );
-        return {
-          ...s,
-          password: user?.password || "No Password Found",
-          joinedAt: user?.joinedAt || s.submittedAt,
-          church: s.church || user?.church || "None",
-          niche: s.niche || user?.niche || "General Studies",
-          nationality: s.nationality || user?.nationality || "Ghanaian",
-          status: s.status || user?.status || "Active Student",
-          schoolType: s.schoolType || user?.schoolType || "University",
-          uniType: s.uniType || user?.uniType || "Public",
-          faculty: s.faculty || user?.faculty || DEFAULT_FACULTIES[0],
-        };
-      },
-    );
-
-    // Also include registered users who haven't completed student profile form yet
-    usersList.forEach(
-      (u: User & { password?: string; role?: string; schoolType?: string; uniType?: string }) => {
-        if (u.role === "admin") return;
-        const alreadyMerged = merged.some((m) => m.email.toLowerCase() === u.email.toLowerCase());
-        if (!alreadyMerged) {
-          merged.push({
-            id: `s-mock-${u.id}`,
-            userId: u.id,
-            fullName: u.name,
-            email: u.email,
-            phone: u.phone || "No Phone",
-            gender: u.gender || "other",
-            dob: "N/A",
-            university: u.university || "Not Chosen",
-            faculty: u.faculty || DEFAULT_FACULTIES[0],
-            department: u.department || "Not Chosen",
-            program: u.program || "Not Chosen",
-            level: u.level || "N/A",
-            indexNumber: "N/A",
-            address: "N/A",
-            submittedAt: u.joinedAt,
-            joinedAt: u.joinedAt,
-            password: u.password,
-            nationality: u.nationality || "Ghanaian",
-            status: u.status || "Active Student",
-            church: u.church || "None",
-            niche: u.niche || "General Studies",
-            schoolType: u.schoolType || "University",
-            uniType: u.uniType || "Public",
-          });
-        }
-      },
-    );
-
-    setStudents(merged);
     setSchools(getGhanaSchools());
     setHiddenSchools(getHiddenSchools());
     setFaculties(getFaculties());
@@ -291,7 +250,7 @@ export default function AdminStudents() {
   }, [students]);
 
   // Save student modifications
-  const saveStudentEdit = () => {
+  const saveStudentEdit = async () => {
     if (!editingStudent) return;
 
     if (!editingStudent.fullName.trim() || !editingStudent.email.trim()) {
@@ -304,127 +263,49 @@ export default function AdminStudents() {
     const resolvedSchoolType = schoolDetails?.type || editingStudent.schoolType || "University";
     const resolvedUniType = schoolDetails?.uniType || editingStudent.uniType || "";
 
-    // 1. Update tnu_students
-    const rawStu = localStorage.getItem("tnu_students");
-    const stuList = rawStu ? JSON.parse(rawStu) : [];
-    const stuIdx = stuList.findIndex(
-      (s: Student) => s.email.toLowerCase() === editingStudent.email.toLowerCase(),
-    );
+    try {
+      const isUUID = (str: string) =>
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+      const cleanUserId =
+        editingStudent.userId && isUUID(editingStudent.userId) ? editingStudent.userId : undefined;
 
-    const updatedStu = {
-      fullName: editingStudent.fullName,
-      email: editingStudent.email,
-      phone: editingStudent.phone,
-      gender: editingStudent.gender,
-      university: editingStudent.university,
-      faculty: editingStudent.faculty,
-      department: editingStudent.department,
-      program: editingStudent.program,
-      level: editingStudent.level,
-      nationality: editingStudent.nationality,
-      status: editingStudent.status,
-      church: editingStudent.church,
-      niche: editingStudent.niche,
-      schoolType: resolvedSchoolType,
-      uniType: resolvedUniType,
-    };
-
-    if (stuIdx >= 0) {
-      stuList[stuIdx] = { ...stuList[stuIdx], ...updatedStu };
-    } else {
-      const finalStudentId = editingStudent.id.startsWith("s-mock")
-        ? `s-${Date.now()}`
-        : editingStudent.id;
-
-      stuList.push({
-        id: finalStudentId,
-        userId: editingStudent.userId || `u-${Date.now()}`,
-        ...updatedStu,
+      const payload = {
+        userId: cleanUserId,
+        email: editingStudent.email,
+        fullName: editingStudent.fullName,
+        phone: editingStudent.phone,
+        gender: editingStudent.gender,
         dob: editingStudent.dob || new Date().toISOString().slice(0, 10),
+        university: editingStudent.university,
+        schoolType: resolvedSchoolType,
+        uniType: resolvedUniType,
+        faculty: editingStudent.faculty,
+        department: editingStudent.department,
+        program: editingStudent.program,
+        level: editingStudent.level,
         indexNumber:
           editingStudent.indexNumber || `STU${Math.floor(100000 + Math.random() * 900000)}`,
         address: editingStudent.address || "Accra, Ghana",
-        submittedAt: new Date().toISOString(),
-      });
-    }
-    localStorage.setItem("tnu_students", JSON.stringify(stuList));
-
-    // 2. Update tnu_users
-    const rawUsers = localStorage.getItem("tnu_users");
-    const usersList = rawUsers ? JSON.parse(rawUsers) : [];
-    const userIdx = usersList.findIndex(
-      (u: User & { password?: string }) =>
-        u.email.toLowerCase() === editingStudent.email.toLowerCase() ||
-        u.id === editingStudent.userId,
-    );
-
-    // Verify if email is already in use (for new students only)
-    const isNew = stuIdx < 0 && !editingStudent.id.startsWith("s-mock");
-    if (isNew) {
-      const emailInUse = usersList.some(
-        (u: User) => u.email.toLowerCase() === editingStudent.email.toLowerCase(),
-      );
-      if (emailInUse) {
-        toast.error("A user with this email is already registered.");
-        return;
-      }
-    }
-
-    if (userIdx >= 0) {
-      usersList[userIdx] = {
-        ...usersList[userIdx],
-        name: editingStudent.fullName,
-        phone: editingStudent.phone,
-        gender: editingStudent.gender,
-        university: editingStudent.university,
-        faculty: editingStudent.faculty,
-        department: editingStudent.department,
-        program: editingStudent.program,
-        level: editingStudent.level,
-        nationality: editingStudent.nationality,
-        status: editingStudent.status,
-        church: editingStudent.church,
-        niche: editingStudent.niche,
-        schoolType: resolvedSchoolType,
-        uniType: resolvedUniType,
+        nationality: editingStudent.nationality || "Ghanaian",
+        status: editingStudent.status || "Active Student",
+        church: editingStudent.church || "None",
+        niche: editingStudent.niche || "General Studies",
       };
-      if (editingStudent.password) {
-        usersList[userIdx].password = editingStudent.password;
-      }
-    } else {
-      usersList.push({
-        id: editingStudent.userId || `u-${Date.now()}`,
-        name: editingStudent.fullName,
-        email: editingStudent.email.toLowerCase(),
-        password: editingStudent.password || "student123",
-        role: "member",
-        phone: editingStudent.phone,
-        gender: editingStudent.gender,
-        university: editingStudent.university,
-        faculty: editingStudent.faculty,
-        schoolType: resolvedSchoolType,
-        uniType: resolvedUniType,
-        department: editingStudent.department,
-        program: editingStudent.program,
-        level: editingStudent.level,
-        nationality: editingStudent.nationality,
-        status: editingStudent.status,
-        church: editingStudent.church,
-        niche: editingStudent.niche,
-        joinedAt: new Date().toISOString(),
-        profileComplete: true,
-      });
-    }
-    localStorage.setItem("tnu_users", JSON.stringify(usersList));
 
-    toast.success(
-      isNew ? "Student registered successfully" : "Student information updated successfully",
-    );
-    setEditingStudent(null);
-    loadData();
+      await apiSaveStudent(payload);
+      toast.success(
+        isEditingExisting
+          ? "Student information updated successfully"
+          : "Student registered successfully",
+      );
+      setEditingStudent(null);
+      await loadData();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to save student profile");
+    }
   };
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (!resetPasswordStudent) return;
     if (!newPassword.trim()) {
       toast.error("Please enter or generate a password");
@@ -435,50 +316,28 @@ export default function AdminStudents() {
       return;
     }
 
-    // Update tnu_users
-    const rawUsers = localStorage.getItem("tnu_users");
-    const usersList = rawUsers ? JSON.parse(rawUsers) : [];
-    const userIdx = usersList.findIndex(
-      (u: User) =>
-        u.email.toLowerCase() === resetPasswordStudent.email.toLowerCase() ||
-        u.id === resetPasswordStudent.userId,
-    );
-
-    if (userIdx >= 0) {
-      usersList[userIdx].password = newPassword.trim();
-      localStorage.setItem("tnu_users", JSON.stringify(usersList));
-
+    try {
+      await resetPasswordAdmin(resetPasswordStudent.userId || "", newPassword.trim());
       toast.success(
         `Password for ${resetPasswordStudent.fullName} successfully updated to "${newPassword.trim()}"`,
       );
       setResetPasswordStudent(null);
-      loadData();
-    } else {
-      toast.error("User account not found to update password");
+      await loadData();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to reset password");
     }
   };
 
   // Delete student
-  const deleteStudent = (email: string) => {
+  const deleteStudent = async (id: string, email: string) => {
     if (confirm(`Are you sure you want to permanently delete student ${email}?`)) {
-      // Delete from tnu_students
-      const rawStu = localStorage.getItem("tnu_students");
-      if (rawStu) {
-        const list = JSON.parse(rawStu);
-        const filtered = list.filter((s: Student) => s.email.toLowerCase() !== email.toLowerCase());
-        localStorage.setItem("tnu_students", JSON.stringify(filtered));
+      try {
+        await apiDeleteStudent(id);
+        toast.success("Student deleted successfully");
+        await loadData();
+      } catch (error: any) {
+        toast.error(error.message || "Failed to delete student");
       }
-
-      // Delete from tnu_users
-      const rawUsers = localStorage.getItem("tnu_users");
-      if (rawUsers) {
-        const list = JSON.parse(rawUsers);
-        const filtered = list.filter((u: User) => u.email.toLowerCase() !== email.toLowerCase());
-        localStorage.setItem("tnu_users", JSON.stringify(filtered));
-      }
-
-      toast.success("Student deleted successfully");
-      loadData();
     }
   };
 
@@ -993,7 +852,7 @@ export default function AdminStudents() {
                             size="sm"
                             variant="ghost"
                             className="h-8 w-8 p-0"
-                            onClick={() => deleteStudent(s.email)}
+                            onClick={() => deleteStudent(s.id, s.email)}
                             title="Delete Student"
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />

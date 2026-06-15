@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, Quote, Calendar } from "lucide-react";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Hero from "@/components/Hero";
-import { getAnnouncements, getBlogs } from "@/lib/data";
+import { getAnnouncements, getBlogs, Announcement, BlogPost } from "@/lib/data";
 import cardPattern from "@/assets/card-pattern.jpg";
 
 const PARTNER_UNIVERSITIES = [
@@ -146,10 +146,24 @@ const testimonials = [
 ];
 
 export default function Home() {
-  const announcements = getAnnouncements()
-    .filter((a) => a.published)
-    .slice(0, 3);
-  const blogs = getBlogs().slice(0, 3);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [annList, blogList] = await Promise.all([getAnnouncements(), getBlogs()]);
+        setAnnouncements(annList.filter((a) => a.published).slice(0, 3));
+        setBlogs(blogList.filter((b) => b.published).slice(0, 3));
+      } catch (err) {
+        console.error("Failed to load home page data:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   return (
     <div className="page-fade-enter bg-[#f8fafc]">

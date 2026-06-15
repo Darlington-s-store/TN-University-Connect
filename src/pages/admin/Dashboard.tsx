@@ -15,12 +15,29 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { getStudents, UNIVERSITIES } from "@/lib/data";
+import { useState, useEffect } from "react";
+import { getStudents, Student, UNIVERSITIES } from "@/lib/data";
 import { useAuth } from "@/lib/auth";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const students = getStudents();
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const data = await getStudents();
+        setStudents(data);
+      } catch (err) {
+        console.error("Failed to load students in AdminDashboard:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
+
   const uniques = new Set(students.map((s) => s.university));
 
   const stats = [
@@ -40,7 +57,9 @@ export default function AdminDashboard() {
     },
     {
       label: "New This Month",
-      value: students.filter((s) => +new Date(s.submittedAt) > Date.now() - 30 * 86400000).length,
+      value: students.filter(
+        (s) => s.submittedAt && +new Date(s.submittedAt) > Date.now() - 30 * 86400000,
+      ).length,
       icon: UserPlus,
       color: "text-accent-foreground",
       bg: "bg-accent/30",

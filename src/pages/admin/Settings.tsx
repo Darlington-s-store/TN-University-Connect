@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { getSettings, saveSettings, SiteSettings } from "@/lib/data";
 import { Save } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 
 export default function AdminSettings() {
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<SiteSettings>({
     siteName: "TN Universities Connect",
     tagline: "Guide. Work. Inspire.",
     contactEmail: "hello@tnuc.gh",
@@ -21,8 +22,31 @@ export default function AdminSettings() {
     emailNotifications: true,
     maintenance: false,
   });
+  const [loading, setLoading] = useState(true);
 
-  const save = () => toast.success("Settings saved");
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getSettings();
+        setSettings(data);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load settings");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const save = async () => {
+    try {
+      const updated = await saveSettings(settings);
+      setSettings(updated);
+      toast.success("Settings saved successfully");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save settings");
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-3xl">

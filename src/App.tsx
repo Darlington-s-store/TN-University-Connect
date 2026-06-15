@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/lib/auth";
 import { GoogleProvider } from "@/lib/google";
 import Preloader from "@/components/Preloader";
 import BreakingNewsOverlay from "@/components/BreakingNewsOverlay";
+import PageTransition from "@/components/PageTransition";
 import "./App.css";
 
 import PublicLayout from "@/components/layout/PublicLayout";
@@ -72,11 +73,11 @@ export default function App() {
                 </Route>
 
                 {/* Auth */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+                <Route path="/admin/login" element={<PageTransition><AdminLogin /></PageTransition>} />
+                <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
+                <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
+                <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
 
                 {/* Member */}
                 <Route
@@ -108,7 +109,7 @@ export default function App() {
                   <Route path="/admin/settings" element={<AdminSettings />} />
                 </Route>
 
-                <Route path="*" element={<NotFound />} />
+                <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
               </Routes>
               <Toaster richColors position="top-right" />
             </BrowserRouter>

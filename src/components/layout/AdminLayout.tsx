@@ -1,4 +1,5 @@
-import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import AnimatedOutlet from "@/components/AnimatedOutlet";
 import {
   LayoutDashboard,
   Users,
@@ -110,7 +111,15 @@ export default function AdminLayout() {
 
   useEffect(() => {
     // Load announcements
-    setAnnouncements(getAnnouncements().filter((a) => a.published));
+    async function loadAnnouncements() {
+      try {
+        const data = await getAnnouncements();
+        setAnnouncements(data.filter((a) => a.published));
+      } catch (err) {
+        console.error("Failed to load announcements in AdminLayout:", err);
+      }
+    }
+    loadAnnouncements();
 
     // Load read announcements
     const stored = localStorage.getItem("tnu_read_announcements");
@@ -291,7 +300,7 @@ export default function AdminLayout() {
         </header>
 
         <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
-          <Outlet />
+          <AnimatedOutlet />
         </main>
       </div>
     </div>

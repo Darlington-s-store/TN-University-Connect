@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
   X,
@@ -34,6 +34,7 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,7 +45,15 @@ export default function Navbar() {
 
   useEffect(() => {
     // Load announcements
-    setAnnouncements(getAnnouncements().filter((a) => a.published));
+    async function loadAnnouncements() {
+      try {
+        const data = await getAnnouncements();
+        setAnnouncements(data.filter((a) => a.published));
+      } catch (err) {
+        console.error("Failed to load announcements in Navbar:", err);
+      }
+    }
+    loadAnnouncements();
 
     // Load read announcements
     const stored = localStorage.getItem("tnu_read_announcements");
@@ -52,6 +61,13 @@ export default function Navbar() {
       setReadIds(JSON.parse(stored));
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const unreadAnnouncements = announcements.filter((a) => !readIds.includes(a.id));
   const unreadCount = unreadAnnouncements.length;
@@ -64,11 +80,12 @@ export default function Navbar() {
   };
 
   return (
-    <motion.header
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur-md"
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-500 ease-out relative ${
+        scrolled
+          ? "bg-background/95 backdrop-blur-lg shadow-lg border-b border-border/80"
+          : "bg-background/60 backdrop-blur-sm border-b border-transparent"
+      }`}
     >
       <div className="h-1 flag-stripe" />
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
@@ -207,65 +224,97 @@ export default function Navbar() {
         </div>
       </div>
 
-      {open && (
-        <div className="lg:hidden border-t border-border bg-background">
-          <div className="container mx-auto px-4 py-4 flex flex-col gap-1">
-            {links.map((l) => (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                end={l.end}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  `px-4 py-3 rounded-md text-sm font-medium ${
-                    isActive ? "text-primary bg-primary/10" : "text-foreground/80"
-                  }`
-                }
-              >
-                {l.label}
-              </NavLink>
-            ))}
-            <div className="pt-3 mt-2 border-t border-border space-y-2">
-              {user ? (
-                <Button
-                  onClick={() => {
-                    setOpen(false);
-                    navigate(user.role === "admin" ? "/admin" : "/dashboard");
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scaleY: 0.95 }}
+            animate={{ opacity: 1, scaleY: 1 }}
+            exit={{ opacity: 0, scaleY: 0.95 }}
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            style={{ transformOrigin: "top" }}
+            className="lg:hidden absolute top-full left-0 w-full border-t border-border bg-background/95 backdrop-blur-lg shadow-xl overflow-hidden"
+          >
+            <div className="container mx-auto px-4 py-4 flex flex-col gap-1">
+              {links.map((l, i) => (
+                <motion.div
+                  key={l.to}
+                  initial={{ opacity: 0, y: -12, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -12, scale: 0.97 }}
+                  transition={{
+                    duration: 0.35,
+                    delay: i * 0.07,
+                    ease: [0.23, 1, 0.32, 1],
                   }}
-                  className="w-full"
                 >
-                  {user.role === "admin" ? "Admin Panel" : "Dashboard"}
-                </Button>
-              ) : (
-                <>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold px-1">
-                    Account
-                  </div>
+                  <NavLink
+                    to={l.to}
+                    end={l.end}
+                    onClick={() => setOpen(false)}
+                    className={({ isActive }) =>
+                      `px-4 py-3 rounded-md text-sm font-medium block transition-all duration-200 ${
+                        isActive
+                          ? "text-primary bg-primary/10"
+                          : "text-foreground/80 hover:text-primary hover:bg-muted/60"
+                      }`
+                    }
+                  >
+                    {l.label}
+                  </NavLink>
+                </motion.div>
+              ))}
+              <motion.div
+                initial={{ opacity: 0, y: 16, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 16, scale: 0.97 }}
+                transition={{
+                  duration: 0.35,
+                  delay: links.length * 0.07 + 0.1,
+                  ease: [0.23, 1, 0.32, 1],
+                }}
+                className="pt-3 mt-2 border-t border-border space-y-2"
+              >
+                {user ? (
                   <Button
-                    variant="outline"
-                    className="w-full justify-start gap-2"
                     onClick={() => {
                       setOpen(false);
-                      navigate("/login");
+                      navigate(user.role === "admin" ? "/admin" : "/dashboard");
                     }}
+                    className="w-full"
                   >
-                    <LogIn className="h-4 w-4" /> Login
+                    {user.role === "admin" ? "Admin Panel" : "Dashboard"}
                   </Button>
-                  <Button
-                    className="w-full justify-start gap-2"
-                    onClick={() => {
-                      setOpen(false);
-                      navigate("/register");
-                    }}
-                  >
-                    <UserPlus className="h-4 w-4" /> Join Now
-                  </Button>
-                </>
-              )}
+                ) : (
+                  <>
+                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold px-1">
+                      Account
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start gap-2"
+                      onClick={() => {
+                        setOpen(false);
+                        navigate("/login");
+                      }}
+                    >
+                      <LogIn className="h-4 w-4" /> Login
+                    </Button>
+                    <Button
+                      className="w-full justify-start gap-2"
+                      onClick={() => {
+                        setOpen(false);
+                        navigate("/register");
+                      }}
+                    >
+                      <UserPlus className="h-4 w-4" /> Join Now
+                    </Button>
+                  </>
+                )}
+              </motion.div>
             </div>
-          </div>
-        </div>
-      )}
-    </motion.header>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
 }

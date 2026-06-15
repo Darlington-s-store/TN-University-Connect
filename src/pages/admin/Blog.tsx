@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,17 +15,27 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getBlogs, saveBlogs, BlogPost } from "@/lib/data";
+import { getBlogsAdmin, createBlog, updateBlog, deleteBlog, BlogPost } from "@/lib/data";
 
 export default function AdminBlog() {
-  const [list, setList] = useState(getBlogs());
+  const [list, setList] = useState<BlogPost[]>([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const persist = (next: BlogPost[]) => {
-    saveBlogs(next);
-    setList(next);
-  };
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getBlogsAdmin();
+        setList(data);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load blog posts");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
   const blank = (): BlogPost => ({
     id: `b-${Date.now()}`,
@@ -39,14 +49,49 @@ export default function AdminBlog() {
     featured: false,
   });
 
-  const save = () => {
+  const save = async () => {
     if (!editing) return;
     if (!editing.title.trim() || !editing.body.trim())
       return toast.error("Title and body are required");
-    const exists = list.find((b) => b.id === editing.id);
-    persist(exists ? list.map((b) => (b.id === editing.id ? editing : b)) : [editing, ...list]);
-    toast.success("Saved");
-    setOpen(false);
+    const exists = list.some((b) => b.id === editing.id);
+    try {
+      if (exists) {
+        const updated = await updateBlog(editing.id, editing);
+        setList((prev) => prev.map((b) => (b.id === editing.id ? updated : b)));
+        toast.success("Blog post updated");
+      } else {
+        const created = await createBlog(editing);
+        setList((prev) => [created, ...prev]);
+        toast.success("Blog post created");
+      }
+      setOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save blog post");
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (confirm("Are you sure you want to delete this blog post?")) {
+      try {
+        await deleteBlog(id);
+        setList((prev) => prev.filter((b) => b.id !== id));
+        toast.success("Deleted");
+      } catch (err: any) {
+        toast.error(err.message || "Failed to delete");
+      }
+    }
+  };
+
+  const togglePublish = async (id: string) => {
+    const found = list.find((b) => b.id === id);
+    if (!found) return;
+    try {
+      const updated = await updateBlog(id, { published: !found.published });
+      setList((prev) => prev.map((b) => (b.id === id ? updated : b)));
+      toast.success(updated.published ? "Published" : "Unpublished");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update publish state");
+    }
   };
 
   return (
@@ -98,15 +143,7 @@ export default function AdminBlog() {
                 {b.author} · {new Date(b.date).toLocaleDateString("en-GB")}
               </div>
               <div className="flex gap-1 mt-4 pt-3 border-t">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    persist(
-                      list.map((x) => (x.id === b.id ? { ...x, published: !x.published } : x)),
-                    );
-                  }}
-                >
+                <Button size="sm" variant="ghost" onClick={() => togglePublish(b.id)}>
                   {b.published ? (
                     <>
                       <EyeOff className="h-4 w-4" /> Unpublish
@@ -127,14 +164,7 @@ export default function AdminBlog() {
                 >
                   <Pencil className="h-4 w-4" /> Edit
                 </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    persist(list.filter((x) => x.id !== b.id));
-                    toast.success("Deleted");
-                  }}
-                >
+                <Button size="sm" variant="ghost" onClick={() => remove(b.id)}>
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               </div>

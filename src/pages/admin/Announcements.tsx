@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Trash2, Megaphone, Plus, Pencil, Eye, EyeOff } from "lucide-react";
-import { getAnnouncements, saveAnnouncements, Announcement } from "@/lib/data";
+import {
+  getAnnouncementsAdmin,
+  createAnnouncement,
+  updateAnnouncement,
+  deleteAnnouncement,
+  Announcement,
+} from "@/lib/data";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -25,19 +31,26 @@ import {
 } from "@/components/ui/dialog";
 
 export default function AdminAnnouncements() {
-  // Announcements state & logic
-  const [announcementList, setAnnouncementList] = useState<Announcement[]>(() =>
-    getAnnouncements(),
-  );
+  const [announcementList, setAnnouncementList] = useState<Announcement[]>([]);
   const [annOpen, setAnnOpen] = useState(false);
   const [editingAnn, setEditingAnn] = useState<Announcement | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const CATEGORIES = ["Events", "Programs", "Scholarships", "Governance", "Research", "General"];
 
-  const persistAnn = (next: Announcement[]) => {
-    saveAnnouncements(next);
-    setAnnouncementList(next);
-  };
+  useEffect(() => {
+    async function load() {
+      try {
+        const list = await getAnnouncementsAdmin();
+        setAnnouncementList(list);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load announcements");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
   const blankAnn = (): Announcement => ({
     id: `a-${Date.now()}`,
@@ -59,31 +72,51 @@ export default function AdminAnnouncements() {
     setAnnOpen(true);
   };
 
-  const saveAnn = () => {
+  const saveAnn = async () => {
     if (!editingAnn) return;
     if (!editingAnn.title.trim() || !editingAnn.body.trim()) {
       toast.error("Title and body are required");
       return;
     }
-    const exists = announcementList.find((a) => a.id === editingAnn.id);
-    persistAnn(
-      exists
-        ? announcementList.map((a) => (a.id === editingAnn.id ? editingAnn : a))
-        : [editingAnn, ...announcementList],
-    );
-    toast.success(exists ? "Announcement updated" : "Announcement created");
-    setAnnOpen(false);
-  };
-
-  const removeAnn = (id: string) => {
-    if (confirm("Are you sure you want to delete this announcement?")) {
-      persistAnn(announcementList.filter((a) => a.id !== id));
-      toast.success("Deleted");
+    const exists = announcementList.some((a) => a.id === editingAnn.id);
+    try {
+      if (exists) {
+        const updated = await updateAnnouncement(editingAnn.id, editingAnn);
+        setAnnouncementList((prev) => prev.map((a) => (a.id === editingAnn.id ? updated : a)));
+        toast.success("Announcement updated");
+      } else {
+        const created = await createAnnouncement(editingAnn);
+        setAnnouncementList((prev) => [created, ...prev]);
+        toast.success("Announcement created");
+      }
+      setAnnOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save announcement");
     }
   };
 
-  const togglePublishAnn = (id: string) => {
-    persistAnn(announcementList.map((a) => (a.id === id ? { ...a, published: !a.published } : a)));
+  const removeAnn = async (id: string) => {
+    if (confirm("Are you sure you want to delete this announcement?")) {
+      try {
+        await deleteAnnouncement(id);
+        setAnnouncementList((prev) => prev.filter((a) => a.id !== id));
+        toast.success("Deleted");
+      } catch (err: any) {
+        toast.error(err.message || "Failed to delete");
+      }
+    }
+  };
+
+  const togglePublishAnn = async (id: string) => {
+    const found = announcementList.find((a) => a.id === id);
+    if (!found) return;
+    try {
+      const updated = await updateAnnouncement(id, { published: !found.published });
+      setAnnouncementList((prev) => prev.map((a) => (a.id === id ? updated : a)));
+      toast.success(updated.published ? "Published" : "Unpublished");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update publish state");
+    }
   };
 
   return (

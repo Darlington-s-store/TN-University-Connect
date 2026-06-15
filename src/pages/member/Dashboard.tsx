@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   User,
@@ -13,22 +14,48 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/lib/auth";
-import { getAnnouncements, getBlogs, getStudents } from "@/lib/data";
+import {
+  getAnnouncements,
+  getBlogs,
+  getStudentMe,
+  Announcement,
+  BlogPost,
+  Student,
+} from "@/lib/data";
 
 export default function MemberDashboard() {
   const { user } = useAuth();
-  const myStudent = getStudents().find((s) => s.email === user?.email);
+  const [myStudent, setMyStudent] = useState<Student | null>(null);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [student, annList, blogList] = await Promise.all([
+          getStudentMe(),
+          getAnnouncements(),
+          getBlogs(),
+        ]);
+        setMyStudent(student);
+        setAnnouncements(annList.filter((a) => a.published).slice(0, 3));
+        setBlogs(blogList.filter((b) => b.published).slice(0, 2));
+      } catch (err) {
+        console.error("Failed to load member dashboard data:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
   const profileComplete = !!(user?.university && user?.department && user?.phone && myStudent);
   const progress =
     (user?.name ? 25 : 0) +
     (user?.university ? 25 : 0) +
     (user?.department ? 25 : 0) +
     (myStudent ? 25 : 0);
-
-  const announcements = getAnnouncements()
-    .filter((a) => a.published)
-    .slice(0, 3);
-  const blogs = getBlogs().slice(0, 2);
 
   return (
     <div className="space-y-6 sm:space-y-8 overflow-x-hidden">

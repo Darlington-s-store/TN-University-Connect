@@ -1,9 +1,10 @@
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, User, BookOpen, Share2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getBlogs } from "@/lib/data";
+import { getBlogs, getBlogById, BlogPost } from "@/lib/data";
 import blog1 from "@/assets/blog-1.jpg";
 import blog2 from "@/assets/blog-2.jpg";
 import blog3 from "@/assets/blog-3.jpg";
@@ -27,7 +28,31 @@ function resolveBlogImage(imgStr?: string) {
 
 export default function BlogDetail() {
   const { id } = useParams();
-  const post = getBlogs().find((b) => b.id === id);
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        if (!id) return;
+        const targetPost = await getBlogById(id);
+        setPost(targetPost);
+      } catch (err) {
+        console.error("Failed to load blog post details:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <h1 className="text-2xl font-bold mb-4">Loading article...</h1>
+      </div>
+    );
+  }
 
   if (!post) {
     return (

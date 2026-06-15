@@ -224,7 +224,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      const isValid = verifyCode(verificationCode);
+      const isValid = await verifyCode(verificationCode);
       if (!isValid) {
         toast.error("Invalid or expired verification code");
         setLoading(false);
@@ -371,7 +371,7 @@ export default function Register() {
                   id="name"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Kwame Mensah"
+                  placeholder="Your full name"
                 />
                 {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
               </div>
@@ -383,7 +383,7 @@ export default function Register() {
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="kwame@example.com"
+                  placeholder="you@example.com"
                 />
                 {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
               </div>
@@ -394,7 +394,7 @@ export default function Register() {
                   id="phone"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  placeholder="+233 24 123 4567"
+                  placeholder="+233 50 000 0000"
                 />
                 {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
               </div>

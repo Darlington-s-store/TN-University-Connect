@@ -8,7 +8,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getMessages, saveMessages } from "@/lib/data";
+import { submitMessage } from "@/lib/data";
+import {
+  Reveal,
+  slideLeft,
+  slideRight,
+  staggerContainer,
+  staggerItem,
+  fadeUp,
+  fadeIn,
+} from "@/lib/animations";
+import { motion } from "framer-motion";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Name is required").max(100),
@@ -22,7 +32,7 @@ export default function Contact() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = schema.safeParse(form);
     if (!result.success) {
@@ -33,19 +43,15 @@ export default function Contact() {
     }
     setErrors({});
     setSubmitting(true);
-    const messages = getMessages();
-    messages.unshift({
-      id: `msg-${Date.now()}`,
-      ...result.data,
-      date: new Date().toISOString(),
-      resolved: false,
-    });
-    saveMessages(messages);
-    setTimeout(() => {
+    try {
+      await submitMessage(result.data);
       toast.success("Message sent — we'll reply within 48 hours.");
       setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send message. Please try again.");
+    } finally {
       setSubmitting(false);
-    }, 600);
+    }
   };
 
   return (
@@ -70,85 +76,99 @@ export default function Contact() {
       </section>
 
       {/* CONTACT SECTION - MODERN SPLIT */}
-      <section className="py-24 -mt-10 relative z-20">
+      <Reveal as="section" variants={fadeUp} className="py-24 -mt-10 relative z-20">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             {/* CONTACT INFO - MODERN CARDS */}
-            <div className="lg:col-span-4 space-y-6">
-              <Card className="border-none shadow-xl bg-white rounded-3xl p-8 group hover:-translate-y-1 transition-all duration-300">
-                <div className="flex items-start gap-6">
-                  <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <Mail className="h-6 w-6 text-primary" />
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              className="lg:col-span-4 space-y-6"
+            >
+              <motion.div variants={staggerItem}>
+                <Card className="border-none shadow-xl bg-white rounded-3xl p-8 group hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex items-start gap-6">
+                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <Mail className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-secondary mb-1">Email Us</h3>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Direct support for general inquiries
+                      </p>
+                      <a
+                        href="mailto:hello@tnuc.gh"
+                        className="text-primary font-bold hover:underline"
+                      >
+                        hello@tnuc.gh
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-secondary mb-1">Email Us</h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Direct support for general inquiries
-                    </p>
-                    <a
-                      href="mailto:hello@tnuc.gh"
-                      className="text-primary font-bold hover:underline"
-                    >
-                      hello@tnuc.gh
-                    </a>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
 
-              <Card className="border-none shadow-xl bg-white rounded-3xl p-8 group hover:-translate-y-1 transition-all duration-300">
-                <div className="flex items-start gap-6">
-                  <div className="h-12 w-12 rounded-2xl bg-ghana-gold/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <Phone className="h-6 w-6 text-ghana-gold" />
+              <motion.div variants={staggerItem}>
+                <Card className="border-none shadow-xl bg-white rounded-3xl p-8 group hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex items-start gap-6">
+                    <div className="h-12 w-12 rounded-2xl bg-ghana-gold/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <Phone className="h-6 w-6 text-ghana-gold" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-secondary mb-1">Call Us</h3>
+                      <p className="text-sm text-muted-foreground mb-3">Mon-Fri from 8am to 5pm</p>
+                      <a
+                        href="tel:+233302500000"
+                        className="text-secondary font-bold hover:underline"
+                      >
+                        +233 30 250 0000
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-secondary mb-1">Call Us</h3>
-                    <p className="text-sm text-muted-foreground mb-3">Mon-Fri from 8am to 5pm</p>
-                    <a
-                      href="tel:+233302500000"
-                      className="text-secondary font-bold hover:underline"
-                    >
-                      +233 30 250 0000
-                    </a>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
 
-              <Card className="border-none shadow-xl bg-white rounded-3xl p-8 group hover:-translate-y-1 transition-all duration-300">
-                <div className="flex items-start gap-6">
-                  <div className="h-12 w-12 rounded-2xl bg-ghana-red/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <MapPin className="h-6 w-6 text-ghana-red" />
+              <motion.div variants={staggerItem}>
+                <Card className="border-none shadow-xl bg-white rounded-3xl p-8 group hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex items-start gap-6">
+                    <div className="h-12 w-12 rounded-2xl bg-ghana-red/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <MapPin className="h-6 w-6 text-ghana-red" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-secondary mb-1">Visit Us</h3>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Our headquarters in the capital
+                      </p>
+                      <p className="text-secondary font-bold">Accra, Greater Accra Region</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-secondary mb-1">Visit Us</h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Our headquarters in the capital
-                    </p>
-                    <p className="text-secondary font-bold">Accra, Greater Accra Region</p>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
 
               {/* SOCIAL LINKS - CLEAN */}
-              <div className="p-8 bg-muted/30 rounded-3xl">
-                <h4 className="text-sm font-bold text-secondary uppercase tracking-widest mb-6">
-                  Follow our journey
-                </h4>
-                <div className="flex gap-4">
-                  {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                    <a
-                      key={i}
-                      href="#"
-                      className="h-12 w-12 rounded-xl bg-white shadow-sm flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
-                    >
-                      <Icon className="h-5 w-5" />
-                    </a>
-                  ))}
+              <Reveal variants={fadeUp}>
+                <div className="p-8 bg-muted/30 rounded-3xl">
+                  <h4 className="text-sm font-bold text-secondary uppercase tracking-widest mb-6">
+                    Follow our journey
+                  </h4>
+                  <div className="flex gap-4">
+                    {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
+                      <a
+                        key={i}
+                        href="#"
+                        className="h-12 w-12 rounded-xl bg-white shadow-sm flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
+                      >
+                        <Icon className="h-5 w-5" />
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </div>
+              </Reveal>
+            </motion.div>
 
             {/* CONTACT FORM - SOPHISTICATED */}
-            <div className="lg:col-span-8">
+            <Reveal variants={slideRight} className="lg:col-span-8">
               <Card className="border-none shadow-2xl bg-white rounded-[2rem] overflow-hidden">
                 <div className="p-8 lg:p-12">
                   <h2 className="text-3xl font-bold text-secondary mb-2">Send a message</h2>
@@ -253,13 +273,13 @@ export default function Contact() {
                   </form>
                 </div>
               </Card>
-            </div>
+            </Reveal>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* MAP PLACEHOLDER - MODERN */}
-      <section className="py-24 bg-muted/20">
+      <Reveal as="section" variants={fadeIn} className="py-24 bg-muted/20">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="aspect-[21/9] rounded-[3rem] bg-secondary/5 border border-border flex items-center justify-center relative overflow-hidden group">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,107,45,0.05)_0%,transparent_70%)]" />
@@ -270,7 +290,7 @@ export default function Contact() {
             </div>
           </div>
         </div>
-      </section>
+      </Reveal>
     </div>
   );
 }

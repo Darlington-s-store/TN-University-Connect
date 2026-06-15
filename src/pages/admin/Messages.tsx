@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Mail, CheckCircle2, Trash2, Reply, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,20 +13,53 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { getMessages, saveMessages, ContactMessage } from "@/lib/data";
+import { getMessages, resolveMessage, deleteMessage, ContactMessage } from "@/lib/data";
 
 export default function AdminMessages() {
-  const [list, setList] = useState(getMessages());
+  const [list, setList] = useState<ContactMessage[]>([]);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<ContactMessage | null>(null);
   const [reply, setReply] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getMessages();
+        setList(data);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load messages");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
   const filtered = list.filter((m) =>
     `${m.name} ${m.email} ${m.subject}`.toLowerCase().includes(q.toLowerCase()),
   );
-  const persist = (next: ContactMessage[]) => {
-    saveMessages(next);
-    setList(next);
+
+  const markResolved = async (id: string) => {
+    try {
+      const updated = await resolveMessage(id);
+      setList((prev) => prev.map((x) => (x.id === id ? updated : x)));
+      toast.success("Marked as resolved");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to resolve");
+    }
+  };
+
+  const removeMsg = async (id: string) => {
+    if (confirm("Are you sure you want to delete this message?")) {
+      try {
+        await deleteMessage(id);
+        setList((prev) => prev.filter((x) => x.id !== id));
+        toast.success("Deleted");
+      } catch (err: any) {
+        toast.error(err.message || "Failed to delete");
+      }
+    }
   };
 
   return (
@@ -85,25 +118,10 @@ export default function AdminMessages() {
                   >
                     <Reply className="h-4 w-4" /> Reply
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() =>
-                      persist(
-                        list.map((x) => (x.id === m.id ? { ...x, resolved: !x.resolved } : x)),
-                      )
-                    }
-                  >
+                  <Button size="sm" variant="ghost" onClick={() => markResolved(m.id)}>
                     <CheckCircle2 className="h-4 w-4" />
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      persist(list.filter((x) => x.id !== m.id));
-                      toast.success("Deleted");
-                    }}
-                  >
+                  <Button size="sm" variant="ghost" onClick={() => removeMsg(m.id)}>
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
@@ -137,12 +155,18 @@ export default function AdminMessages() {
               Cancel
             </Button>
             <Button
-              onClick={() => {
+              onClick={async () => {
                 if (!reply.trim()) return toast.error("Reply cannot be empty");
-                if (open)
-                  persist(list.map((x) => (x.id === open.id ? { ...x, resolved: true } : x)));
-                toast.success("Reply sent and marked resolved");
-                setOpen(null);
+                if (open) {
+                  try {
+                    const updated = await resolveMessage(open.id);
+                    setList((prev) => prev.map((x) => (x.id === open.id ? updated : x)));
+                    toast.success("Reply sent and marked resolved");
+                    setOpen(null);
+                  } catch (err: any) {
+                    toast.error(err.message || "Failed to resolve");
+                  }
+                }
               }}
             >
               Send reply

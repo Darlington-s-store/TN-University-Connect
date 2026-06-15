@@ -1,14 +1,44 @@
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Share2, Megaphone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getAnnouncements } from "@/lib/data";
+import { getAnnouncements, getAnnouncementById, Announcement } from "@/lib/data";
 import cardPattern from "@/assets/card-pattern.jpg";
 
 export default function AnnouncementDetail() {
   const { id } = useParams();
-  const item = getAnnouncements().find((a) => a.id === id && a.published);
+  const [item, setItem] = useState<Announcement | null>(null);
+  const [related, setRelated] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        if (!id) return;
+        const [targetAnn, allAnns] = await Promise.all([
+          getAnnouncementById(id),
+          getAnnouncements(),
+        ]);
+        setItem(targetAnn);
+        setRelated(allAnns.filter((a) => a.id !== targetAnn.id && a.published).slice(0, 3));
+      } catch (err) {
+        console.error("Failed to load announcement details:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <h1 className="text-2xl font-bold mb-4">Loading announcement...</h1>
+      </div>
+    );
+  }
 
   if (!item) {
     return (
@@ -20,10 +50,6 @@ export default function AnnouncementDetail() {
       </div>
     );
   }
-
-  const related = getAnnouncements()
-    .filter((a) => a.id !== item.id && a.published)
-    .slice(0, 3);
 
   return (
     <motion.div

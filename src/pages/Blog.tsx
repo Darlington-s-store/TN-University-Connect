@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, BookOpen, ArrowRight, Star } from "lucide-react";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getBlogs } from "@/lib/data";
+import { getBlogs, BlogPost } from "@/lib/data";
 import blog1 from "@/assets/blog-1.jpg";
 import blog2 from "@/assets/blog-2.jpg";
 import blog3 from "@/assets/blog-3.jpg";
@@ -29,7 +29,23 @@ function resolveBlogImage(imgStr?: string) {
 }
 
 export default function Blog() {
-  const all = getBlogs().filter((b) => b.published);
+  const [all, setAll] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const list = await getBlogs();
+        setAll(list.filter((b) => b.published));
+      } catch (err) {
+        console.error("Failed to load blog posts:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
   const featured = all.find((b) => b.featured);
   const categories = Array.from(new Set(all.map((b) => b.category)));
   const recent = [...all].sort((a, b) => +new Date(b.date) - +new Date(a.date)).slice(0, 5);

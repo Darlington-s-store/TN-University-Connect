@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Target, Eye, CheckCircle2, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import Logo from "@/components/Logo";
+import { motion } from "framer-motion";
+import {
+  Reveal,
+  fadeUp,
+  slideLeft,
+  slideRight,
+  staggerContainer,
+  staggerItem,
+} from "@/lib/animations";
 
 const team = [
   {
@@ -74,66 +83,70 @@ export default function About() {
       </section>
 
       {/* MISSION & VISION - MODERN GRID */}
-      <section className="py-24 -mt-12 relative z-20">
+      <Reveal as="section" className="py-24 -mt-12 relative z-20">
         <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
           <div className="grid lg:grid-cols-2 gap-8">
-            <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
-              <div className="relative h-40 overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=600&h=300&fit=crop"
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
-                <div className="absolute bottom-4 left-6">
-                  <div className="h-12 w-12 rounded-xl bg-primary/20 backdrop-blur-md flex items-center justify-center border border-primary/30">
-                    <Target className="h-6 w-6 text-primary" />
+            <Reveal variants={slideLeft}>
+              <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
+                <div className="relative h-40 overflow-hidden">
+                  <img
+                    src="https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=600&h=300&fit=crop"
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
+                  <div className="absolute bottom-4 left-6">
+                    <div className="h-12 w-12 rounded-xl bg-primary/20 backdrop-blur-md flex items-center justify-center border border-primary/30">
+                      <Target className="h-6 w-6 text-primary" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <CardContent className="p-8 flex-1">
-                <h2 className="text-2xl font-extrabold text-secondary mb-3">Our Mission</h2>
-                <p className="text-muted-foreground leading-relaxed text-sm">
-                  To create a unified, accessible ecosystem that empowers every Ghanaian student
-                  with the connections, resources, and networks required to excel in a globalized
-                  economy.
-                </p>
-              </CardContent>
-            </Card>
+                <CardContent className="p-8 flex-1">
+                  <h2 className="text-2xl font-extrabold text-secondary mb-3">Our Mission</h2>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
+                    To create a unified, accessible ecosystem that empowers every Ghanaian student
+                    with the connections, resources, and networks required to excel in a globalized
+                    economy.
+                  </p>
+                </CardContent>
+              </Card>
+            </Reveal>
 
-            <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
-              <div className="relative h-40 overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=300&fit=crop"
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
-                <div className="absolute bottom-4 left-6">
-                  <div className="h-12 w-12 rounded-xl bg-ghana-red/20 backdrop-blur-md flex items-center justify-center border border-ghana-red/30">
-                    <Eye className="h-6 w-6 text-ghana-red" />
+            <Reveal variants={slideRight}>
+              <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
+                <div className="relative h-40 overflow-hidden">
+                  <img
+                    src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=300&fit=crop"
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
+                  <div className="absolute bottom-4 left-6">
+                    <div className="h-12 w-12 rounded-xl bg-ghana-red/20 backdrop-blur-md flex items-center justify-center border border-ghana-red/30">
+                      <Eye className="h-6 w-6 text-ghana-red" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <CardContent className="p-8 flex-1">
-                <h2 className="text-2xl font-extrabold text-secondary mb-3">Our Vision</h2>
-                <p className="text-muted-foreground leading-relaxed text-sm">
-                  A future where institutional boundaries disappear, allowing knowledge to flow
-                  freely and ensuring higher education remains the primary driver of national
-                  innovation and prosperity.
-                </p>
-              </CardContent>
-            </Card>
+                <CardContent className="p-8 flex-1">
+                  <h2 className="text-2xl font-extrabold text-secondary mb-3">Our Vision</h2>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
+                    A future where institutional boundaries disappear, allowing knowledge to flow
+                    freely and ensuring higher education remains the primary driver of national
+                    innovation and prosperity.
+                  </p>
+                </CardContent>
+              </Card>
+            </Reveal>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* CORE OBJECTIVES - CLEAN DESIGN */}
-      <section className="py-24 bg-muted/30">
+      <Reveal as="section" className="py-24 bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center max-w-2xl mx-auto mb-16">
+          <Reveal variants={fadeUp} className="text-center max-w-2xl mx-auto mb-16">
             <Badge variant="outline" className="border-primary text-primary mb-4 px-4">
               Strategic Goals
             </Badge>
@@ -142,28 +155,38 @@ export default function About() {
               Our objectives are rooted in the belief that collective growth is the only way forward
               for our academic institutions.
             </p>
-          </div>
+          </Reveal>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {objectives.map((o, i) => (
-              <div
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {objectives.map((o) => (
+              <motion.div
                 key={o}
+                variants={staggerItem}
                 className="bg-white p-6 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow flex gap-4"
               >
                 <div className="h-10 w-10 rounded-full bg-primary/5 flex items-center justify-center shrink-0">
                   <CheckCircle2 className="h-5 w-5 text-primary" />
                 </div>
                 <span className="text-secondary font-medium leading-snug pt-1">{o}</span>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </Reveal>
 
       {/* LEADERSHIP - SOPHISTICATED GRID */}
-      <section className="py-24">
+      <Reveal as="section" className="py-24">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
+          <Reveal
+            variants={fadeUp}
+            className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6"
+          >
             <div className="max-w-xl">
               <Badge variant="outline" className="border-ghana-red text-ghana-red mb-4">
                 Leadership
@@ -176,11 +199,17 @@ export default function About() {
                 technology, and community building.
               </p>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
             {team.map((m) => (
-              <div key={m.name} className="group">
+              <motion.div key={m.name} variants={staggerItem} className="group">
                 <div className="relative aspect-[4/5] rounded-2xl overflow-hidden mb-6 bg-muted">
                   <img
                     src={m.image}
@@ -194,14 +223,14 @@ export default function About() {
                   {m.name}
                 </h3>
                 <p className="text-muted-foreground font-medium">{m.role}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </Reveal>
 
       {/* FINAL CTA - MODERN COMPACT */}
-      <section className="py-20 bg-secondary relative overflow-hidden">
+      <Reveal as="section" className="py-20 bg-secondary relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
         <div className="container mx-auto px-4 sm:px-6 text-center relative z-10">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8">
@@ -225,7 +254,7 @@ export default function About() {
             </Button>
           </div>
         </div>
-      </section>
+      </Reveal>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { Camera, Lock, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,15 +17,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
-import { getStudents, saveStudents, Student, UNIVERSITIES, DEPARTMENTS } from "@/lib/data";
+import { getStudentMe, submitStudentForm, Student, UNIVERSITIES, DEPARTMENTS } from "@/lib/data";
 import { FACULTIES, PROGRAMMES, LEVELS, CHURCHES, NICHES } from "@/lib/schools";
 
 export default function MemberProfile() {
   const { user, updateUser } = useAuth();
-  const studentRecord = useMemo(
-    () => getStudents().find((s) => s.email === user?.email),
-    [user?.email],
-  );
+  const [studentRecord, setStudentRecord] = useState<Student | null>(null);
 
   const [form, setForm] = useState({
     name: user?.name || "",
@@ -43,65 +40,113 @@ export default function MemberProfile() {
     status: user?.status || "Active Student",
     church: user?.church || "",
     niche: user?.niche || "",
-    dob: studentRecord?.dob || "",
-    indexNumber: studentRecord?.indexNumber || "",
-    address: studentRecord?.address || "",
+    dob: "",
+    indexNumber: "",
+    address: "",
     bio: user?.bio || "",
     avatar: user?.avatar || "",
   });
   const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
 
-  const saveProfile = (e: React.FormEvent) => {
+  // Sync user info when context loads
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        gender: user.gender || "male",
+        nationality: user.nationality || "Ghanaian",
+        university: user.university || "",
+        schoolType: user.schoolType || "",
+        uniType: user.uniType || "",
+        faculty: user.faculty || "",
+        department: user.department || "",
+        program: user.program || "",
+        level: user.level || "",
+        status: user.status || "Active Student",
+        church: user.church || "",
+        niche: user.niche || "",
+        bio: user.bio || "",
+        avatar: user.avatar || "",
+      }));
+    }
+  }, [user]);
+
+  // Load student profile details
+  useEffect(() => {
+    async function loadStudent() {
+      try {
+        const data = await getStudentMe();
+        if (data) {
+          setStudentRecord(data);
+          setForm((prev) => ({
+            ...prev,
+            dob: data.dob || "",
+            indexNumber: data.indexNumber || "",
+            address: data.address || "",
+          }));
+        }
+      } catch (err: any) {
+        console.error("Failed to load own student profile details:", err);
+      }
+    }
+    loadStudent();
+  }, []);
+
+  const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateUser({
-      name: form.name,
-      phone: form.phone,
-      gender: form.gender,
-      nationality: form.nationality,
-      university: form.university,
-      schoolType: form.schoolType,
-      uniType: form.uniType || undefined,
-      faculty: form.faculty,
-      department: form.department,
-      program: form.program,
-      level: form.level,
-      status: form.status,
-      church: form.church,
-      niche: form.niche,
-      bio: form.bio,
-      avatar: form.avatar,
-    });
+    try {
+      // 1. Submit/update student profile in backend db
+      const record: Partial<Student> = {
+        fullName: form.name,
+        email: form.email,
+        phone: form.phone,
+        gender: form.gender,
+        dob: form.dob || new Date().toISOString().slice(0, 10),
+        university: form.university,
+        schoolType: form.schoolType,
+        uniType: form.uniType || undefined,
+        faculty: form.faculty,
+        department: form.department,
+        program: form.program,
+        level: form.level,
+        indexNumber: form.indexNumber || `STU${Math.floor(100000 + Math.random() * 900000)}`,
+        address: form.address || "Accra, Ghana",
+        nationality: form.nationality,
+        status: form.status,
+        church: form.church,
+        niche: form.niche,
+      };
 
-    const all = getStudents();
-    const idx = all.findIndex((s) => s.email === form.email);
-    const record: Student = {
-      id: studentRecord?.id || `s-${Date.now()}`,
-      userId: studentRecord?.userId || user?.id,
-      fullName: form.name,
-      email: form.email,
-      phone: form.phone,
-      gender: form.gender,
-      dob: form.dob,
-      university: form.university,
-      faculty: form.faculty,
-      department: form.department,
-      program: form.program,
-      level: form.level,
-      indexNumber: form.indexNumber,
-      address: form.address,
-      submittedAt: studentRecord?.submittedAt || new Date().toISOString(),
-      nationality: form.nationality,
-      status: form.status,
-      church: form.church,
-      niche: form.niche,
-      schoolType: form.schoolType,
-      uniType: form.uniType,
-    };
-    if (idx >= 0) all[idx] = record;
-    else all.unshift(record);
-    saveStudents(all);
+      const updatedStudent = await submitStudentForm(record);
+      setStudentRecord(updatedStudent);
 
-    toast.success("Profile updated");
+      // 2. Sync user profile changes (updates users table and local storage via context)
+      await updateUser({
+        name: form.name,
+        phone: form.phone,
+        gender: form.gender,
+        nationality: form.nationality,
+        university: form.university,
+        schoolType: form.schoolType,
+        uniType: form.uniType || undefined,
+        faculty: form.faculty,
+        department: form.department,
+        program: form.program,
+        level: form.level,
+        status: form.status,
+        church: form.church,
+        niche: form.niche,
+        bio: form.bio,
+        avatar: form.avatar,
+      });
+
+      toast.success("Profile updated successfully");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update profile");
+    }
   };
 
   const onAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {

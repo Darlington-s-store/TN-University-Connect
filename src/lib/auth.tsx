@@ -62,184 +62,143 @@ type AuthCtx = {
 };
 
 const Ctx = createContext<AuthCtx | null>(null);
-const KEY = "tnu_user";
-const USERS_KEY = "tnu_users";
-
-function readUsers(): Array<User & { password?: string }> {
-  const raw = localStorage.getItem(USERS_KEY);
-  if (raw) return JSON.parse(raw);
-
-  // seed default admin and user
-  const seed: Array<User & { password?: string }> = [
-    {
-      id: "admin-1",
-      name: "TN Admin",
-      email: "admin@tnuc.gh",
-      password: "admin123",
-      role: "admin",
-      joinedAt: new Date().toISOString(),
-      profileComplete: true,
-    },
-    {
-      id: "user-1",
-      name: "Kwame Mensah",
-      email: "kwame@tnuc.gh",
-      password: "member123",
-      role: "member",
-      phone: "+233 24 123 4567",
-      gender: "male",
-      nationality: "Ghanaian",
-      university: "University of Ghana (UG) - Legon",
-      schoolType: "University",
-      uniType: "Public",
-      faculty: "Faculty of Science",
-      department: "Computer Science & IT",
-      program: "BSc Computer Science",
-      level: "300",
-      status: "Active Student",
-      church: "Pentecost Church",
-      niche: "Tech & STEM Enthusiasts",
-      joinedAt: new Date().toISOString(),
-      profileComplete: true,
-    },
-  ];
-  localStorage.setItem(USERS_KEY, JSON.stringify(seed));
-  return seed;
-}
-
-function writeUsers(u: Array<User & { password?: string }>) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(u));
-}
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const TOKEN_KEY = "tnu_token";
+const USER_KEY = "tnu_user";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    readUsers();
-    const raw = localStorage.getItem(KEY);
-    if (raw) setUser(JSON.parse(raw));
-    setInitializing(false);
+    async function checkSession() {
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (!token) {
+        setInitializing(false);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_URL}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            setUser(data.user);
+            localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+          } else {
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USER_KEY);
+            setUser(null);
+          }
+        } else {
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(USER_KEY);
+          setUser(null);
+        }
+      } catch (err) {
+        console.error("Session restoration failed:", err);
+        const rawUser = localStorage.getItem(USER_KEY);
+        if (rawUser) setUser(JSON.parse(rawUser));
+      } finally {
+        setInitializing(false);
+      }
+    }
+    checkSession();
   }, []);
 
   const login = async (email: string, password: string): Promise<User> => {
-    const users = readUsers();
-    const found = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
-    );
-    if (!found) throw new Error("Invalid email or password");
-    const { password: _p, ...safe } = found;
-    setUser(safe);
-    localStorage.setItem(KEY, JSON.stringify(safe));
-    return safe;
+    const res = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || "Invalid credentials.");
+    }
+
+    localStorage.setItem(TOKEN_KEY, data.token);
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+    setUser(data.user);
+    return data.user;
   };
 
   const register = async (data: RegisterData): Promise<User> => {
-    const users = readUsers();
-    if (users.find((u) => u.email.toLowerCase() === data.email.toLowerCase())) {
-      throw new Error("An account with that email already exists");
+    const res = await fetch(`${API_URL}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    const resData = await res.json();
+    if (!res.ok) {
+      throw new Error(resData.message || "Registration failed.");
     }
-    const newUser: User & { password?: string } = {
-      id: `user-${Date.now()}`,
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      role: "member" as const,
-      joinedAt: new Date().toISOString(),
-      profileComplete: true,
-      phone: data.phone,
-      gender: data.gender,
-      nationality: data.nationality,
-      university: data.school,
-      schoolType: data.schoolType,
-      uniType: data.uniType,
-      faculty: data.faculty,
-      department: data.department,
-      program: data.program,
-      level: data.level,
-      status: data.status,
-      church: data.church,
-      niche: data.niche || "General Studies",
-    };
-    users.push(newUser);
-    writeUsers(users);
 
-    // Also write to tnu_students so it appears there
-    const studentsRaw = localStorage.getItem("tnu_students");
-    const students = studentsRaw ? JSON.parse(studentsRaw) : [];
-    const newStudent = {
-      id: `s-${Date.now()}`,
-      userId: newUser.id,
-      fullName: newUser.name,
-      email: newUser.email,
-      phone: newUser.phone,
-      gender: newUser.gender,
-      dob: new Date().toISOString().slice(0, 10), // placeholder DOB
-      university: newUser.university,
-      department: newUser.department,
-      program: newUser.program,
-      level: newUser.level,
-      indexNumber: `STU${Math.floor(100000 + Math.random() * 900000)}`,
-      address: "Accra, Ghana",
-      submittedAt: new Date().toISOString(),
-      nationality: newUser.nationality,
-      status: newUser.status,
-      church: newUser.church,
-      niche: newUser.niche,
-    };
-    students.push(newStudent);
-    localStorage.setItem("tnu_students", JSON.stringify(students));
-
-    const { password: _p, ...safe } = newUser;
-    setUser(safe);
-    localStorage.setItem(KEY, JSON.stringify(safe));
-    return safe;
+    localStorage.setItem(TOKEN_KEY, resData.token);
+    localStorage.setItem(USER_KEY, JSON.stringify(resData.user));
+    setUser(resData.user);
+    return resData.user;
   };
 
   const googleLogin = async (profile: GoogleProfile): Promise<User> => {
-    const users = readUsers();
-    const existing = users.find((u) => u.email.toLowerCase() === profile.email.toLowerCase());
-    if (existing) {
-      const { password: _p, ...safe } = existing;
-      setUser(safe);
-      localStorage.setItem(KEY, JSON.stringify(safe));
-      return safe;
+    const res = await fetch(`${API_URL}/api/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profile),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || "Google sign-in failed.");
     }
-    const newUser: User & { password?: string } = {
-      id: `user-${Date.now()}`,
-      name: profile.name,
-      email: profile.email,
-      role: "member" as const,
-      avatar: profile.picture,
-      joinedAt: new Date().toISOString(),
-      profileComplete: false,
-    };
-    users.push(newUser);
-    writeUsers(users);
-    const { password: _p, ...safe } = newUser;
-    setUser(safe);
-    localStorage.setItem(KEY, JSON.stringify(safe));
-    return safe;
+
+    localStorage.setItem(TOKEN_KEY, data.token);
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+    setUser(data.user);
+    return data.user;
   };
 
   const logout = () => {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
     setUser(null);
-    localStorage.removeItem(KEY);
   };
 
-  const updateUser = (patch: Partial<User>) => {
-    setUser((prev) => {
-      if (!prev) return null;
-      const next = { ...prev, ...patch };
-      localStorage.setItem(KEY, JSON.stringify(next));
-      const users = readUsers();
-      const idx = users.findIndex((u) => u.id === prev.id);
-      if (idx >= 0) {
-        users[idx] = { ...users[idx], ...patch };
-        writeUsers(users);
+  const updateUser = async (patch: Partial<User>) => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/auth/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(patch),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Update failed.");
       }
-      return next;
-    });
+
+      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+      setUser(data.user);
+    } catch (err) {
+      console.error("Failed to sync user updates:", err);
+      setUser((prev) => {
+        if (!prev) return null;
+        const next = { ...prev, ...patch };
+        localStorage.setItem(USER_KEY, JSON.stringify(next));
+        return next;
+      });
+    }
   };
 
   return (

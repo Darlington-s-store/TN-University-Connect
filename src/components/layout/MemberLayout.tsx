@@ -1,4 +1,5 @@
-import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import AnimatedOutlet from "@/components/AnimatedOutlet";
 import { LayoutDashboard, User, FileText, LogOut, Home, Bell, Menu, Megaphone } from "lucide-react";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -84,7 +85,15 @@ export default function MemberLayout() {
 
   useEffect(() => {
     // Load announcements
-    setAnnouncements(getAnnouncements().filter((a) => a.published));
+    async function loadAnnouncements() {
+      try {
+        const data = await getAnnouncements();
+        setAnnouncements(data.filter((a) => a.published));
+      } catch (err) {
+        console.error("Failed to load announcements in MemberLayout:", err);
+      }
+    }
+    loadAnnouncements();
 
     // Load read announcements
     const stored = localStorage.getItem("tnu_read_announcements");
@@ -258,7 +267,7 @@ export default function MemberLayout() {
 
         {/* Page Body */}
         <main className="flex-1 p-4 sm:p-8 lg:p-10 overflow-y-auto">
-          <Outlet />
+          <AnimatedOutlet />
         </main>
       </div>
     </div>

@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
-import { getStudents, saveStudents, Student } from "@/lib/data";
+import { getStudentMe, submitStudentForm, Student } from "@/lib/data";
 import {
   FACULTIES,
   DEPARTMENTS,
@@ -51,33 +51,68 @@ const schema = z.object({
 
 export default function StudentForm() {
   const { user, updateUser } = useAuth();
-  const existing = useMemo(() => getStudents().find((s) => s.email === user?.email), [user?.email]);
+  const [existing, setExisting] = useState<Student | null>(null);
+  const [loading, setLoading] = useState(true);
   const [schools, setSchools] = useState<GhanaSchool[]>([]);
 
-  const [step, setStep] = useState<"form" | "preview" | "done">(existing ? "done" : "form");
+  const [step, setStep] = useState<"form" | "preview" | "done">("form");
   const [form, setForm] = useState({
-    fullName: existing?.fullName || user?.name || "",
-    email: existing?.email || user?.email || "",
-    phone: existing?.phone || user?.phone || "",
-    gender: existing?.gender || user?.gender || "male",
-    dob: existing?.dob || "",
-    nationality: existing?.nationality || user?.nationality || "Ghanaian",
-    church: existing?.church || user?.church || "",
-    niche: existing?.niche || user?.niche || "",
-    schoolType: existing?.schoolType || user?.schoolType || "",
-    uniType: existing?.uniType || user?.uniType || "",
-    university: existing?.university || user?.university || "",
-    faculty: existing?.faculty || user?.faculty || "",
-    department: existing?.department || user?.department || "",
-    program: existing?.program || user?.program || "",
-    level: existing?.level || user?.level || "",
-    status: existing?.status || user?.status || "Active Student",
-    indexNumber: existing?.indexNumber || "",
-    address: existing?.address || "",
+    fullName: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    gender: user?.gender || "male",
+    dob: "",
+    nationality: user?.nationality || "Ghanaian",
+    church: user?.church || "",
+    niche: user?.niche || "",
+    schoolType: user?.schoolType || "",
+    uniType: user?.uniType || "",
+    university: user?.university || "",
+    faculty: user?.faculty || "",
+    department: user?.department || "",
+    program: user?.program || "",
+    level: user?.level || "",
+    status: user?.status || "Active Student",
+    indexNumber: "",
+    address: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    async function load() {
+      try {
+        const student = await getStudentMe();
+        if (student) {
+          setExisting(student);
+          setForm({
+            fullName: student.fullName,
+            email: student.email,
+            phone: student.phone,
+            gender: student.gender,
+            dob: student.dob,
+            nationality: student.nationality || "Ghanaian",
+            church: student.church || "",
+            niche: student.niche || "",
+            schoolType: student.schoolType || "",
+            uniType: student.uniType || "",
+            university: student.university,
+            faculty: student.faculty || "",
+            department: student.department,
+            program: student.program,
+            level: student.level,
+            status: student.status || "Active Student",
+            indexNumber: student.indexNumber,
+            address: student.address,
+          });
+          setStep("done");
+        }
+      } catch (err) {
+        console.error("Failed to load student info:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
     setSchools(getGhanaSchools());
   }, []);
 
@@ -113,12 +148,8 @@ export default function StudentForm() {
     setStep("preview");
   };
 
-  const submit = () => {
-    const all = getStudents();
-    const idx = all.findIndex((s) => s.email === form.email);
-    const record: Student = {
-      id: existing?.id || `s-${Date.now()}`,
-      userId: existing?.userId || user?.id,
+  const submit = async () => {
+    const record: Partial<Student> = {
       fullName: form.fullName,
       email: form.email,
       phone: form.phone,
@@ -131,37 +162,40 @@ export default function StudentForm() {
       level: form.level,
       indexNumber: form.indexNumber,
       address: form.address,
-      submittedAt: new Date().toISOString(),
       nationality: form.nationality,
       status: form.status,
-      church: form.church,
-      niche: form.niche,
-      schoolType: form.schoolType,
-      uniType: form.uniType,
-    };
-    if (idx >= 0) all[idx] = record;
-    else all.unshift(record);
-    saveStudents(all);
-
-    updateUser({
-      name: form.fullName,
-      phone: form.phone,
-      gender: form.gender,
-      nationality: form.nationality,
       church: form.church,
       niche: form.niche,
       schoolType: form.schoolType,
       uniType: form.uniType || undefined,
-      university: form.university,
-      faculty: form.faculty,
-      department: form.department,
-      program: form.program,
-      level: form.level,
-      status: form.status,
-    });
+    };
 
-    toast.success(existing ? "Information updated" : "Information submitted");
-    setStep("done");
+    try {
+      const savedStudent = await submitStudentForm(record);
+      setExisting(savedStudent);
+
+      updateUser({
+        name: form.fullName,
+        phone: form.phone,
+        gender: form.gender,
+        nationality: form.nationality,
+        church: form.church,
+        niche: form.niche,
+        schoolType: form.schoolType,
+        uniType: form.uniType || undefined,
+        university: form.university,
+        faculty: form.faculty,
+        department: form.department,
+        program: form.program,
+        level: form.level,
+        status: form.status,
+      });
+
+      toast.success(existing ? "Information updated" : "Information submitted");
+      setStep("done");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit form");
+    }
   };
 
   const Field = ({
