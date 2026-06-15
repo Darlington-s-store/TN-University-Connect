@@ -26,7 +26,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <div className="flex items-center gap-2 mt-1">
           <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse"></span>
           <p className="text-sm font-extrabold text-slate-800">
-            {payload[0].value} {payload[0].value === 1 ? 'Student' : 'Students'}
+            {payload[0].value} {payload[0].value === 1 ? "Student" : "Students"}
           </p>
         </div>
       </div>
@@ -182,7 +182,10 @@ export default function AdminDashboard() {
                   tick={{ fill: "#94a3b8", fontSize: 11, fontWeight: 500 }}
                   allowDecimals={false}
                 />
-                <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#006B2D", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                <Tooltip
+                  content={<CustomTooltip />}
+                  cursor={{ stroke: "#006B2D", strokeWidth: 1, strokeDasharray: "4 4" }}
+                />
                 <Area
                   type="monotone"
                   dataKey="students"
@@ -194,13 +197,13 @@ export default function AdminDashboard() {
                     fill: "#006B2D",
                     stroke: "#fff",
                     strokeWidth: 3,
-                    style: { filter: "drop-shadow(0px 4px 8px rgba(0, 107, 45, 0.4))" }
+                    style: { filter: "drop-shadow(0px 4px 8px rgba(0, 107, 45, 0.4))" },
                   }}
                   dot={{
                     r: 4,
                     fill: "#fff",
                     stroke: "#006B2D",
-                    strokeWidth: 2.5
+                    strokeWidth: 2.5,
                   }}
                 />
               </AreaChart>
