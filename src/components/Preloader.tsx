@@ -34,7 +34,7 @@ export default function Preloader({ minDuration = 1400 }: { minDuration?: number
         <img
           src={logoAsset}
           alt=""
-          className="relative h-36 w-36 sm:h-44 sm:w-44 rounded-full object-contain animate-[logoPulse_1.6s_ease-in-out_infinite]"
+          className="relative h-36 w-36 sm:h-44 sm:w-44 rounded-full object-contain animate-logo-pulse"
         />
       </div>
     </div>

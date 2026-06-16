@@ -237,6 +237,9 @@
 @utility float-slow {
   animation: floatSlow 6s ease-in-out infinite;
 }
+@utility animate-logo-pulse {
+  animation: logoPulse 1.6s ease-in-out infinite;
+}
 @utility card-pattern-bg {
   background-image: url("/src/assets/card-pattern.jpg");
   background-size: cover;

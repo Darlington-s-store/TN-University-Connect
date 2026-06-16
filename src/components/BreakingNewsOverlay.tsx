@@ -23,38 +23,22 @@ export default function BreakingNewsOverlay() {
 
   if (!visible) return null;
 
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden">
+      <div className="relative bg-black rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden border border-slate-800">
         <Button
           size="icon"
           variant="ghost"
-          className="absolute top-3 right-3 z-10 bg-white/80 hover:bg-white rounded-full"
+          className="absolute top-3 right-3 z-10 bg-black/50 hover:bg-black/85 text-white rounded-full border border-white/10"
           onClick={() => setVisible(false)}
         >
           <X className="h-5 w-5" />
         </Button>
         <img
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHeEMW2wZdKSDjbqr9CO6LHukMYkngIJbR8z6Fxil9Hg&s"
-          alt="In Memoriam"
-          className="w-full h-48 object-contain bg-black"
+          alt="Breaking News"
+          className="w-full h-auto max-h-[80vh] object-contain bg-black block"
         />
-        <div className="p-5 text-center space-y-2">
-          <h2 className="text-xl font-extrabold text-secondary">Rest in Peace</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            We are deeply saddened by the passing of a UCC student. Our heartfelt condolences go out
-            to the family, friends, and the university community.
-          </p>
-          <div className="text-xs text-muted-foreground pt-1">
-            This message will close in{" "}
-            <span className="font-bold text-secondary">
-              {minutes}:{seconds.toString().padStart(2, "0")}
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );
