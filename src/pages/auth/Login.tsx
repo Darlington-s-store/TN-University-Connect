@@ -20,7 +20,7 @@ const schema = z.object({
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, googleLogin } = useAuth();
+  const { login, googleLogin, logout } = useAuth();
   const [form, setForm] = useState({ email: "", password: "", remember: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -39,8 +39,13 @@ export default function Login() {
     setLoading(true);
     try {
       const user = await login(form.email, form.password);
+      if (user.role === "admin") {
+        logout();
+        toast.error("Access Denied: Administrators must sign in using the Admin Login page.");
+        return;
+      }
       toast.success(`Welcome back, ${user.name}`);
-      navigate(user.role === "admin" ? "/admin" : "/dashboard");
+      navigate("/dashboard");
     } catch (e) {
       const error = e as Error;
       toast.error(error.message || "Login failed");
@@ -59,8 +64,13 @@ export default function Login() {
     setGoogleLoading(true);
     try {
       const user = await googleLogin(profile);
+      if (user.role === "admin") {
+        logout();
+        toast.error("Access Denied: Administrators must sign in using the Admin Login page.");
+        return;
+      }
       toast.success(`Welcome${user.name ? `, ${user.name}` : " back"}!`);
-      navigate(user.role === "admin" ? "/admin" : "/dashboard");
+      navigate("/dashboard");
     } catch (e) {
       const error = e as Error;
       toast.error(error.message || "Google sign-in failed");

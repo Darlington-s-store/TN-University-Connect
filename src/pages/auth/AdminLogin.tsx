@@ -16,7 +16,7 @@ const schema = z.object({
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -35,6 +35,7 @@ export default function AdminLogin() {
     try {
       const user = await login(form.email, form.password);
       if (user.role !== "admin") {
+        logout();
         toast.error("Access Denied: This account does not have administrator privileges.");
         return;
       }
