@@ -121,16 +121,16 @@ export default function MemberLayout() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc]">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:w-64 bg-secondary text-secondary-foreground flex-col sticky top-0 h-screen z-20">
+      <aside className="hidden lg:flex lg:w-64 bg-secondary text-secondary-foreground flex-col fixed inset-y-0 left-0 z-30">
         <SidebarContent />
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="lg:pl-64 flex flex-col min-h-screen">
         {/* Sticky Topbar */}
-        <header className="h-16 border-b bg-white flex items-center justify-between px-4 sm:px-8 sticky top-0 z-10">
+        <header className="h-16 border-b bg-white flex items-center justify-between px-4 sm:px-8 sticky top-0 z-20">
           <div className="flex items-center gap-4">
             {/* Mobile Navigation Sheet */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>

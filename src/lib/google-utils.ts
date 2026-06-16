@@ -2,10 +2,7 @@ export const CLIENT_ID =
   import.meta.env.VITE_GOOGLE_CLIENT_ID || "your-google-client-id.apps.googleusercontent.com";
 
 export const isMockClientId = (clientId: string) => {
-  return (
-    !clientId ||
-    clientId.includes("your-google-client-id")
-  );
+  return !clientId || clientId.includes("your-google-client-id");
 };
 
 export function decodeGoogleCredential(

@@ -59,6 +59,8 @@ type AuthCtx = {
   googleLogin: (profile: GoogleProfile) => Promise<User>;
   logout: () => void;
   updateUser: (patch: Partial<User>) => void;
+  forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (email: string, code: string, password: string) => Promise<void>;
 };
 
 const Ctx = createContext<AuthCtx | null>(null);
@@ -100,8 +102,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (err) {
         console.error("Session restoration failed:", err);
-        const rawUser = localStorage.getItem(USER_KEY);
-        if (rawUser) setUser(JSON.parse(rawUser));
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        setUser(null);
       } finally {
         setInitializing(false);
       }
@@ -194,15 +197,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Failed to sync user updates:", err);
       setUser((prev) => {
         if (!prev) return null;
-        const next = { ...prev, ...patch };
-        localStorage.setItem(USER_KEY, JSON.stringify(next));
-        return next;
+        return { ...prev, ...patch };
       });
     }
   };
 
+  const forgotPassword = async (email: string): Promise<void> => {
+    const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to send reset code.");
+    }
+  };
+
+  const resetPassword = async (email: string, code: string, password: string): Promise<void> => {
+    const res = await fetch(`${API_URL}/api/auth/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, code, password }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to reset password.");
+    }
+  };
+
   return (
-    <Ctx.Provider value={{ user, initializing, login, register, googleLogin, logout, updateUser }}>
+    <Ctx.Provider
+      value={{
+        user,
+        initializing,
+        login,
+        register,
+        googleLogin,
+        logout,
+        updateUser,
+        forgotPassword,
+        resetPassword,
+      }}
+    >
       {children}
     </Ctx.Provider>
   );
