@@ -28,7 +28,7 @@ export default function BreakingNewsOverlay() {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden">
         <Button
           size="icon"
           variant="ghost"
@@ -40,7 +40,7 @@ export default function BreakingNewsOverlay() {
         <img
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHeEMW2wZdKSDjbqr9CO6LHukMYkngIJbR8z6Fxil9Hg&s"
           alt="In Memoriam"
-          className="w-full object-contain bg-black max-h-[70vh]"
+          className="w-full h-48 object-contain bg-black"
         />
         <div className="p-5 text-center space-y-2">
           <h2 className="text-xl font-extrabold text-secondary">Rest in Peace</h2>
