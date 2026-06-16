@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -7,10 +7,9 @@ import {
   CheckCircle2,
   ArrowRight,
   ArrowLeft,
-  Send,
-  Sparkles,
-  Smartphone,
   Mail,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";
 import { Button } from "@/components/ui/button";
@@ -25,197 +24,103 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
-import { decodeGoogleCredential, CLIENT_ID, isMockClientId } from "@/lib/google-utils";
-import { MockGoogleButton } from "@/lib/google";
-import { GoogleLogin } from "@react-oauth/google";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  GHANA_SCHOOLS,
-  FACULTIES,
-  DEPARTMENTS,
-  PROGRAMMES,
-  LEVELS,
-  CHURCHES,
-  NICHES,
-} from "@/lib/schools";
 import { sendVerificationCode, verifyCode } from "@/lib/verification";
 
-// Step 1 schema
-const step1Schema = z
-  .object({
-    name: z.string().trim().min(2, "Full name is required").max(100),
-    email: z.string().trim().email("Enter a valid email").max(255),
-    phone: z.string().trim().min(9, "Enter a valid phone number"),
-    password: z.string().min(8, "Password must be at least 8 characters").max(100),
-    confirm: z.string(),
-  })
-  .refine((d) => d.password === d.confirm, {
-    message: "Passwords do not match",
-    path: ["confirm"],
-  });
-
-// Step 2 schema
-const step2Schema = z.object({
-  gender: z.enum(["male", "female", "other"], { required_error: "Gender is required" }),
-  nationality: z.string().trim().min(2, "Nationality is required"),
-  church: z.string().min(1, "Please select your church"),
-  niche: z.string().min(1, "Please select your focus niche"),
+// Validation schema for registering user
+const registerSchema = z.object({
+  name: z.string().trim().min(2, "Full name is required").max(100),
+  status: z.string().min(1, "Select your role"),
+  level: z.string().min(1, "Select your academic level"),
+  email: z.string().trim().email("Enter a valid email").max(255),
+  phone: z.string().trim().min(9, "Enter a valid phone number"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
-
-// Step 3 schema
-const step3Schema = z.object({
-  schoolType: z.string().min(1, "Select school type"),
-  uniType: z.string().optional(),
-  school: z.string().min(1, "Select your school"),
-  faculty: z.string().min(1, "Select your faculty"),
-  department: z.string().min(1, "Select your department"),
-  program: z.string().min(1, "Select your programme"),
-  level: z.string().min(1, "Select your level"),
-  status: z.string().min(1, "Select status"),
-});
-
-function passwordStrength(pw: string) {
-  let s = 0;
-  if (pw.length >= 8) s++;
-  if (/[A-Z]/.test(pw)) s++;
-  if (/[0-9]/.test(pw)) s++;
-  if (/[^A-Za-z0-9]/.test(pw)) s++;
-  return s;
-}
 
 export default function Register() {
   const navigate = useNavigate();
   const { register } = useAuth();
 
-  // Wizard state
+  // Wizard state: Step 1 (Sign Up Form), Step 2 (Verify profile code)
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
-  // Form fields
+  // Streamlined Form fields
   const [form, setForm] = useState({
     name: "",
+    status: "", // Dropdown: Student, Alumni, Faculty, Other
+    level: "",  // Dropdown: Undergraduate, Postgraduate, High School, Other
     email: "",
     phone: "+233 ",
     password: "",
-    confirm: "",
-    gender: "",
-    nationality: "Ghanaian",
-    church: "",
-    niche: "",
-    schoolType: "",
-    uniType: "",
-    school: "",
-    faculty: "",
-    department: "",
-    program: "",
-    level: "",
-    status: "Active Student",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [verificationCode, setVerificationCode] = useState("");
   const [verificationLoading, setVerificationLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Filter schools list based on selections
-  const filteredSchools = useMemo(() => {
-    if (!form.schoolType) return [];
-    return GHANA_SCHOOLS.filter((s) => {
-      if (s.type !== form.schoolType) return false;
-      if (form.schoolType === "University") {
-        return form.uniType ? s.uniType === form.uniType : true;
-      }
-      return true;
-    });
-  }, [form.schoolType, form.uniType]);
+  // Password checklist evaluation
+  const passChecks = useMemo(() => {
+    const pw = form.password;
+    return {
+      length: pw.length >= 8,
+      hasNumber: /[0-9]/.test(pw),
+      hasUpper: /[A-Z]/.test(pw),
+      hasLower: /[a-z]/.test(pw),
+      notCommon: pw.length > 0 && !["password", "12345678", "qwertyui", "password123"].includes(pw.toLowerCase()),
+    };
+  }, [form.password]);
 
-  const strength = useMemo(() => passwordStrength(form.password), [form.password]);
-  const strengthLabel = ["Too weak", "Weak", "Fair", "Good", "Strong"][strength];
+  // Score count out of 5
+  const strengthScore = useMemo(() => {
+    let score = 0;
+    if (passChecks.length) score++;
+    if (passChecks.hasNumber) score++;
+    if (passChecks.hasUpper) score++;
+    if (passChecks.hasLower) score++;
+    if (passChecks.notCommon) score++;
+    return score;
+  }, [passChecks]);
+
+  const strengthLabel = ["Too weak", "Weak", "Fair", "Good", "Strong"][Math.max(0, strengthScore - 1)] || "Too weak";
   const strengthColor = [
-    "bg-destructive",
-    "bg-destructive",
-    "bg-ghana-gold",
-    "bg-primary",
-    "bg-primary",
-  ][strength];
+    "bg-destructive", // 0
+    "bg-destructive", // 1
+    "bg-destructive", // 2
+    "bg-ghana-gold",   // 3
+    "bg-primary",      // 4
+    "bg-primary",      // 5
+  ][strengthScore];
 
-  // Reset uni sub-type & school selection when school type changes
-  useEffect(() => {
-    setForm((f) => ({ ...f, uniType: "", school: "" }));
-  }, [form.schoolType]);
-
-  useEffect(() => {
-    setForm((f) => ({ ...f, school: "" }));
-  }, [form.uniType]);
-
-  // Handle navigation
-  const nextStep = async () => {
+  // Submit Step 1: Send Verification Code
+  const handleCreateAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
     setErrors({});
-    if (step === 1) {
-      const result = step1Schema.safeParse({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        password: form.password,
-        confirm: form.confirm,
-      });
-      if (!result.success) {
-        const errs: Record<string, string> = {};
-        result.error.issues.forEach((i) => (errs[i.path[0] as string] = i.message));
-        setErrors(errs);
-        return;
-      }
-      setStep(2);
-    } else if (step === 2) {
-      const result = step2Schema.safeParse({
-        gender: form.gender,
-        nationality: form.nationality,
-        church: form.church,
-        niche: form.niche,
-      });
-      if (!result.success) {
-        const errs: Record<string, string> = {};
-        result.error.issues.forEach((i) => (errs[i.path[0] as string] = i.message));
-        setErrors(errs);
-        return;
-      }
-      setStep(3);
-    } else if (step === 3) {
-      const result = step3Schema.safeParse({
-        schoolType: form.schoolType,
-        uniType: form.uniType || undefined,
-        school: form.school,
-        faculty: form.faculty,
-        department: form.department,
-        program: form.program,
-        level: form.level,
-        status: form.status,
-      });
-      if (!result.success) {
-        const errs: Record<string, string> = {};
-        result.error.issues.forEach((i) => (errs[i.path[0] as string] = i.message));
-        setErrors(errs);
-        return;
-      }
 
-      // Trigger verification code sending when moving to Step 4
-      setVerificationLoading(true);
-      try {
-        await sendVerificationCode(form.email, form.phone);
-        setStep(4);
-      } catch (err) {
-        toast.error("Failed to send verification code. Try again.");
-      } finally {
-        setVerificationLoading(false);
-      }
+    const result = registerSchema.safeParse(form);
+    if (!result.success) {
+      const errs: Record<string, string> = {};
+      result.error.issues.forEach((i) => (errs[i.path[0] as string] = i.message));
+      setErrors(errs);
+      return;
+    }
+
+    setVerificationLoading(true);
+    try {
+      // Dispatch OTP code via backend SMTP route
+      await sendVerificationCode(form.email, form.phone);
+      setStep(2);
+      toast.success("Verification code sent to your email!");
+    } catch (err) {
+      toast.error("Failed to send verification code. Try again.");
+    } finally {
+      setVerificationLoading(false);
     }
   };
 
-  const prevStep = () => {
-    setErrors({});
-    setStep((s) => Math.max(1, s - 1));
-  };
-
+  // Submit Step 2: Verify Code and complete registration
   const submitRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!verificationCode.trim()) {
@@ -231,7 +136,27 @@ export default function Register() {
         return;
       }
 
-      await register(form);
+      // Complete registration with the simplified details
+      // Fill out backward compatible mock values for other fields required by DB/context
+      await register({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+        gender: "other",
+        nationality: "Ghanaian",
+        school: "",
+        schoolType: "University",
+        uniType: "Public",
+        faculty: "",
+        department: "",
+        program: "",
+        level: form.level,
+        status: form.status,
+        church: "",
+        niche: "",
+      });
+
       setDone(true);
       toast.success("Verification successful! Account created.");
       setTimeout(() => navigate("/dashboard"), 1500);
@@ -271,36 +196,21 @@ export default function Register() {
     );
   }
 
-  const stepPercentage = (step / 4) * 100;
-
   return (
     <AuthShell
-      title="Create your account"
-      subtitle={`Step ${step} of 4 — ${["Account Credentials", "Personal Details", "Institution Info", "Verify Profile"][step - 1]}`}
-      footer={
-        step === 1 ? (
-          <>
-            Already a member?{" "}
-            <Link to="/login" className="text-primary font-medium hover:underline">
-              Sign in
-            </Link>
-          </>
-        ) : null
-      }
+      title="Welcome"
+      subtitle="Sign in to access your account or create a new one"
     >
-      <div className="mb-6">
-        <Progress value={stepPercentage} className="h-2" />
-        <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground mt-2 font-medium gap-1">
-          <span className={`${step >= 1 ? "text-primary font-bold" : ""} text-center`}>
-            Credentials
-          </span>
-          <span className={`${step >= 2 ? "text-primary font-bold" : ""} text-center`}>
-            Personal
-          </span>
-          <span className={`${step >= 3 ? "text-primary font-bold" : ""} text-center`}>School</span>
-          <span className={`${step >= 4 ? "text-primary font-bold" : ""} text-center`}>
-            Verification
-          </span>
+      {/* Navigation tab control */}
+      <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
+        <Link
+          to="/login"
+          className="flex-1 text-center py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-secondary transition-all"
+        >
+          Sign In
+        </Link>
+        <div className="flex-1 text-center py-2.5 rounded-lg text-sm font-bold bg-white text-secondary shadow-soft">
+          Sign Up
         </div>
       </div>
 
@@ -315,131 +225,156 @@ export default function Register() {
               transition={{ duration: 0.3 }}
               className="space-y-4"
             >
-              {CLIENT_ID && (
-                <>
-                  <div className="flex justify-center w-full">
-                    {isMockClientId(CLIENT_ID) ? (
-                      <MockGoogleButton
-                        onClick={() => {
-                          const profile = decodeGoogleCredential("mock-credential");
-                          if (!profile) return;
-                          setForm((f) => ({
-                            ...f,
-                            name: profile.name,
-                            email: profile.email,
-                          }));
-                          toast.success("Google account linked! Fill in your details to continue.");
-                        }}
-                        text="Sign up with Google"
-                      />
-                    ) : (
-                      <GoogleLogin
-                        onSuccess={(response) => {
-                          const profile = decodeGoogleCredential(response.credential || "");
-                          if (!profile) return;
-                          setForm((f) => ({
-                            ...f,
-                            name: profile.name,
-                            email: profile.email,
-                          }));
-                          toast.success("Google account linked! Fill in your details to continue.");
-                        }}
-                        onError={() => toast.error("Google sign-up failed")}
-                        theme="outline"
-                        size="large"
-                        text="signup_with"
-                        shape="rectangular"
-                        width="100%"
-                      />
-                    )}
+
+
+              <form onSubmit={handleCreateAccount} className="space-y-4">
+                <div className="space-y-1">
+                  <Label htmlFor="name">Full name</Label>
+                  <Input
+                    id="name"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="Your full name"
+                  />
+                  {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="status">I am a *</Label>
+                    <Select
+                      value={form.status}
+                      onValueChange={(v) => setForm({ ...form, status: v })}
+                    >
+                      <SelectTrigger id="status">
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Student">Student</SelectItem>
+                        <SelectItem value="Alumni">Alumni</SelectItem>
+                        <SelectItem value="Faculty">Faculty</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.status && <p className="text-xs text-destructive">{errors.status}</p>}
                   </div>
-                  <div className="relative py-2">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-muted-foreground">
-                        or fill in manually
-                      </span>
-                    </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="level">Academic Level</Label>
+                    <Select
+                      value={form.level}
+                      onValueChange={(v) => setForm({ ...form, level: v })}
+                    >
+                      <SelectTrigger id="level">
+                        <SelectValue placeholder="Select Level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Undergraduate">Undergraduate</SelectItem>
+                        <SelectItem value="Postgraduate">Postgraduate</SelectItem>
+                        <SelectItem value="High School">High School</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.level && <p className="text-xs text-destructive">{errors.level}</p>}
                   </div>
-                </>
-              )}
-              <div className="space-y-1">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Your full name"
-                />
-                {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
-              </div>
+                </div>
 
-              <div className="space-y-1">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="you@example.com"
-                />
-                {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-              </div>
+                <div className="space-y-1">
+                  <Label htmlFor="email">Email address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="you@example.com"
+                  />
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                </div>
 
-              <div className="space-y-1">
-                <Label htmlFor="phone">Phone Number (For SMS)</Label>
-                <Input
-                  id="phone"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  placeholder="+233 50 000 0000"
-                />
-                {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
-              </div>
+                <div className="space-y-1">
+                  <Label htmlFor="phone">Phone number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    placeholder="+233 50 000 0000"
+                  />
+                  {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
+                </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={form.password}
+                      onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+
+                  {/* Password strength & requirements checklist */}
                   {form.password && (
-                    <div className="mt-1">
-                      <div className="flex gap-1">
-                        {[0, 1, 2, 3].map((i) => (
-                          <div
-                            key={i}
-                            className={`h-1 flex-1 rounded ${i < strength ? strengthColor : "bg-muted"}`}
-                          />
-                        ))}
+                    <div className="mt-2.5">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex gap-1 flex-1 max-w-[200px]">
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <div
+                              key={i}
+                              className={`h-1.5 flex-1 rounded ${i <= strengthScore ? strengthColor : "bg-muted"}`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-bold text-muted-foreground tracking-wide uppercase">
+                          {strengthLabel}
+                        </span>
                       </div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5">
-                        {strengthLabel}
+
+                      {/* Checklist grid matching reference image */}
+                      <div className="grid grid-cols-2 gap-y-1.5 gap-x-4 text-[10px] sm:text-xs text-muted-foreground mt-2 border-t pt-2">
+                        <div className={`flex items-center gap-1.5 ${passChecks.length ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                          <CheckCircle2 className={`h-3.5 w-3.5 ${passChecks.length ? "text-primary" : "text-slate-300"}`} />
+                          <span>At least 8 characters</span>
+                        </div>
+                        <div className={`flex items-center gap-1.5 ${passChecks.hasNumber ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                          <CheckCircle2 className={`h-3.5 w-3.5 ${passChecks.hasNumber ? "text-primary" : "text-slate-300"}`} />
+                          <span>Contains a number</span>
+                        </div>
+                        <div className={`flex items-center gap-1.5 ${passChecks.hasUpper ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                          <CheckCircle2 className={`h-3.5 w-3.5 ${passChecks.hasUpper ? "text-primary" : "text-slate-300"}`} />
+                          <span>Contains uppercase letter</span>
+                        </div>
+                        <div className={`flex items-center gap-1.5 ${passChecks.hasLower ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                          <CheckCircle2 className={`h-3.5 w-3.5 ${passChecks.hasLower ? "text-primary" : "text-slate-300"}`} />
+                          <span>Contains lowercase letter</span>
+                        </div>
+                        <div className={`flex items-center gap-1.5 ${passChecks.notCommon ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+                          <CheckCircle2 className={`h-3.5 w-3.5 ${passChecks.notCommon ? "text-primary" : "text-slate-300"}`} />
+                          <span>Not a common password</span>
+                        </div>
                       </div>
                     </div>
                   )}
-                  {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="confirm">Confirm Password</Label>
-                  <Input
-                    id="confirm"
-                    type="password"
-                    value={form.confirm}
-                    onChange={(e) => setForm({ ...form, confirm: e.target.value })}
-                  />
-                  {errors.confirm && <p className="text-xs text-destructive">{errors.confirm}</p>}
-                </div>
-              </div>
 
-              <Button onClick={nextStep} className="w-full mt-4 h-12 sm:h-11">
-                Continue <ArrowRight className="h-4 w-4 ml-1.5" />
-              </Button>
+                <Button
+                  type="submit"
+                  disabled={verificationLoading}
+                  size="lg"
+                  className="w-full mt-6 h-12"
+                >
+                  {verificationLoading ? "Sending Code..." : "Create Account"} <ArrowRight className="h-4 w-4 ml-1.5" />
+                </Button>
+              </form>
             </motion.div>
           )}
 
@@ -450,300 +385,15 @@ export default function Register() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
-              className="space-y-4"
-            >
-              <div className="space-y-1">
-                <Label htmlFor="gender">Gender</Label>
-                <Select value={form.gender} onValueChange={(v) => setForm({ ...form, gender: v })}>
-                  <SelectTrigger id="gender">
-                    <SelectValue placeholder="Select Gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other / Prefer not to say</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.gender && <p className="text-xs text-destructive">{errors.gender}</p>}
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="nationality">Nationality</Label>
-                <Input
-                  id="nationality"
-                  value={form.nationality}
-                  onChange={(e) => setForm({ ...form, nationality: e.target.value })}
-                />
-                {errors.nationality && (
-                  <p className="text-xs text-destructive">{errors.nationality}</p>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="church">Church Affiliation</Label>
-                <Select value={form.church} onValueChange={(v) => setForm({ ...form, church: v })}>
-                  <SelectTrigger id="church">
-                    <SelectValue placeholder="Select Church" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CHURCHES.map((ch) => (
-                      <SelectItem key={ch} value={ch}>
-                        {ch}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.church && <p className="text-xs text-destructive">{errors.church}</p>}
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="niche">Focus Niche / Category</Label>
-                <Select value={form.niche} onValueChange={(v) => setForm({ ...form, niche: v })}>
-                  <SelectTrigger id="niche">
-                    <SelectValue placeholder="Select Niche Focus" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {NICHES.map((n) => (
-                      <SelectItem key={n} value={n}>
-                        {n}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.niche && <p className="text-xs text-destructive">{errors.niche}</p>}
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                <Button
-                  variant="outline"
-                  onClick={prevStep}
-                  className="flex-1 sm:w-1/3 sm:flex-none h-11"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
-                </Button>
-                <Button onClick={nextStep} className="flex-1 sm:w-2/3 sm:flex-none h-11">
-                  Continue <ArrowRight className="h-4 w-4 ml-1.5" />
-                </Button>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-3"
-            >
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="schoolType">School Type</Label>
-                  <Select
-                    value={form.schoolType}
-                    onValueChange={(v) => setForm({ ...form, schoolType: v })}
-                  >
-                    <SelectTrigger id="schoolType">
-                      <SelectValue placeholder="Select Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="University">University</SelectItem>
-                      <SelectItem value="Nursing & Midwifery">Nursing & Midwifery</SelectItem>
-                      <SelectItem value="College of Education">College of Education</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.schoolType && (
-                    <p className="text-xs text-destructive">{errors.schoolType}</p>
-                  )}
-                </div>
-
-                {form.schoolType === "University" && (
-                  <div className="space-y-1">
-                    <Label htmlFor="uniType">University Sub-type</Label>
-                    <Select
-                      value={form.uniType}
-                      onValueChange={(v) => setForm({ ...form, uniType: v })}
-                    >
-                      <SelectTrigger id="uniType">
-                        <SelectValue placeholder="Select Category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Public">Public Universities</SelectItem>
-                        <SelectItem value="Technical">Technical Universities</SelectItem>
-                        <SelectItem value="Private">Private Universities</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.uniType && <p className="text-xs text-destructive">{errors.uniType}</p>}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="school">School / Institution Name</Label>
-                <Select
-                  value={form.school}
-                  onValueChange={(v) => setForm({ ...form, school: v })}
-                  disabled={!form.schoolType || (form.schoolType === "University" && !form.uniType)}
-                >
-                  <SelectTrigger id="school" className="text-left whitespace-normal h-auto py-2">
-                    <SelectValue
-                      placeholder={
-                        !form.schoolType ? "Select School Type First" : "Select Institution"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {filteredSchools.map((s) => (
-                      <SelectItem key={s.name} value={s.name}>
-                        {s.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.school && <p className="text-xs text-destructive">{errors.school}</p>}
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="faculty">Faculty</Label>
-                  <Select
-                    value={form.faculty}
-                    onValueChange={(v) => setForm({ ...form, faculty: v })}
-                  >
-                    <SelectTrigger id="faculty">
-                      <SelectValue placeholder="Select Faculty" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {FACULTIES.map((f) => (
-                        <SelectItem key={f} value={f}>
-                          {f}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.faculty && <p className="text-xs text-destructive">{errors.faculty}</p>}
-                </div>
-
-                <div className="space-y-1">
-                  <Label htmlFor="department">Department</Label>
-                  <Select
-                    value={form.department}
-                    onValueChange={(v) => setForm({ ...form, department: v })}
-                  >
-                    <SelectTrigger id="department">
-                      <SelectValue placeholder="Select Department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DEPARTMENTS.map((d) => (
-                        <SelectItem key={d} value={d}>
-                          {d}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.department && (
-                    <p className="text-xs text-destructive">{errors.department}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="program">Programme of Study</Label>
-                  <Select
-                    value={form.program}
-                    onValueChange={(v) => setForm({ ...form, program: v })}
-                  >
-                    <SelectTrigger id="program">
-                      <SelectValue placeholder="Select Programme" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PROGRAMMES.map((p) => (
-                        <SelectItem key={p} value={p}>
-                          {p}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.program && <p className="text-xs text-destructive">{errors.program}</p>}
-                </div>
-
-                <div className="space-y-1">
-                  <Label htmlFor="level">Current Level</Label>
-                  <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v })}>
-                    <SelectTrigger id="level">
-                      <SelectValue placeholder="Select Level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LEVELS.map((l) => (
-                        <SelectItem key={l} value={l}>
-                          Level {l}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.level && <p className="text-xs text-destructive">{errors.level}</p>}
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="status">Student / Professional Status</Label>
-                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active Student">Active Student</SelectItem>
-                    <SelectItem value="Alumni">Alumni</SelectItem>
-                    <SelectItem value="Completed">Completed Study</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.status && <p className="text-xs text-destructive">{errors.status}</p>}
-              </div>
-
-              <div className="flex gap-3 mt-4">
-                <Button
-                  variant="outline"
-                  onClick={prevStep}
-                  className="flex-1 sm:w-1/3 sm:flex-none h-11"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
-                </Button>
-                <Button
-                  onClick={nextStep}
-                  disabled={verificationLoading}
-                  className="flex-1 sm:w-2/3 sm:flex-none h-11"
-                >
-                  {verificationLoading ? "Sending Code..." : "Continue"}{" "}
-                  <ArrowRight className="h-4 w-4 ml-1.5" />
-                </Button>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 4 && (
-            <motion.div
-              key="step4"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
               className="space-y-5"
             >
               <div className="p-4 bg-muted/50 border rounded-2xl flex flex-col items-center text-center">
-                <div className="flex gap-3 mb-2">
-                  <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <Mail className="h-4.5 w-4.5" />
-                  </div>
-                  <div className="h-9 w-9 rounded-full bg-accent/20 flex items-center justify-center text-accent-foreground">
-                    <Smartphone className="h-4.5 w-4.5" />
-                  </div>
+                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+                  <Mail className="h-4.5 w-4.5" />
                 </div>
-                <h4 className="font-bold text-secondary text-sm">Security Codes Sent!</h4>
+                <h4 className="font-bold text-secondary text-sm">Security Code Sent!</h4>
                 <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                  We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong> and
-                  SMS to <strong>{form.phone}</strong>.
+                  We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>.
                 </p>
               </div>
 
@@ -779,7 +429,7 @@ export default function Register() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={prevStep}
+                    onClick={() => setStep(1)}
                     className="flex-1 sm:w-1/3 sm:flex-none h-11"
                     disabled={loading}
                   >

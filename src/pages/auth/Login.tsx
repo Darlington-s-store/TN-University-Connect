@@ -71,17 +71,22 @@ export default function Login() {
 
   return (
     <AuthShell
-      title="Welcome back"
-      subtitle="Sign in to access your TN Universities Connect dashboard."
-      footer={
-        <>
-          New here?{" "}
-          <Link to="/register" className="text-primary font-medium hover:underline">
-            Create an account
-          </Link>
-        </>
-      }
+      title="Welcome"
+      subtitle="Sign in to access your account or create a new one"
     >
+      {/* Navigation tab control */}
+      <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
+        <div className="flex-1 text-center py-2.5 rounded-lg text-sm font-bold bg-white text-secondary shadow-soft cursor-default">
+          Sign In
+        </div>
+        <Link
+          to="/register"
+          className="flex-1 text-center py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-secondary transition-all"
+        >
+          Sign Up
+        </Link>
+      </div>
+
       <form onSubmit={submit} className="space-y-4" noValidate>
         <div>
           <Label htmlFor="email">Email</Label>
