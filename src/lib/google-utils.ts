@@ -4,8 +4,7 @@ export const CLIENT_ID =
 export const isMockClientId = (clientId: string) => {
   return (
     !clientId ||
-    clientId.includes("your-google-client-id") ||
-    clientId.includes("y84712210666-sl4hjbnsrot1v0f1c3u4mncq7a9363hj")
+    clientId.includes("your-google-client-id")
   );
 };
 
