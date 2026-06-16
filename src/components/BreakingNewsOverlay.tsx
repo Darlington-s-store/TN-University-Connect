@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export default function BreakingNewsOverlay() {
   const [visible, setVisible] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(300);
+  const [timeLeft, setTimeLeft] = useState(8);
 
   useEffect(() => {
     if (!visible) return;
