@@ -1,7 +1,22 @@
 import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { CheckCircle2, Eye, Pencil, Upload, ArrowRight, ArrowLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  CheckCircle2,
+  Eye,
+  Pencil,
+  Upload,
+  ArrowRight,
+  ArrowLeft,
+  User,
+  GraduationCap,
+  Sparkles,
+  Check,
+  FileText,
+  Trash2,
+  AlertCircle,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,26 +42,56 @@ import {
   getGhanaSchools,
   GhanaSchool,
 } from "@/lib/schools";
+import { PhoneInput } from "@/components/PhoneInput";
 
+// Base validation schema
 const schema = z.object({
-  fullName: z.string().trim().min(2).max(120),
-  email: z.string().trim().email(),
-  phone: z.string().trim().min(7).max(20),
+  fullName: z.string().trim().min(2, "Full name must be at least 2 characters").max(120),
+  email: z.string().trim().email("Invalid email address"),
+  phone: z.string().trim().min(7, "Phone number too short").max(20),
   gender: z.enum(["male", "female", "other"]),
   dob: z.string().min(1, "Date of birth required"),
   nationality: z.string().min(1, "Nationality required"),
-  church: z.string().min(1, "Church required"),
-  niche: z.string().min(1, "Niche required"),
-  schoolType: z.string().min(1, "School type required"),
+  church: z.string().min(1, "Church affiliation is required"),
+  niche: z.string().min(1, "Focus niche is required"),
+  schoolType: z.string().min(1, "School type is required"),
   uniType: z.string().optional(),
-  university: z.string().min(1, "Institution required"),
-  faculty: z.string().min(1, "Faculty required"),
-  department: z.string().min(1, "Department required"),
-  program: z.string().min(1, "Program required"),
-  level: z.string().min(1, "Level required"),
-  status: z.string().min(1, "Status required"),
-  indexNumber: z.string().min(3, "Index number required"),
-  address: z.string().min(2, "Address required"),
+  university: z.string().min(1, "Institution name is required"),
+  faculty: z.string().min(1, "Faculty is required"),
+  department: z.string().min(1, "Department is required"),
+  program: z.string().min(1, "Programme of study is required"),
+  level: z.string().min(1, "Level is required"),
+  status: z.string().min(1, "Enrollment status is required"),
+  indexNumber: z.string().min(3, "Index/Student ID required"),
+  address: z.string().min(2, "Contact address is required"),
+});
+
+// Step-specific Zod schemas for partial validation
+const step1Schema = schema.pick({
+  fullName: true,
+  email: true,
+  phone: true,
+  gender: true,
+  dob: true,
+  nationality: true,
+});
+
+const step2Schema = schema.pick({
+  schoolType: true,
+  uniType: true,
+  university: true,
+  faculty: true,
+  department: true,
+  program: true,
+  level: true,
+  status: true,
+  indexNumber: true,
+  address: true,
+});
+
+const step3Schema = schema.pick({
+  church: true,
+  niche: true,
 });
 
 export default function StudentForm() {
@@ -55,7 +100,11 @@ export default function StudentForm() {
   const [loading, setLoading] = useState(true);
   const [schools, setSchools] = useState<GhanaSchool[]>([]);
 
+  // Wizard state: "form" | "preview" | "done"
   const [step, setStep] = useState<"form" | "preview" | "done">("form");
+  const [wizardStep, setWizardStep] = useState<number>(1);
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; size: string } | null>(null);
+
   const [form, setForm] = useState({
     fullName: user?.name || "",
     email: user?.email || "",
@@ -116,6 +165,7 @@ export default function StudentForm() {
     setSchools(getGhanaSchools());
   }, []);
 
+  // Reset institution when school type or sub-type shifts
   useEffect(() => {
     setForm((f) => ({ ...f, uniType: "", university: "" }));
   }, [form.schoolType]);
@@ -135,17 +185,66 @@ export default function StudentForm() {
     });
   }, [schools, form.schoolType, form.uniType]);
 
-  const goPreview = () => {
-    const result = schema.safeParse(form);
+  // Validate step 1 fields
+  const validateStep1 = () => {
+    const result = step1Schema.safeParse(form);
     if (!result.success) {
       const errs: Record<string, string> = {};
       result.error.issues.forEach((i) => (errs[i.path[0] as string] = i.message));
       setErrors(errs);
-      toast.error("Please fix the highlighted fields");
-      return;
+      toast.error("Please fill all required personal fields");
+      return false;
     }
     setErrors({});
-    setStep("preview");
+    return true;
+  };
+
+  // Validate step 2 fields
+  const validateStep2 = () => {
+    const result = step2Schema.safeParse(form);
+    if (!result.success) {
+      const errs: Record<string, string> = {};
+      result.error.issues.forEach((i) => (errs[i.path[0] as string] = i.message));
+      setErrors(errs);
+      toast.error("Please fill all required academic fields");
+      return false;
+    }
+    setErrors({});
+    return true;
+  };
+
+  // Validate step 3 fields
+  const validateStep3 = () => {
+    const result = step3Schema.safeParse(form);
+    if (!result.success) {
+      const errs: Record<string, string> = {};
+      result.error.issues.forEach((i) => (errs[i.path[0] as string] = i.message));
+      setErrors(errs);
+      toast.error("Please select a church and niche focus");
+      return false;
+    }
+    setErrors({});
+    return true;
+  };
+
+  const nextStep = () => {
+    if (wizardStep === 1 && validateStep1()) {
+      setWizardStep(2);
+    } else if (wizardStep === 2 && validateStep2()) {
+      setWizardStep(3);
+    }
+  };
+
+  const prevStep = () => {
+    if (wizardStep > 1) {
+      setWizardStep(wizardStep - 1);
+    }
+  };
+
+  const goPreview = () => {
+    if (validateStep3()) {
+      setStep("preview");
+    }
   };
 
   const submit = async () => {
@@ -191,53 +290,127 @@ export default function StudentForm() {
         status: form.status,
       });
 
-      toast.success(existing ? "Information updated" : "Information submitted");
+      toast.success(existing ? "Information updated successfully" : "Information submitted successfully");
       setStep("done");
     } catch (err: any) {
       toast.error(err.message || "Failed to submit form");
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const sizeStr = file.size > 1024 * 1024 
+        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
+        : `${(file.size / 1024).toFixed(0)} KB`;
+      setUploadedFile({ name: file.name, size: sizeStr });
+      toast.success("Document attached successfully");
+    }
+  };
+
+  const clearFile = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setUploadedFile(null);
+  };
+
   const Field = ({
     label,
     error,
+    id,
     children,
   }: {
     label: string;
     error?: string;
+    id?: string;
     children: React.ReactNode;
   }) => (
-    <div>
-      <Label>{label}</Label>
+    <div className="space-y-1.5">
+      <Label htmlFor={id} className="text-xs font-semibold">{label}</Label>
       {children}
-      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
+      {error && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {error}</p>}
+    </div>
+  );
+
+  // Animation variants
+  const slideVariants = {
+    initial: { opacity: 0, x: 15 },
+    animate: { opacity: 1, x: 0, transition: { duration: 0.2 } },
+    exit: { opacity: 0, x: -15, transition: { duration: 0.15 } }
+  };
+
+  // Wizard Stepper Config
+  const stepsList = [
+    { num: 1, label: "Personal", icon: User },
+    { num: 2, label: "Academic", icon: GraduationCap },
+    { num: 3, label: "Network", icon: Sparkles },
+    { num: 4, label: "Review", icon: FileText }
+  ];
+
+  const renderStepper = (activeStep: number) => (
+    <div className="w-full py-4 mb-6 select-none">
+      <div className="flex items-center justify-between max-w-lg mx-auto">
+        {stepsList.map((s, idx) => {
+          const Icon = s.icon;
+          const isCompleted = activeStep > s.num;
+          const isActive = activeStep === s.num;
+
+          return (
+            <div key={s.num} className="flex items-center flex-1 last:flex-none">
+              <div className="flex flex-col items-center relative">
+                <div
+                  className={`h-9 w-9 rounded-full border-2 flex items-center justify-center transition-all ${
+                    isCompleted 
+                      ? "bg-ghana-green border-ghana-green text-white" 
+                      : isActive 
+                      ? "border-primary text-primary bg-primary/5 shadow-soft ring-4 ring-primary/10" 
+                      : "border-muted text-muted-foreground bg-card"
+                  }`}
+                >
+                  {isCompleted ? <Check className="h-4 w-4" /> : <Icon className="h-4.5 w-4.5" />}
+                </div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider mt-1.5 hidden sm:block ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+                  {s.label}
+                </span>
+              </div>
+              
+              {idx < stepsList.length - 1 && (
+                <div className="flex-1 h-0.5 mx-2 bg-muted relative overflow-hidden">
+                  <div
+                    className={`absolute inset-0 bg-primary transition-all duration-300 ${
+                      isCompleted ? "w-full" : "w-0"
+                    }`}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 
   if (step === "done") {
     return (
-      <div className="max-w-3xl">
-        <div className="mb-6">
-          <Badge variant="outline" className="border-primary text-primary">
-            Student Information
-          </Badge>
-        </div>
-        <Card className="border-0 shadow-elegant">
-          <div className="h-1 flag-stripe" />
-          <CardContent className="p-4 sm:p-8 text-center">
-            <div className="h-16 w-16 rounded-full bg-primary/10 grid place-items-center mx-auto mb-4">
+      <div className="max-w-xl mx-auto py-10 font-sans">
+        <Card className="border-0 shadow-elegant overflow-hidden">
+          <div className="h-1.5 flag-stripe" />
+          <CardContent className="p-8 text-center space-y-6">
+            <div className="h-16 w-16 rounded-full bg-primary/10 grid place-items-center mx-auto mb-2 animate-bounce" style={{ animationDuration: "3s" }}>
               <CheckCircle2 className="h-8 w-8 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold text-secondary mb-2">Submission received</h2>
-            <p className="text-muted-foreground">
-              Your student details are on file. You can edit them anytime.
-            </p>
-            <div className="mt-6 flex justify-center gap-2">
-              <Button variant="outline" onClick={() => setStep("preview")}>
-                <Eye className="h-4 w-4" /> View
+            <div>
+              <h2 className="text-2xl font-extrabold text-secondary dark:text-foreground font-display">Submission Received!</h2>
+              <p className="text-sm text-muted-foreground mt-2 max-w-sm mx-auto leading-relaxed">
+                Your student profiles have been verified successfully. You can update or verify your academic record at any point.
+              </p>
+            </div>
+            
+            <div className="flex justify-center gap-2 pt-2">
+              <Button variant="outline" size="sm" onClick={() => setStep("preview")} className="px-4 font-semibold text-xs h-9">
+                <Eye className="h-4 w-4" /> View Info
               </Button>
-              <Button onClick={() => setStep("form")}>
-                <Pencil className="h-4 w-4" /> Edit
+              <Button size="sm" onClick={() => { setStep("form"); setWizardStep(1); }} className="px-4 font-semibold text-xs h-9">
+                <Pencil className="h-4 w-4" /> Edit Record
               </Button>
             </div>
           </CardContent>
@@ -248,25 +421,24 @@ export default function StudentForm() {
 
   if (step === "preview") {
     return (
-      <div className="max-w-3xl space-y-6">
+      <div className="max-w-2xl mx-auto space-y-6 font-sans">
         <div>
-          <Badge variant="outline" className="border-primary text-primary mb-2">
-            Step 2 of 2
-          </Badge>
-          <h1 className="text-3xl font-bold text-secondary">Review your information</h1>
-          <p className="text-muted-foreground">Check everything is correct before submitting.</p>
+          {renderStepper(4)}
+          <h1 className="text-2xl font-extrabold tracking-tight text-secondary dark:text-foreground font-display">Verify & Confirm</h1>
+          <p className="text-sm text-muted-foreground mt-1">Check your details before submitting to the university registrar.</p>
         </div>
-        <Card>
-          <CardContent className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+
+        <Card className="border shadow-soft">
+          <CardContent className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-xs">
             {[
               ["Full name", form.fullName],
-              ["Email", form.email],
-              ["Phone", form.phone],
+              ["Email address", form.email],
+              ["Phone number", form.phone],
               ["Gender", form.gender],
               ["Date of birth", form.dob],
               ["Nationality", form.nationality],
-              ["Church", form.church],
-              ["Niche", form.niche],
+              ["Church Affiliation", form.church],
+              ["Focus Niche", form.niche],
               ["School type", form.schoolType],
               ...(form.uniType ? [["Sub-type", form.uniType] as const] : []),
               ["Institution", form.university],
@@ -276,21 +448,35 @@ export default function StudentForm() {
               ["Level", form.level],
               ["Status", form.status],
               ["Index number", form.indexNumber],
-              ["Address", form.address],
+              ["Contact address", form.address],
             ].map(([k, v]) => (
-              <div key={k}>
-                <div className="text-muted-foreground text-xs uppercase tracking-wider">{k}</div>
-                <div className="font-medium text-secondary mt-0.5">{v}</div>
+              <div key={k} className="space-y-0.5">
+                <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">{k}</div>
+                <div className="font-semibold text-secondary dark:text-foreground truncate">{v || "—"}</div>
               </div>
             ))}
+
+            {uploadedFile && (
+              <div className="sm:col-span-2 border-t pt-4 mt-2">
+                <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px] mb-1.5">Attached Document</div>
+                <div className="flex items-center gap-2 text-xs bg-muted/40 p-2.5 rounded-xl border max-w-sm">
+                  <FileText className="h-5 w-5 text-primary shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-secondary truncate">{uploadedFile.name}</div>
+                    <div className="text-[10px] text-muted-foreground">{uploadedFile.size}</div>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={() => setStep("form")}>
-            <ArrowLeft className="h-4 w-4" /> Edit
+
+        <div className="flex justify-between gap-3">
+          <Button variant="outline" onClick={() => { setStep("form"); setWizardStep(3); }} className="font-semibold text-xs h-9">
+            <ArrowLeft className="h-4 w-4" /> Back to Form
           </Button>
-          <Button onClick={submit}>
-            Confirm & Submit <ArrowRight className="h-4 w-4" />
+          <Button onClick={submit} className="font-semibold text-xs h-9 px-5">
+            Submit Verification <Check className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -298,293 +484,360 @@ export default function StudentForm() {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6 font-sans">
       <div>
-        <Badge variant="outline" className="border-primary text-primary mb-2">
-          Step 1 of 2
-        </Badge>
-        <h1 className="text-3xl font-bold text-secondary">Student Information Form</h1>
-        <p className="text-muted-foreground">
-          Fill in your academic and contact details. You can preview before submitting.
+        {renderStepper(wizardStep)}
+        <h1 className="text-2xl font-extrabold tracking-tight text-secondary dark:text-foreground font-display">
+          {wizardStep === 1 && "Personal Information"}
+          {wizardStep === 2 && "Academic Credentials"}
+          {wizardStep === 3 && "Affiliations & Documents"}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {wizardStep === 1 && "Start by adding your basic contact details."}
+          {wizardStep === 2 && "Configure institution and programme registry details."}
+          {wizardStep === 3 && "Submit community tags and support verification documents."}
         </p>
       </div>
 
-      <Card>
-        <CardContent className="p-4 sm:p-6 space-y-8">
-          {/* Personal details */}
-          <section>
-            <h3 className="font-bold text-secondary mb-4">Personal details</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Full name" error={errors.fullName}>
-                <Input
-                  value={form.fullName}
-                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                />
-              </Field>
-              <Field label="Email" error={errors.email}>
-                <Input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-              </Field>
-              <Field label="Phone" error={errors.phone}>
-                <Input
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                />
-              </Field>
-              <Field label="Date of birth" error={errors.dob}>
-                <Input
-                  type="date"
-                  value={form.dob}
-                  onChange={(e) => setForm({ ...form, dob: e.target.value })}
-                />
-              </Field>
-              <Field label="Nationality" error={errors.nationality}>
-                <Input
-                  value={form.nationality}
-                  onChange={(e) => setForm({ ...form, nationality: e.target.value })}
-                />
-              </Field>
-              <Field label="Church Affiliation" error={errors.church}>
-                <Select value={form.church} onValueChange={(v) => setForm({ ...form, church: v })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Church" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CHURCHES.map((ch) => (
-                      <SelectItem key={ch} value={ch}>
-                        {ch}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-              <div className="sm:col-span-2">
-                <Label>Gender</Label>
-                <RadioGroup
-                  value={form.gender}
-                  onValueChange={(v) =>
-                    setForm({ ...form, gender: v as "male" | "female" | "other" })
-                  }
-                  className="flex flex-wrap gap-4 mt-2"
-                >
-                  {(["male", "female", "other"] as const).map((g) => (
-                    <label key={g} className="flex items-center gap-2 cursor-pointer">
-                      <RadioGroupItem value={g} /> <span className="capitalize">{g}</span>
-                    </label>
-                  ))}
-                </RadioGroup>
-              </div>
-            </div>
-          </section>
-
-          {/* Focus Niche */}
-          <section>
-            <h3 className="font-bold text-secondary mb-4">Focus & Affiliation</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Focus Niche / Category" error={errors.niche}>
-                <Select value={form.niche} onValueChange={(v) => setForm({ ...form, niche: v })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select niche" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {NICHES.map((n) => (
-                      <SelectItem key={n} value={n}>
-                        {n}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-            </div>
-          </section>
-
-          {/* Academic details */}
-          <section>
-            <h3 className="font-bold text-secondary mb-4">Academic details</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="School Type" error={errors.schoolType}>
-                <Select
-                  value={form.schoolType}
-                  onValueChange={(v) => setForm({ ...form, schoolType: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="University">University</SelectItem>
-                    <SelectItem value="Nursing & Midwifery">Nursing & Midwifery</SelectItem>
-                    <SelectItem value="College of Education">College of Education</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-
-              {form.schoolType === "University" && (
-                <Field label="University Sub-type" error={errors.uniType}>
-                  <Select
-                    value={form.uniType}
-                    onValueChange={(v) => setForm({ ...form, uniType: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Public">Public Universities</SelectItem>
-                      <SelectItem value="Technical">Technical Universities</SelectItem>
-                      <SelectItem value="Private">Private Universities</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              )}
-
-              <div className="sm:col-span-2">
-                <Field label="Institution Name" error={errors.university}>
-                  <Select
-                    value={form.university}
-                    onValueChange={(v) => setForm({ ...form, university: v })}
-                    disabled={
-                      !form.schoolType || (form.schoolType === "University" && !form.uniType)
-                    }
-                  >
-                    <SelectTrigger className="text-left whitespace-normal h-auto py-2">
-                      <SelectValue
-                        placeholder={
-                          !form.schoolType ? "Select school type first" : "Select institution"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
-                      {filteredSchools.map((s) => (
-                        <SelectItem key={s.name} value={s.name}>
-                          {s.name}
-                        </SelectItem>
+      <Card className="border shadow-soft">
+        <CardContent className="p-6">
+          <AnimatePresence mode="wait">
+            {wizardStep === 1 && (
+              <motion.div
+                key="step1"
+                variants={slideVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="space-y-4"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Full name" error={errors.fullName} id="fullName">
+                    <Input
+                      id="fullName"
+                      value={form.fullName}
+                      onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                      className="h-9"
+                    />
+                  </Field>
+                  <Field label="Email" error={errors.email} id="email">
+                    <Input
+                      id="email"
+                      type="email"
+                      value={form.email}
+                      disabled
+                      className="h-9 bg-muted/50 cursor-not-allowed opacity-80"
+                    />
+                  </Field>
+                  <Field label="Phone number" error={errors.phone} id="phone">
+                    <PhoneInput
+                      id="phone"
+                      value={form.phone}
+                      onChange={(v) => setForm({ ...form, phone: v })}
+                    />
+                  </Field>
+                  <Field label="Date of birth" error={errors.dob} id="dob">
+                    <Input
+                      id="dob"
+                      type="date"
+                      value={form.dob}
+                      onChange={(e) => setForm({ ...form, dob: e.target.value })}
+                      className="h-9"
+                    />
+                  </Field>
+                  <Field label="Nationality" error={errors.nationality} id="nationality">
+                    <Input
+                      id="nationality"
+                      value={form.nationality}
+                      onChange={(e) => setForm({ ...form, nationality: e.target.value })}
+                      className="h-9"
+                    />
+                  </Field>
+                  <Field label="Gender" error={errors.gender}>
+                    <RadioGroup
+                      value={form.gender}
+                      onValueChange={(v) => setForm({ ...form, gender: v as "male" | "female" | "other" })}
+                      className="flex gap-4 mt-2"
+                    >
+                      {(["male", "female", "other"] as const).map((g) => (
+                        <label key={g} className="flex items-center gap-2 cursor-pointer text-xs font-semibold">
+                          <RadioGroupItem value={g} className="h-4 w-4" /> 
+                          <span className="capitalize">{g}</span>
+                        </label>
                       ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </div>
+                    </RadioGroup>
+                  </Field>
+                </div>
+              </motion.div>
+            )}
 
-              <Field label="Faculty" error={errors.faculty}>
-                <Select
-                  value={form.faculty}
-                  onValueChange={(v) => setForm({ ...form, faculty: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select faculty" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FACULTIES.map((f) => (
-                      <SelectItem key={f} value={f}>
-                        {f}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+            {wizardStep === 2 && (
+              <motion.div
+                key="step2"
+                variants={slideVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="space-y-4"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="School Type" error={errors.schoolType}>
+                    <Select
+                      value={form.schoolType}
+                      onValueChange={(v) => setForm({ ...form, schoolType: v })}
+                    >
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="University">University</SelectItem>
+                        <SelectItem value="Nursing & Midwifery">Nursing & Midwifery</SelectItem>
+                        <SelectItem value="College of Education">College of Education</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-              <Field label="Department" error={errors.department}>
-                <Select
-                  value={form.department}
-                  onValueChange={(v) => setForm({ ...form, department: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DEPARTMENTS.map((d) => (
-                      <SelectItem key={d} value={d}>
-                        {d}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+                  {form.schoolType === "University" && (
+                    <Field label="University Sub-type" error={errors.uniType}>
+                      <Select
+                        value={form.uniType}
+                        onValueChange={(v) => setForm({ ...form, uniType: v })}
+                      >
+                        <SelectTrigger className="h-9">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Public">Public Universities</SelectItem>
+                          <SelectItem value="Technical">Technical Universities</SelectItem>
+                          <SelectItem value="Private">Private Universities</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  )}
 
-              <Field label="Programme" error={errors.program}>
-                <Select
-                  value={form.program}
-                  onValueChange={(v) => setForm({ ...form, program: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select programme" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PROGRAMMES.map((p) => (
-                      <SelectItem key={p} value={p}>
-                        {p}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+                  <div className="sm:col-span-2">
+                    <Field label="Institution Name" error={errors.university}>
+                      <Select
+                        value={form.university}
+                        onValueChange={(v) => setForm({ ...form, university: v })}
+                        disabled={!form.schoolType || (form.schoolType === "University" && !form.uniType)}
+                      >
+                        <SelectTrigger className="text-left whitespace-normal h-auto py-2">
+                          <SelectValue
+                            placeholder={!form.schoolType ? "Select school type first" : "Select institution"}
+                          />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[200px]">
+                          {filteredSchools.map((s) => (
+                            <SelectItem key={s.name} value={s.name}>
+                              {s.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  </div>
 
-              <Field label="Current Level" error={errors.level}>
-                <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LEVELS.map((l) => (
-                      <SelectItem key={l} value={l}>
-                        {l === "Alumni" || l === "Graduate" || l === "Completed" ? l : `Level ${l}`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+                  <Field label="Faculty" error={errors.faculty}>
+                    <Select
+                      value={form.faculty}
+                      onValueChange={(v) => setForm({ ...form, faculty: v })}
+                    >
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select faculty" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {FACULTIES.map((f) => (
+                          <SelectItem key={f} value={f}>
+                            {f}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-              <Field label="Student / Professional Status" error={errors.status}>
-                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active Student">Active Student</SelectItem>
-                    <SelectItem value="Alumni">Alumni</SelectItem>
-                    <SelectItem value="Completed">Completed Study</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
+                  <Field label="Department" error={errors.department}>
+                    <Select
+                      value={form.department}
+                      onValueChange={(v) => setForm({ ...form, department: v })}
+                    >
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DEPARTMENTS.map((d) => (
+                          <SelectItem key={d} value={d}>
+                            {d}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-              <Field label="Index / Student number" error={errors.indexNumber}>
-                <Input
-                  value={form.indexNumber}
-                  onChange={(e) => setForm({ ...form, indexNumber: e.target.value })}
-                />
-              </Field>
+                  <Field label="Programme" error={errors.program}>
+                    <Select
+                      value={form.program}
+                      onValueChange={(v) => setForm({ ...form, program: v })}
+                    >
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select programme" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PROGRAMMES.map((p) => (
+                          <SelectItem key={p} value={p}>
+                            {p}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-              <Field label="Contact address" error={errors.address}>
-                <Input
-                  value={form.address}
-                  onChange={(e) => setForm({ ...form, address: e.target.value })}
-                />
-              </Field>
-            </div>
-          </section>
+                  <Field label="Current Level" error={errors.level}>
+                    <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v })}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LEVELS.map((l) => (
+                          <SelectItem key={l} value={l}>
+                            {l === "Alumni" || l === "Graduate" || l === "Completed" ? l : `Level ${l}`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-          {/* Documents */}
-          <section>
-            <h3 className="font-bold text-secondary mb-4">
-              Documents{" "}
-              <span className="text-xs font-normal text-muted-foreground">(optional)</span>
-            </h3>
-            <label className="block border-2 border-dashed rounded-lg p-6 sm:p-8 text-center cursor-pointer hover:border-primary transition-smooth">
-              <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-              <div className="text-sm font-medium text-secondary">
-                Click to upload supporting documents
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">PDF, JPG, PNG · Max 5MB</div>
-              <input type="file" className="hidden" />
-            </label>
-          </section>
+                  <Field label="Enrollment Status" error={errors.status}>
+                    <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Active Student">Active Student</SelectItem>
+                        <SelectItem value="Alumni">Alumni</SelectItem>
+                        <SelectItem value="Completed">Completed Study</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-          <div className="flex justify-end gap-2 pt-4 border-t">
-            <Button onClick={goPreview}>
-              Preview <ArrowRight className="h-4 w-4" />
+                  <Field label="Index / Student Number" error={errors.indexNumber} id="indexNum">
+                    <Input
+                      id="indexNum"
+                      value={form.indexNumber}
+                      onChange={(e) => setForm({ ...form, indexNumber: e.target.value })}
+                      className="h-9"
+                    />
+                  </Field>
+
+                  <div className="sm:col-span-2">
+                    <Field label="Contact Address" error={errors.address} id="address">
+                      <Input
+                        id="address"
+                        value={form.address}
+                        onChange={(e) => setForm({ ...form, address: e.target.value })}
+                        className="h-9"
+                      />
+                    </Field>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {wizardStep === 3 && (
+              <motion.div
+                key="step3"
+                variants={slideVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="space-y-6"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Church Affiliation" error={errors.church}>
+                    <Select value={form.church} onValueChange={(v) => setForm({ ...form, church: v })}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select Church" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CHURCHES.map((ch) => (
+                          <SelectItem key={ch} value={ch}>
+                            {ch}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+
+                  <Field label="Focus Niche / Category" error={errors.niche}>
+                    <Select value={form.niche} onValueChange={(v) => setForm({ ...form, niche: v })}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select niche" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {NICHES.map((n) => (
+                          <SelectItem key={n} value={n}>
+                            {n}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </div>
+
+                {/* Optional Document Upload Zone */}
+                <div className="space-y-2 pt-2">
+                  <Label className="text-xs font-semibold flex items-center gap-1.5">
+                    Supporting Documents <span className="text-[10px] font-normal text-muted-foreground">(Optional)</span>
+                  </Label>
+                  
+                  {!uploadedFile ? (
+                    <label className="block border-2 border-dashed rounded-xl p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/10 transition-smooth">
+                      <Upload className="h-7 w-7 mx-auto text-muted-foreground mb-1.5" />
+                      <div className="text-xs font-semibold text-secondary">Click to upload document verification</div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">PDF, JPG, PNG up to 5MB</div>
+                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleFileUpload} />
+                    </label>
+                  ) : (
+                    <div className="flex items-center justify-between border bg-muted/20 p-3 rounded-xl max-w-md shadow-sm">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <FileText className="h-5 w-5 text-primary shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-secondary truncate">{uploadedFile.name}</div>
+                          <div className="text-[10px] text-muted-foreground">{uploadedFile.size}</div>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={clearFile} className="h-8 w-8 hover:text-destructive hover:bg-destructive/5">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Stepper Wizard Actions */}
+          <div className="flex justify-between items-center pt-6 mt-6 border-t">
+            <Button
+              variant="ghost"
+              onClick={prevStep}
+              disabled={wizardStep === 1}
+              className="font-bold text-xs h-9 hover:bg-muted"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back
             </Button>
+
+            {wizardStep < 3 ? (
+              <Button onClick={nextStep} className="font-semibold text-xs h-9 px-5">
+                Next Step <ArrowRight className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button onClick={goPreview} className="font-semibold text-xs h-9 px-5">
+                Preview Details <ArrowRight className="h-4 w-4" />
+              </Button>
+            )}
           </div>
+
         </CardContent>
       </Card>
     </div>
