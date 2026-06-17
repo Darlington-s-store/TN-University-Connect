@@ -9,7 +9,7 @@ export default function Hero() {
   return (
     <section
       className="relative min-h-[85vh] flex items-center justify-center text-white overflow-hidden"
-      aria-label="TN Universities Connect — Hero"
+      aria-label="TN Universities Connect ??? Hero"
     >
       {/* Background video & gradient overlay */}
       <div className="absolute inset-0 z-0">

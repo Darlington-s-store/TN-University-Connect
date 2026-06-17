@@ -40,7 +40,21 @@ const registerSchema = z.object({
   level: z.string().min(1, "Select your academic level"),
   email: z.string().trim().email("Enter a valid email").max(255),
   phone: z.string().trim().min(9, "Enter a valid phone number"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .refine((val) => /[A-Z]/.test(val), {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .refine((val) => /[a-z]/.test(val), {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .refine((val) => /[0-9]/.test(val), {
+      message: "Password must contain at least one number",
+    })
+    .refine((val) => /[^A-Za-z0-9]/.test(val), {
+      message: "Password must contain at least one special character",
+    }),
 });
 
 export default function Register() {
@@ -76,9 +90,7 @@ export default function Register() {
       hasNumber: /[0-9]/.test(pw),
       hasUpper: /[A-Z]/.test(pw),
       hasLower: /[a-z]/.test(pw),
-      notCommon:
-        pw.length > 0 &&
-        !["password", "12345678", "qwertyui", "password123"].includes(pw.toLowerCase()),
+      hasSpecial: /[^A-Za-z0-9]/.test(pw),
     };
   }, [form.password]);
 
@@ -89,7 +101,7 @@ export default function Register() {
     if (passChecks.hasNumber) score++;
     if (passChecks.hasUpper) score++;
     if (passChecks.hasLower) score++;
-    if (passChecks.notCommon) score++;
+    if (passChecks.hasSpecial) score++;
     return score;
   }, [passChecks]);
 
@@ -123,8 +135,9 @@ export default function Register() {
       await sendVerificationCode(form.email, form.phone);
       setStep(2);
       toast.success("Verification code sent to your email!");
-    } catch (err) {
-      toast.error("Failed to send verification code. Try again.");
+    } catch (err: unknown) {
+      const e = err as Error;
+      toast.error(e.message || "Failed to send verification code. Try again.");
     } finally {
       setVerificationLoading(false);
     }
@@ -182,7 +195,8 @@ export default function Register() {
       await sendVerificationCode(form.email, form.phone);
       toast.success("New verification code sent!");
     } catch (err) {
-      toast.error("Resend failed.");
+      const e = err as Error;
+      toast.error(e.message || "Resend failed.");
     } finally {
       setVerificationLoading(false);
     }
@@ -413,47 +427,44 @@ export default function Register() {
                       {/* Micro Checklist Grid */}
                       <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-[10px] text-muted-foreground">
                         <div
-                          className={`flex items-center gap-1 ${passChecks.length ? "text-primary font-semibold" : ""}`}
+                          className={`flex items-center gap-1 ${passChecks.length ? "text-ghana-green font-semibold" : ""}`}
                         >
                           <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.length ? "text-primary" : "text-muted/60"}`}
+                            className={`h-3 w-3 ${passChecks.length ? "text-ghana-green" : "text-muted/60"}`}
                           />
                           <span>8+ characters</span>
                         </div>
                         <div
-                          className={`flex items-center gap-1 ${passChecks.hasNumber ? "text-primary font-semibold" : ""}`}
+                          className={`flex items-center gap-1 ${passChecks.hasNumber ? "text-ghana-green font-semibold" : ""}`}
                         >
                           <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.hasNumber ? "text-primary" : "text-muted/60"}`}
+                            className={`h-3 w-3 ${passChecks.hasNumber ? "text-ghana-green" : "text-muted/60"}`}
                           />
                           <span>One number</span>
                         </div>
                         <div
-                          className={`flex items-center gap-1 ${passChecks.hasUpper ? "text-primary font-semibold" : ""}`}
+                          className={`flex items-center gap-1 ${passChecks.hasUpper ? "text-ghana-green font-semibold" : ""}`}
                         >
                           <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.hasUpper ? "text-primary" : "text-muted/60"}`}
+                            className={`h-3 w-3 ${passChecks.hasUpper ? "text-ghana-green" : "text-muted/60"}`}
                           />
                           <span>Uppercase</span>
                         </div>
                         <div
-                          className={`flex items-center gap-1 ${passChecks.hasLower ? "text-primary font-semibold" : ""}`}
+                          className={`flex items-center gap-1 ${passChecks.hasLower ? "text-ghana-green font-semibold" : ""}`}
                         >
                           <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.hasLower ? "text-primary" : "text-muted/60"}`}
+                            className={`h-3 w-3 ${passChecks.hasLower ? "text-ghana-green" : "text-muted/60"}`}
                           />
                           <span>Lowercase</span>
                         </div>
                         <div
-                          className={`flex items-center gap-1 ${passChecks.notCommon ? "text-primary font-semibold" : ""}`}
+                          className={`flex items-center gap-1 ${passChecks.hasSpecial ? "text-ghana-green font-semibold" : ""}`}
                         >
                           <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.notCommon ? "text-primary" : "text-muted/60"}`}
+                            className={`h-3 w-3 ${passChecks.hasSpecial ? "text-ghana-green" : "text-muted/60"}`}
                           />
-                          <span>Not common</span>
-                        </div>
-                        <div className="text-[11px] text-muted-foreground font-medium mt-0.5 col-span-2">
-                          {strengthLabel}
+                          <span>Special character</span>
                         </div>
                       </div>
                     </motion.div>
