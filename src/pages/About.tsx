@@ -5,6 +5,8 @@ import { Target, Eye, CheckCircle2, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import Logo from "@/components/Logo";
 import { motion } from "framer-motion";
+import heroVideo from "@/assets/hero-video.mp4.asset.json";
+import heroBg from "@/assets/hero-bg.jpg";
 import {
   Reveal,
   fadeUp,
@@ -55,14 +57,21 @@ export default function About() {
       {/* MODERN HERO */}
       <section className="relative overflow-hidden bg-secondary text-white py-24 lg:py-32">
         <div className="absolute inset-0 z-0">
-          <img
-            src="https://www.ug.edu.gh/sites/default/files/inline-images/IMG_7281.jpg"
-            alt=""
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster={heroBg}
             className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-secondary/20" />
+            aria-hidden="true"
+          >
+            <source src={heroVideo.url} type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-secondary/75" />
+          <div className="absolute inset-0 bg-gradient-to-b from-secondary/40 via-transparent to-secondary" />
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4" />
         </div>
 
         <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center flex flex-col items-center">

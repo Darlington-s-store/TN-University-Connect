@@ -14,6 +14,8 @@ import blog4 from "@/assets/blog-4.jpg";
 import blog5 from "@/assets/blog-5.jpg";
 import blog6 from "@/assets/blog-6.jpg";
 import blog7 from "@/assets/blog-7.jpg";
+import heroVideo from "@/assets/hero-video.mp4.asset.json";
+import heroBg from "@/assets/hero-bg.jpg";
 
 function resolveBlogImage(imgStr?: string) {
   if (!imgStr) return undefined;
@@ -74,14 +76,21 @@ export default function Blog() {
         className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28"
       >
         <div className="absolute inset-0 z-0">
-          <img
-            src="https://www.ug.edu.gh/sites/default/files/inline-images/IMG_7281.jpg"
-            alt=""
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster={heroBg}
             className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-secondary/20" />
-          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_20%,rgba(245,197,24,0.15)_0%,transparent_50%)]" />
-          <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(0,107,45,0.2)_0%,transparent_50%)]" />
+            aria-hidden="true"
+          >
+            <source src={heroVideo.url} type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-secondary/75" />
+          <div className="absolute inset-0 bg-gradient-to-b from-secondary/30 via-transparent to-secondary" />
+          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_20%,rgba(245,197,24,0.18)_0%,transparent_50%)]" />
+          <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(0,107,45,0.22)_0%,transparent_50%)]" />
         </div>
 
         <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center flex flex-col items-center">
