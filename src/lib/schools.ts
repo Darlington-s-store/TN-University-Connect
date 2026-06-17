@@ -40,7 +40,7 @@ export const GHANA_SCHOOLS: GhanaSchool[] = [
     uniType: "Public",
   },
   {
-    name: "Akenten Appiah-Menka University of Skills Training and Entrepreneurial Development (AAMUSTED)",
+    name: "University of Skills Training and Entrepreneurial Development (USTED)",
     type: "University",
     uniType: "Public",
   },
