@@ -210,6 +210,7 @@ export default function Register() {
           >
             <Link to="/dashboard">Go to Dashboard</Link>
           </Button>
+        </div>
       </AuthShell>
     );
   }
