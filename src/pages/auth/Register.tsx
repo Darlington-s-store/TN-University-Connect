@@ -490,6 +490,6 @@ export default function Register() {
           )}
         </AnimatePresence>
       </div>
-    </AuthShell>
+    </RegisterShell>
   );
 }
