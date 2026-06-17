@@ -290,7 +290,9 @@ export default function StudentForm() {
         status: form.status,
       });
 
-      toast.success(existing ? "Information updated successfully" : "Information submitted successfully");
+      toast.success(
+        existing ? "Information updated successfully" : "Information submitted successfully",
+      );
       setStep("done");
     } catch (err: any) {
       toast.error(err.message || "Failed to submit form");
@@ -300,9 +302,10 @@ export default function StudentForm() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const sizeStr = file.size > 1024 * 1024 
-        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
-        : `${(file.size / 1024).toFixed(0)} KB`;
+      const sizeStr =
+        file.size > 1024 * 1024
+          ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+          : `${(file.size / 1024).toFixed(0)} KB`;
       setUploadedFile({ name: file.name, size: sizeStr });
       toast.success("Document attached successfully");
     }
@@ -325,9 +328,15 @@ export default function StudentForm() {
     children: React.ReactNode;
   }) => (
     <div className="space-y-1.5">
-      <Label htmlFor={id} className="text-xs font-semibold">{label}</Label>
+      <Label htmlFor={id} className="text-xs font-semibold">
+        {label}
+      </Label>
       {children}
-      {error && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {error}</p>}
+      {error && (
+        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+          <AlertCircle className="h-3 w-3" /> {error}
+        </p>
+      )}
     </div>
   );
 
@@ -335,7 +344,7 @@ export default function StudentForm() {
   const slideVariants = {
     initial: { opacity: 0, x: 15 },
     animate: { opacity: 1, x: 0, transition: { duration: 0.2 } },
-    exit: { opacity: 0, x: -15, transition: { duration: 0.15 } }
+    exit: { opacity: 0, x: -15, transition: { duration: 0.15 } },
   };
 
   // Wizard Stepper Config
@@ -343,7 +352,7 @@ export default function StudentForm() {
     { num: 1, label: "Personal", icon: User },
     { num: 2, label: "Academic", icon: GraduationCap },
     { num: 3, label: "Network", icon: Sparkles },
-    { num: 4, label: "Review", icon: FileText }
+    { num: 4, label: "Review", icon: FileText },
   ];
 
   const renderStepper = (activeStep: number) => (
@@ -359,20 +368,22 @@ export default function StudentForm() {
               <div className="flex flex-col items-center relative">
                 <div
                   className={`h-9 w-9 rounded-full border-2 flex items-center justify-center transition-all ${
-                    isCompleted 
-                      ? "bg-ghana-green border-ghana-green text-white" 
-                      : isActive 
-                      ? "border-primary text-primary bg-primary/5 shadow-soft ring-4 ring-primary/10" 
-                      : "border-muted text-muted-foreground bg-card"
+                    isCompleted
+                      ? "bg-ghana-green border-ghana-green text-white"
+                      : isActive
+                        ? "border-primary text-primary bg-primary/5 shadow-soft ring-4 ring-primary/10"
+                        : "border-muted text-muted-foreground bg-card"
                   }`}
                 >
                   {isCompleted ? <Check className="h-4 w-4" /> : <Icon className="h-4.5 w-4.5" />}
                 </div>
-                <span className={`text-[10px] font-bold uppercase tracking-wider mt-1.5 hidden sm:block ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+                <span
+                  className={`text-[10px] font-bold uppercase tracking-wider mt-1.5 hidden sm:block ${isActive ? "text-primary" : "text-muted-foreground"}`}
+                >
                   {s.label}
                 </span>
               </div>
-              
+
               {idx < stepsList.length - 1 && (
                 <div className="flex-1 h-0.5 mx-2 bg-muted relative overflow-hidden">
                   <div
@@ -395,21 +406,39 @@ export default function StudentForm() {
         <Card className="border-0 shadow-elegant overflow-hidden">
           <div className="h-1.5 flag-stripe" />
           <CardContent className="p-8 text-center space-y-6">
-            <div className="h-16 w-16 rounded-full bg-primary/10 grid place-items-center mx-auto mb-2 animate-bounce" style={{ animationDuration: "3s" }}>
+            <div
+              className="h-16 w-16 rounded-full bg-primary/10 grid place-items-center mx-auto mb-2 animate-bounce"
+              style={{ animationDuration: "3s" }}
+            >
               <CheckCircle2 className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h2 className="text-2xl font-extrabold text-secondary dark:text-foreground font-display">Submission Received!</h2>
+              <h2 className="text-2xl font-extrabold text-secondary dark:text-foreground font-display">
+                Submission Received!
+              </h2>
               <p className="text-sm text-muted-foreground mt-2 max-w-sm mx-auto leading-relaxed">
-                Your student profiles have been verified successfully. You can update or verify your academic record at any point.
+                Your student profiles have been verified successfully. You can update or verify your
+                academic record at any point.
               </p>
             </div>
-            
+
             <div className="flex justify-center gap-2 pt-2">
-              <Button variant="outline" size="sm" onClick={() => setStep("preview")} className="px-4 font-semibold text-xs h-9">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setStep("preview")}
+                className="px-4 font-semibold text-xs h-9"
+              >
                 <Eye className="h-4 w-4" /> View Info
               </Button>
-              <Button size="sm" onClick={() => { setStep("form"); setWizardStep(1); }} className="px-4 font-semibold text-xs h-9">
+              <Button
+                size="sm"
+                onClick={() => {
+                  setStep("form");
+                  setWizardStep(1);
+                }}
+                className="px-4 font-semibold text-xs h-9"
+              >
                 <Pencil className="h-4 w-4" /> Edit Record
               </Button>
             </div>
@@ -424,8 +453,12 @@ export default function StudentForm() {
       <div className="max-w-2xl mx-auto space-y-6 font-sans">
         <div>
           {renderStepper(4)}
-          <h1 className="text-2xl font-extrabold tracking-tight text-secondary dark:text-foreground font-display">Verify & Confirm</h1>
-          <p className="text-sm text-muted-foreground mt-1">Check your details before submitting to the university registrar.</p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-secondary dark:text-foreground font-display">
+            Verify & Confirm
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Check your details before submitting to the university registrar.
+          </p>
         </div>
 
         <Card className="border shadow-soft">
@@ -451,14 +484,20 @@ export default function StudentForm() {
               ["Contact address", form.address],
             ].map(([k, v]) => (
               <div key={k} className="space-y-0.5">
-                <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">{k}</div>
-                <div className="font-semibold text-secondary dark:text-foreground truncate">{v || "—"}</div>
+                <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
+                  {k}
+                </div>
+                <div className="font-semibold text-secondary dark:text-foreground truncate">
+                  {v || "—"}
+                </div>
               </div>
             ))}
 
             {uploadedFile && (
               <div className="sm:col-span-2 border-t pt-4 mt-2">
-                <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px] mb-1.5">Attached Document</div>
+                <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px] mb-1.5">
+                  Attached Document
+                </div>
                 <div className="flex items-center gap-2 text-xs bg-muted/40 p-2.5 rounded-xl border max-w-sm">
                   <FileText className="h-5 w-5 text-primary shrink-0" />
                   <div className="flex-1 min-w-0">
@@ -472,7 +511,14 @@ export default function StudentForm() {
         </Card>
 
         <div className="flex justify-between gap-3">
-          <Button variant="outline" onClick={() => { setStep("form"); setWizardStep(3); }} className="font-semibold text-xs h-9">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setStep("form");
+              setWizardStep(3);
+            }}
+            className="font-semibold text-xs h-9"
+          >
             <ArrowLeft className="h-4 w-4" /> Back to Form
           </Button>
           <Button onClick={submit} className="font-semibold text-xs h-9 px-5">
@@ -556,12 +602,17 @@ export default function StudentForm() {
                   <Field label="Gender" error={errors.gender}>
                     <RadioGroup
                       value={form.gender}
-                      onValueChange={(v) => setForm({ ...form, gender: v as "male" | "female" | "other" })}
+                      onValueChange={(v) =>
+                        setForm({ ...form, gender: v as "male" | "female" | "other" })
+                      }
                       className="flex gap-4 mt-2"
                     >
                       {(["male", "female", "other"] as const).map((g) => (
-                        <label key={g} className="flex items-center gap-2 cursor-pointer text-xs font-semibold">
-                          <RadioGroupItem value={g} className="h-4 w-4" /> 
+                        <label
+                          key={g}
+                          className="flex items-center gap-2 cursor-pointer text-xs font-semibold"
+                        >
+                          <RadioGroupItem value={g} className="h-4 w-4" />
                           <span className="capitalize">{g}</span>
                         </label>
                       ))}
@@ -620,11 +671,15 @@ export default function StudentForm() {
                       <Select
                         value={form.university}
                         onValueChange={(v) => setForm({ ...form, university: v })}
-                        disabled={!form.schoolType || (form.schoolType === "University" && !form.uniType)}
+                        disabled={
+                          !form.schoolType || (form.schoolType === "University" && !form.uniType)
+                        }
                       >
                         <SelectTrigger className="text-left whitespace-normal h-auto py-2">
                           <SelectValue
-                            placeholder={!form.schoolType ? "Select school type first" : "Select institution"}
+                            placeholder={
+                              !form.schoolType ? "Select school type first" : "Select institution"
+                            }
                           />
                         </SelectTrigger>
                         <SelectContent className="max-h-[200px]">
@@ -693,14 +748,19 @@ export default function StudentForm() {
                   </Field>
 
                   <Field label="Current Level" error={errors.level}>
-                    <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v })}>
+                    <Select
+                      value={form.level}
+                      onValueChange={(v) => setForm({ ...form, level: v })}
+                    >
                       <SelectTrigger className="h-9">
                         <SelectValue placeholder="Select level" />
                       </SelectTrigger>
                       <SelectContent>
                         {LEVELS.map((l) => (
                           <SelectItem key={l} value={l}>
-                            {l === "Alumni" || l === "Graduate" || l === "Completed" ? l : `Level ${l}`}
+                            {l === "Alumni" || l === "Graduate" || l === "Completed"
+                              ? l
+                              : `Level ${l}`}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -708,7 +768,10 @@ export default function StudentForm() {
                   </Field>
 
                   <Field label="Enrollment Status" error={errors.status}>
-                    <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                    <Select
+                      value={form.status}
+                      onValueChange={(v) => setForm({ ...form, status: v })}
+                    >
                       <SelectTrigger className="h-9">
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
@@ -754,7 +817,10 @@ export default function StudentForm() {
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field label="Church Affiliation" error={errors.church}>
-                    <Select value={form.church} onValueChange={(v) => setForm({ ...form, church: v })}>
+                    <Select
+                      value={form.church}
+                      onValueChange={(v) => setForm({ ...form, church: v })}
+                    >
                       <SelectTrigger className="h-9">
                         <SelectValue placeholder="Select Church" />
                       </SelectTrigger>
@@ -769,7 +835,10 @@ export default function StudentForm() {
                   </Field>
 
                   <Field label="Focus Niche / Category" error={errors.niche}>
-                    <Select value={form.niche} onValueChange={(v) => setForm({ ...form, niche: v })}>
+                    <Select
+                      value={form.niche}
+                      onValueChange={(v) => setForm({ ...form, niche: v })}
+                    >
                       <SelectTrigger className="h-9">
                         <SelectValue placeholder="Select niche" />
                       </SelectTrigger>
@@ -787,26 +856,47 @@ export default function StudentForm() {
                 {/* Optional Document Upload Zone */}
                 <div className="space-y-2 pt-2">
                   <Label className="text-xs font-semibold flex items-center gap-1.5">
-                    Supporting Documents <span className="text-[10px] font-normal text-muted-foreground">(Optional)</span>
+                    Supporting Documents{" "}
+                    <span className="text-[10px] font-normal text-muted-foreground">
+                      (Optional)
+                    </span>
                   </Label>
-                  
+
                   {!uploadedFile ? (
                     <label className="block border-2 border-dashed rounded-xl p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/10 transition-smooth">
                       <Upload className="h-7 w-7 mx-auto text-muted-foreground mb-1.5" />
-                      <div className="text-xs font-semibold text-secondary">Click to upload document verification</div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5">PDF, JPG, PNG up to 5MB</div>
-                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleFileUpload} />
+                      <div className="text-xs font-semibold text-secondary">
+                        Click to upload document verification
+                      </div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">
+                        PDF, JPG, PNG up to 5MB
+                      </div>
+                      <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        className="hidden"
+                        onChange={handleFileUpload}
+                      />
                     </label>
                   ) : (
                     <div className="flex items-center justify-between border bg-muted/20 p-3 rounded-xl max-w-md shadow-sm">
                       <div className="flex items-center gap-2.5 min-w-0">
                         <FileText className="h-5 w-5 text-primary shrink-0" />
                         <div className="min-w-0">
-                          <div className="text-xs font-semibold text-secondary truncate">{uploadedFile.name}</div>
-                          <div className="text-[10px] text-muted-foreground">{uploadedFile.size}</div>
+                          <div className="text-xs font-semibold text-secondary truncate">
+                            {uploadedFile.name}
+                          </div>
+                          <div className="text-[10px] text-muted-foreground">
+                            {uploadedFile.size}
+                          </div>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={clearFile} className="h-8 w-8 hover:text-destructive hover:bg-destructive/5">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={clearFile}
+                        className="h-8 w-8 hover:text-destructive hover:bg-destructive/5"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -837,7 +927,6 @@ export default function StudentForm() {
               </Button>
             )}
           </div>
-
         </CardContent>
       </Card>
     </div>

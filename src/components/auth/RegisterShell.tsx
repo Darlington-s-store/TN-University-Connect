@@ -96,9 +96,7 @@ export default function RegisterShell({
             </div>
           </div>
 
-          {footer && (
-            <div className="mt-6 text-center text-sm text-white/70">{footer}</div>
-          )}
+          {footer && <div className="mt-6 text-center text-sm text-white/70">{footer}</div>}
 
           <div className="mt-8 text-center">
             <Link to="/" className="text-xs text-white/50 hover:text-white sm:hidden">

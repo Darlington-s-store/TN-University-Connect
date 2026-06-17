@@ -166,7 +166,10 @@ export default function Announcements() {
                 </div>
                 <CardContent className="lg:col-span-2 p-8 lg:p-12 flex flex-col justify-center">
                   <div className="flex items-center gap-3 mb-4 text-xs">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary border-none font-bold">
+                    <Badge
+                      variant="secondary"
+                      className="bg-primary/10 text-primary border-none font-bold"
+                    >
                       {featured.category}
                     </Badge>
                     <span className="text-muted-foreground inline-flex items-center gap-1">

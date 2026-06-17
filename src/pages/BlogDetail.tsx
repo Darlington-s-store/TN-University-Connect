@@ -105,16 +105,16 @@ export default function BlogDetail() {
         <header className="relative bg-secondary text-white overflow-hidden">
           {heroImg && (
             <div className="absolute inset-0">
-              <img
-                src={heroImg}
-                alt=""
-                className="h-full w-full object-cover opacity-30"
-              />
+              <img src={heroImg} alt="" className="h-full w-full object-cover opacity-30" />
               <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/85 to-secondary/60" />
             </div>
           )}
           <div className="relative container mx-auto px-4 sm:px-6 max-w-4xl py-20 lg:py-28">
-            <Button asChild variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10 -ml-3 mb-6">
+            <Button
+              asChild
+              variant="ghost"
+              className="text-white/80 hover:text-white hover:bg-white/10 -ml-3 mb-6"
+            >
               <Link to="/blog">
                 <ArrowLeft className="h-4 w-4" /> All articles
               </Link>
@@ -131,7 +131,11 @@ export default function BlogDetail() {
             <div className="flex flex-wrap items-center gap-5 text-sm text-white/80">
               <span className="flex items-center gap-2">
                 <span className="h-9 w-9 rounded-full bg-white/15 grid place-items-center font-bold">
-                  {post.author.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                  {post.author
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .slice(0, 2)}
                 </span>
                 <span className="flex flex-col leading-tight">
                   <span className="font-semibold text-white">{post.author}</span>
@@ -176,10 +180,16 @@ export default function BlogDetail() {
           {/* Author card */}
           <div className="mt-16 p-6 rounded-2xl bg-muted/40 border border-border flex items-center gap-4">
             <div className="h-14 w-14 rounded-full bg-secondary text-white grid place-items-center font-bold text-lg">
-              {post.author.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+              {post.author
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)}
             </div>
             <div className="flex-1">
-              <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Written by</div>
+              <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
+                Written by
+              </div>
               <div className="text-lg font-bold text-secondary">{post.author}</div>
             </div>
             <Button asChild variant="outline" className="rounded-xl">
@@ -193,8 +203,13 @@ export default function BlogDetail() {
           <section className="bg-muted/30 border-t border-border py-16">
             <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-secondary">Continue reading</h2>
-                <Link to="/blog" className="text-sm font-bold text-primary hover:underline inline-flex items-center gap-1">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-secondary">
+                  Continue reading
+                </h2>
+                <Link
+                  to="/blog"
+                  className="text-sm font-bold text-primary hover:underline inline-flex items-center gap-1"
+                >
                   All articles <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -219,7 +234,10 @@ export default function BlogDetail() {
                       )}
                     </div>
                     <div className="p-5">
-                      <Badge variant="secondary" className="mb-2 bg-primary/5 text-primary border-none text-[10px] font-bold">
+                      <Badge
+                        variant="secondary"
+                        className="mb-2 bg-primary/5 text-primary border-none text-[10px] font-bold"
+                      >
                         {r.category}
                       </Badge>
                       <h3 className="font-bold text-secondary group-hover:text-primary transition-colors line-clamp-2 leading-snug">

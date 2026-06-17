@@ -83,10 +83,7 @@ export default function Login() {
   };
 
   return (
-    <AuthShell
-      title="Welcome Back"
-      subtitle="Sign in to connect with your university workspace"
-    >
+    <AuthShell title="Welcome Back" subtitle="Sign in to connect with your university workspace">
       {/* Navigation tab control */}
       <div className="flex bg-muted/65 p-1 rounded-xl mb-6 border border-muted/80">
         <div className="flex-1 text-center py-2 text-xs font-bold bg-card text-secondary shadow-soft cursor-default rounded-lg border">
@@ -106,10 +103,11 @@ export default function Login() {
         transition={{ duration: 0.25 }}
       >
         <form onSubmit={submit} className="space-y-4" noValidate>
-          
           {/* Email Input */}
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs font-semibold">Email address</Label>
+            <Label htmlFor="email" className="text-xs font-semibold">
+              Email address
+            </Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -121,12 +119,18 @@ export default function Login() {
                 className="pl-9 h-9.5 text-sm"
               />
             </div>
-            {errors.email && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.email}</p>}
+            {errors.email && (
+              <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" /> {errors.email}
+              </p>
+            )}
           </div>
 
           {/* Password Input */}
           <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
+            <Label htmlFor="password" className="text-xs font-semibold">
+              Password
+            </Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -144,7 +148,11 @@ export default function Login() {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {errors.password && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.password}</p>}
+            {errors.password && (
+              <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" /> {errors.password}
+              </p>
+            )}
           </div>
 
           {/* Remember & Forgot */}
@@ -162,7 +170,11 @@ export default function Login() {
           </div>
 
           {/* Submit Trigger */}
-          <Button type="submit" disabled={loading} className="w-full h-10 font-semibold text-xs mt-2 shadow-sm">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full h-10 font-semibold text-xs mt-2 shadow-sm"
+          >
             <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign In"}
           </Button>
 

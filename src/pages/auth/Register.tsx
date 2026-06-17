@@ -245,10 +245,11 @@ export default function Register() {
               className="space-y-4"
             >
               <form onSubmit={handleCreateAccount} className="space-y-4" noValidate>
-                
                 {/* 1. Name Input */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="name" className="text-xs font-semibold">Full name</Label>
+                  <Label htmlFor="name" className="text-xs font-semibold">
+                    Full name
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -259,13 +260,19 @@ export default function Register() {
                       className="pl-9 h-9.5 text-sm"
                     />
                   </div>
-                  {errors.name && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.name}</p>}
+                  {errors.name && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.name}
+                    </p>
+                  )}
                 </div>
 
                 {/* 2. Grid Role & Level */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="status" className="text-xs font-semibold">I am a</Label>
+                    <Label htmlFor="status" className="text-xs font-semibold">
+                      I am a
+                    </Label>
                     <Select
                       value={form.status}
                       onValueChange={(v) => setForm({ ...form, status: v })}
@@ -280,11 +287,17 @@ export default function Register() {
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
-                    {errors.status && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.status}</p>}
+                    {errors.status && (
+                      <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" /> {errors.status}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="level" className="text-xs font-semibold">Academic Level</Label>
+                    <Label htmlFor="level" className="text-xs font-semibold">
+                      Academic Level
+                    </Label>
                     <Select
                       value={form.level}
                       onValueChange={(v) => setForm({ ...form, level: v })}
@@ -299,13 +312,19 @@ export default function Register() {
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
-                    {errors.level && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.level}</p>}
+                    {errors.level && (
+                      <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" /> {errors.level}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* 3. Email Input */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="text-xs font-semibold">Email address</Label>
+                  <Label htmlFor="email" className="text-xs font-semibold">
+                    Email address
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -317,23 +336,35 @@ export default function Register() {
                       className="pl-9 h-9.5 text-sm"
                     />
                   </div>
-                  {errors.email && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.email}</p>}
+                  {errors.email && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.email}
+                    </p>
+                  )}
                 </div>
 
                 {/* 4. Phone Input */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="phone" className="text-xs font-semibold">Phone number</Label>
+                  <Label htmlFor="phone" className="text-xs font-semibold">
+                    Phone number
+                  </Label>
                   <PhoneInput
                     id="phone"
                     value={form.phone}
                     onChange={(v) => setForm({ ...form, phone: v })}
                   />
-                  {errors.phone && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.phone}</p>}
+                  {errors.phone && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.phone}
+                    </p>
+                  )}
                 </div>
 
                 {/* 5. Password Input */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
+                  <Label htmlFor="password" className="text-xs font-semibold">
+                    Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -352,7 +383,11 @@ export default function Register() {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  {errors.password && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.password}</p>}
+                  {errors.password && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.password}
+                    </p>
+                  )}
 
                   {/* Password requirements with Progressive Disclosure (focus check) */}
                   {(form.password || isPasswordFocused) && (
@@ -377,27 +412,49 @@ export default function Register() {
 
                       {/* Micro Checklist Grid */}
                       <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-[10px] text-muted-foreground">
-                        <div className={`flex items-center gap-1 ${passChecks.length ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.length ? "text-primary" : "text-muted/60"}`} />
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.length ? "text-primary font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.length ? "text-primary" : "text-muted/60"}`}
+                          />
                           <span>8+ characters</span>
                         </div>
-                        <div className={`flex items-center gap-1 ${passChecks.hasNumber ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.hasNumber ? "text-primary" : "text-muted/60"}`} />
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.hasNumber ? "text-primary font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.hasNumber ? "text-primary" : "text-muted/60"}`}
+                          />
                           <span>One number</span>
                         </div>
-                        <div className={`flex items-center gap-1 ${passChecks.hasUpper ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.hasUpper ? "text-primary" : "text-muted/60"}`} />
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.hasUpper ? "text-primary font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.hasUpper ? "text-primary" : "text-muted/60"}`}
+                          />
                           <span>Uppercase</span>
                         </div>
-                        <div className={`flex items-center gap-1 ${passChecks.hasLower ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.hasLower ? "text-primary" : "text-muted/60"}`} />
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.hasLower ? "text-primary font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.hasLower ? "text-primary" : "text-muted/60"}`}
+                          />
                           <span>Lowercase</span>
                         </div>
-                        <div className={`flex items-center gap-1 ${passChecks.notCommon ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.notCommon ? "text-primary" : "text-muted/60"}`} />
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.notCommon ? "text-primary font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.notCommon ? "text-primary" : "text-muted/60"}`}
+                          />
                           <span>Not common</span>
                         </div>
-                        <div className="text-[11px] text-muted-foreground font-medium mt-0.5 col-span-2">{strengthLabel}</div>
+                        <div className="text-[11px] text-muted-foreground font-medium mt-0.5 col-span-2">
+                          {strengthLabel}
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -408,7 +465,7 @@ export default function Register() {
                   disabled={verificationLoading}
                   className="w-full mt-6 h-10 font-semibold text-xs"
                 >
-                  {verificationLoading ? "Sending Verification..." : "Create Account"} 
+                  {verificationLoading ? "Sending Verification..." : "Create Account"}
                   <ArrowRight className="h-4 w-4 ml-1.5" />
                 </Button>
               </form>
@@ -428,7 +485,9 @@ export default function Register() {
                 <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
                   <Mail className="h-4.5 w-4.5" />
                 </div>
-                <h4 className="font-bold text-secondary text-sm font-display">Security Code Sent!</h4>
+                <h4 className="font-bold text-secondary text-sm font-display">
+                  Security Code Sent!
+                </h4>
                 <p className="text-[11px] text-muted-foreground mt-1 max-w-sm leading-normal">
                   We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>.
                 </p>
@@ -440,7 +499,10 @@ export default function Register() {
 
               <form onSubmit={submitRegister} className="space-y-5">
                 <div className="space-y-2 text-center">
-                  <Label htmlFor="verificationCode" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  <Label
+                    htmlFor="verificationCode"
+                    className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
+                  >
                     Enter 6-Digit Code
                   </Label>
                   <Input

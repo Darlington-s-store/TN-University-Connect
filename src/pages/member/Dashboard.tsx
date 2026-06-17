@@ -86,20 +86,29 @@ export default function MemberDashboard() {
     const cat = category.toLowerCase();
     if (cat.includes("academic") || cat.includes("school")) {
       return (
-        <Badge variant="outline" className="border-ghana-green text-ghana-green bg-ghana-green/5 text-[10px] font-bold px-2 py-0.5 rounded-full">
+        <Badge
+          variant="outline"
+          className="border-ghana-green text-ghana-green bg-ghana-green/5 text-[10px] font-bold px-2 py-0.5 rounded-full"
+        >
           {category}
         </Badge>
       );
     }
     if (cat.includes("career") || cat.includes("job") || cat.includes("internship")) {
       return (
-        <Badge variant="outline" className="border-deep-navy text-deep-navy bg-deep-navy/5 text-[10px] font-bold px-2 py-0.5 rounded-full dark:border-blue-400 dark:text-blue-400 dark:bg-blue-400/10">
+        <Badge
+          variant="outline"
+          className="border-deep-navy text-deep-navy bg-deep-navy/5 text-[10px] font-bold px-2 py-0.5 rounded-full dark:border-blue-400 dark:text-blue-400 dark:bg-blue-400/10"
+        >
           {category}
         </Badge>
       );
     }
     return (
-      <Badge variant="outline" className="border-accent text-accent-foreground bg-accent/5 text-[10px] font-bold px-2 py-0.5 rounded-full">
+      <Badge
+        variant="outline"
+        className="border-accent text-accent-foreground bg-accent/5 text-[10px] font-bold px-2 py-0.5 rounded-full"
+      >
         {category}
       </Badge>
     );
@@ -135,7 +144,11 @@ export default function MemberDashboard() {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring" as const, stiffness: 300, damping: 24 },
+    },
   };
 
   return (
@@ -146,27 +159,40 @@ export default function MemberDashboard() {
       className="space-y-8 overflow-x-hidden font-sans pb-10"
     >
       {/* 1. Welcoming Header */}
-      <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div
+        variants={itemVariants}
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-2 w-2 rounded-full bg-ghana-green animate-ping" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Member Workspace</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
+              Member Workspace
+            </span>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-secondary dark:text-foreground flex items-center gap-2 font-display">
             {greeting}, {user?.name?.split(" ")[0]}!
-            <GreetingIcon className="h-7 w-7 text-accent animate-bounce" style={{ animationDuration: "3s" }} />
+            <GreetingIcon
+              className="h-7 w-7 text-accent animate-bounce"
+              style={{ animationDuration: "3s" }}
+            />
           </h1>
           <p className="text-sm text-muted-foreground mt-1 max-w-md">
-            Here's your consolidated portal for announcements, professional insights, and verification tasks.
+            Here's your consolidated portal for announcements, professional insights, and
+            verification tasks.
           </p>
         </div>
-        
+
         {profileComplete && (
           <div className="flex items-center gap-2.5 bg-primary/10 border border-primary/20 rounded-2xl px-4 py-2 text-primary self-start md:self-auto shadow-sm">
             <ShieldCheck className="h-5 w-5 text-ghana-green shrink-0" />
             <div>
-              <div className="text-xs font-extrabold uppercase tracking-wider text-ghana-green">Verified Student</div>
-              <div className="text-[10px] text-muted-foreground font-medium">{user?.university || "TN Network"} Member</div>
+              <div className="text-xs font-extrabold uppercase tracking-wider text-ghana-green">
+                Verified Student
+              </div>
+              <div className="text-[10px] text-muted-foreground font-medium">
+                {user?.university || "TN Network"} Member
+              </div>
             </div>
           </div>
         )}
@@ -174,10 +200,8 @@ export default function MemberDashboard() {
 
       {/* 2. Main Workspace Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* LEFT COLUMN: Consumption & Updates Feed (Spans 2 columns on desktop) */}
         <div className="lg:col-span-2 space-y-8">
-          
           {/* Section: Announcements */}
           <motion.div variants={itemVariants} className="space-y-4">
             <div className="flex items-center justify-between">
@@ -185,9 +209,16 @@ export default function MemberDashboard() {
                 <div className="p-2 rounded-lg bg-ghana-red/10 text-ghana-red">
                   <Megaphone className="h-5 w-5" />
                 </div>
-                <h2 className="text-lg font-bold text-secondary dark:text-foreground font-display">Official Network Announcements</h2>
+                <h2 className="text-lg font-bold text-secondary dark:text-foreground font-display">
+                  Official Network Announcements
+                </h2>
               </div>
-              <Button asChild size="sm" variant="ghost" className="text-xs text-primary font-bold hover:bg-primary/5">
+              <Button
+                asChild
+                size="sm"
+                variant="ghost"
+                className="text-xs text-primary font-bold hover:bg-primary/5"
+              >
                 <Link to="/announcements" className="flex items-center gap-1">
                   View All <ChevronRight className="h-4.5 w-4.5" />
                 </Link>
@@ -213,11 +244,7 @@ export default function MemberDashboard() {
                   };
 
                   return (
-                    <motion.div
-                      key={a.id}
-                      whileHover={{ y: -3, scale: 1.005 }}
-                      className="group"
-                    >
+                    <motion.div key={a.id} whileHover={{ y: -3, scale: 1.005 }} className="group">
                       <Link
                         to={`/announcements/${a.id}`}
                         onClick={markRead}
@@ -228,7 +255,12 @@ export default function MemberDashboard() {
                           <div className="flex items-center gap-2 flex-wrap">
                             {getCategoryBadge(a.category)}
                             <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
-                              <Clock className="h-3 w-3" /> {new Date(a.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                              <Clock className="h-3 w-3" />{" "}
+                              {new Date(a.date).toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })}
                             </span>
                           </div>
                         </div>
@@ -253,9 +285,16 @@ export default function MemberDashboard() {
                 <div className="p-2 rounded-lg bg-primary/10 text-primary">
                   <BookOpen className="h-5 w-5" />
                 </div>
-                <h2 className="text-lg font-bold text-secondary dark:text-foreground font-display">Professional Insights & Blogs</h2>
+                <h2 className="text-lg font-bold text-secondary dark:text-foreground font-display">
+                  Professional Insights & Blogs
+                </h2>
               </div>
-              <Button asChild size="sm" variant="ghost" className="text-xs text-primary font-bold hover:bg-primary/5">
+              <Button
+                asChild
+                size="sm"
+                variant="ghost"
+                className="text-xs text-primary font-bold hover:bg-primary/5"
+              >
                 <Link to="/blog" className="flex items-center gap-1">
                   View All <ChevronRight className="h-4.5 w-4.5" />
                 </Link>
@@ -282,8 +321,12 @@ export default function MemberDashboard() {
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-primary">{b.category}</span>
-                          <span className="text-[10px] text-muted-foreground font-medium">By {b.author}</span>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-primary">
+                            {b.category}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground font-medium">
+                            By {b.author}
+                          </span>
                         </div>
                         <h3 className="font-semibold text-secondary dark:text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors font-display">
                           {b.title}
@@ -299,29 +342,30 @@ export default function MemberDashboard() {
               )}
             </div>
           </motion.div>
-
         </div>
 
         {/* RIGHT COLUMN: Sidebar (Actions, Profile & Progress) */}
         <div className="space-y-6">
-          
           {/* Action Center Widget */}
           <motion.div variants={itemVariants}>
             <Card className="border-0 shadow-elegant overflow-hidden bg-card relative">
               <div className="h-1.5 flag-stripe" />
               <CardContent className="p-6 space-y-5">
-                
                 {/* Header info */}
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-bold text-secondary dark:text-foreground text-md font-display">Onboarding Status</h3>
+                    <h3 className="font-bold text-secondary dark:text-foreground text-md font-display">
+                      Onboarding Status
+                    </h3>
                     <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                      {profileComplete 
-                        ? "Your account verification is fully verified." 
+                      {profileComplete
+                        ? "Your account verification is fully verified."
                         : "Verify your details to gain access to features."}
                     </p>
                   </div>
-                  <span className="text-2xl font-black text-primary tracking-tight font-display">{progress}%</span>
+                  <span className="text-2xl font-black text-primary tracking-tight font-display">
+                    {progress}%
+                  </span>
                 </div>
 
                 {/* Custom Progress Bar */}
@@ -337,7 +381,9 @@ export default function MemberDashboard() {
                 <div className="space-y-3 pt-1">
                   <div className="flex items-center gap-2.5 text-xs">
                     <CheckCircle2 className="h-4.5 w-4.5 text-ghana-green shrink-0" />
-                    <span className="text-secondary dark:text-muted-foreground font-medium">Basic profile registered</span>
+                    <span className="text-secondary dark:text-muted-foreground font-medium">
+                      Basic profile registered
+                    </span>
                   </div>
                   <div className="flex items-center gap-2.5 text-xs">
                     {user?.university && user?.department ? (
@@ -345,7 +391,9 @@ export default function MemberDashboard() {
                     ) : (
                       <div className="h-4.5 w-4.5 rounded-full border border-dashed border-muted-foreground/50 shrink-0" />
                     )}
-                    <span className={`${user?.university && user?.department ? "text-secondary dark:text-muted-foreground font-medium" : "text-muted-foreground font-normal"}`}>
+                    <span
+                      className={`${user?.university && user?.department ? "text-secondary dark:text-muted-foreground font-medium" : "text-muted-foreground font-normal"}`}
+                    >
                       University & department added
                     </span>
                   </div>
@@ -355,7 +403,9 @@ export default function MemberDashboard() {
                     ) : (
                       <div className="h-4.5 w-4.5 rounded-full border border-dashed border-muted-foreground/50 shrink-0" />
                     )}
-                    <span className={`${myStudent ? "text-secondary dark:text-muted-foreground font-medium" : "text-muted-foreground font-normal"}`}>
+                    <span
+                      className={`${myStudent ? "text-secondary dark:text-muted-foreground font-medium" : "text-muted-foreground font-normal"}`}
+                    >
                       Student validation form
                     </span>
                   </div>
@@ -364,10 +414,20 @@ export default function MemberDashboard() {
                 {/* Contextual actions */}
                 {!profileComplete ? (
                   <div className="grid grid-cols-2 gap-2 pt-2">
-                    <Button asChild size="sm" variant="default" className="text-xs font-semibold py-4 h-auto shadow-sm">
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="default"
+                      className="text-xs font-semibold py-4 h-auto shadow-sm"
+                    >
                       <Link to="/profile">Edit Profile</Link>
                     </Button>
-                    <Button asChild size="sm" variant="outline" className="text-xs font-semibold py-4 h-auto">
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="outline"
+                      className="text-xs font-semibold py-4 h-auto"
+                    >
                       <Link to="/student-info">Submit Info</Link>
                     </Button>
                   </div>
@@ -378,15 +438,20 @@ export default function MemberDashboard() {
                         <GraduationCap className="h-4 w-4" /> Academic Records
                       </div>
                       <div className="text-[11px] font-medium truncate leading-normal">
-                        Uni: <span className="font-semibold text-secondary dark:text-foreground">{user?.university}</span>
+                        Uni:{" "}
+                        <span className="font-semibold text-secondary dark:text-foreground">
+                          {user?.university}
+                        </span>
                       </div>
                       <div className="text-[11px] font-medium truncate leading-normal">
-                        Dept: <span className="font-semibold text-secondary dark:text-foreground">{user?.department}</span>
+                        Dept:{" "}
+                        <span className="font-semibold text-secondary dark:text-foreground">
+                          {user?.department}
+                        </span>
                       </div>
                     </div>
                   </div>
                 )}
-
               </CardContent>
             </Card>
           </motion.div>
@@ -396,9 +461,12 @@ export default function MemberDashboard() {
             <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-extrabold">
               Quick Shortcuts
             </h3>
-            
+
             <div className="bg-card border rounded-xl divide-y divide-muted/70 overflow-hidden shadow-sm">
-              <Link to="/profile" className="flex items-center justify-between p-3.5 hover:bg-muted/40 transition-smooth group text-xs text-secondary dark:text-foreground font-semibold">
+              <Link
+                to="/profile"
+                className="flex items-center justify-between p-3.5 hover:bg-muted/40 transition-smooth group text-xs text-secondary dark:text-foreground font-semibold"
+              >
                 <div className="flex items-center gap-3">
                   <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
                     <User className="h-4.5 w-4.5" />
@@ -408,7 +476,10 @@ export default function MemberDashboard() {
                 <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
               </Link>
 
-              <Link to="/student-info" className="flex items-center justify-between p-3.5 hover:bg-muted/40 transition-smooth group text-xs text-secondary dark:text-foreground font-semibold">
+              <Link
+                to="/student-info"
+                className="flex items-center justify-between p-3.5 hover:bg-muted/40 transition-smooth group text-xs text-secondary dark:text-foreground font-semibold"
+              >
                 <div className="flex items-center gap-3">
                   <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
                     <FileText className="h-4.5 w-4.5" />
@@ -427,11 +498,17 @@ export default function MemberDashboard() {
                 <CardContent className="p-4 flex gap-3.5">
                   <AlertCircle className="h-5.5 w-5.5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
                   <div className="space-y-1">
-                    <div className="text-xs font-bold text-amber-800 dark:text-amber-300 font-display">Verification Required</div>
+                    <div className="text-xs font-bold text-amber-800 dark:text-amber-300 font-display">
+                      Verification Required
+                    </div>
                     <p className="text-[11px] text-amber-700 dark:text-amber-400/90 leading-relaxed font-medium">
-                      Please upload your academic detail card or register your student email address to fully unlock student channels and graduation networks.
+                      Please upload your academic detail card or register your student email address
+                      to fully unlock student channels and graduation networks.
                     </p>
-                    <Link to="/student-info" className="text-[11px] text-amber-600 dark:text-amber-400 hover:text-amber-800 font-extrabold inline-flex items-center gap-0.5 mt-1 hover:underline">
+                    <Link
+                      to="/student-info"
+                      className="text-[11px] text-amber-600 dark:text-amber-400 hover:text-amber-800 font-extrabold inline-flex items-center gap-0.5 mt-1 hover:underline"
+                    >
                       Verify Academic Details <ChevronRight className="h-3 w-3" />
                     </Link>
                   </div>
@@ -439,9 +516,7 @@ export default function MemberDashboard() {
               </Card>
             </motion.div>
           )}
-
         </div>
-
       </div>
     </motion.div>
   );

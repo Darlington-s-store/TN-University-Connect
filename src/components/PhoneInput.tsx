@@ -43,9 +43,7 @@ export function PhoneInput({
     if (!val) return COUNTRIES[0]; // Default to Ghana
 
     // Check dial codes from longest to shortest to avoid partial match conflicts
-    const sortedCountries = [...COUNTRIES].sort(
-      (a, b) => b.dialCode.length - a.dialCode.length
-    );
+    const sortedCountries = [...COUNTRIES].sort((a, b) => b.dialCode.length - a.dialCode.length);
 
     for (const c of sortedCountries) {
       if (val.startsWith(c.dialCode)) {
@@ -106,7 +104,7 @@ export function PhoneInput({
       className={cn(
         "flex rounded-md border border-input bg-background text-sm shadow-sm transition-colors focus-within:ring-1 focus-within:ring-ring focus-within:border-ring overflow-hidden h-9 w-full",
         disabled && "opacity-50 cursor-not-allowed bg-muted",
-        className
+        className,
       )}
     >
       {/* Country Selector Dropdown Trigger */}
@@ -132,7 +130,7 @@ export function PhoneInput({
                 onClick={() => handleCountrySelect(c)}
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-1.5 text-left text-xs hover:bg-muted/80 transition-colors font-semibold",
-                  selectedCountry.code === c.code && "bg-primary/5 text-primary"
+                  selectedCountry.code === c.code && "bg-primary/5 text-primary",
                 )}
               >
                 <span className="flex items-center gap-2">

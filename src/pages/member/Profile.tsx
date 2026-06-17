@@ -186,15 +186,18 @@ export default function MemberProfile() {
 
   return (
     <div className="space-y-8 max-w-4xl pb-12 font-sans">
-      
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-2 w-2 rounded-full bg-primary" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Account Management</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
+              Account Management
+            </span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-secondary dark:text-foreground font-display">My Profile</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-secondary dark:text-foreground font-display">
+            My Profile
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Update personal and academic details. Changes sync with your verified student record.
           </p>
@@ -218,7 +221,6 @@ export default function MemberProfile() {
         <TabsContent value="profile">
           <motion.div variants={containerVariants} initial="hidden" animate="show">
             <form onSubmit={saveProfile} className="space-y-6">
-              
               {/* Profile Avatar Card */}
               <Card className="border shadow-soft overflow-hidden">
                 <CardContent className="p-6">
@@ -227,12 +229,23 @@ export default function MemberProfile() {
                       <Avatar className="h-24 w-24 border-2 border-primary/20 shadow-md">
                         <AvatarImage src={form.avatar} />
                         <AvatarFallback className="text-2xl font-bold bg-gradient-to-tr from-primary to-secondary text-primary-foreground">
-                          {form.name ? form.name.split(" ").map(p => p[0]).slice(0, 2).join("") : "U"}
+                          {form.name
+                            ? form.name
+                                .split(" ")
+                                .map((p) => p[0])
+                                .slice(0, 2)
+                                .join("")
+                            : "U"}
                         </AvatarFallback>
                       </Avatar>
                       <label className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-primary text-primary-foreground grid place-items-center cursor-pointer shadow-elegant hover:scale-105 transition-smooth">
                         <Camera className="h-4 w-4" />
-                        <input type="file" accept="image/*" className="hidden" onChange={onAvatar} />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={onAvatar}
+                        />
                       </label>
                     </div>
                     <div className="text-center sm:text-left min-w-0">
@@ -243,7 +256,10 @@ export default function MemberProfile() {
                         )}
                       </h2>
                       <p className="text-xs text-muted-foreground mt-0.5">{form.email}</p>
-                      <Badge variant="secondary" className="mt-2 text-[10px] uppercase font-extrabold tracking-wider">
+                      <Badge
+                        variant="secondary"
+                        className="mt-2 text-[10px] uppercase font-extrabold tracking-wider"
+                      >
                         {form.status || "Member"}
                       </Badge>
                     </div>
@@ -257,14 +273,20 @@ export default function MemberProfile() {
                   <div className="flex items-center gap-2 pb-2 border-b border-muted">
                     <User className="h-5 w-5 text-primary" />
                     <div>
-                      <h3 className="font-bold text-secondary dark:text-foreground text-sm font-display">Personal Details</h3>
-                      <p className="text-[10px] text-muted-foreground">General identification and contact information</p>
+                      <h3 className="font-bold text-secondary dark:text-foreground text-sm font-display">
+                        Personal Details
+                      </h3>
+                      <p className="text-[10px] text-muted-foreground">
+                        General identification and contact information
+                      </p>
                     </div>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="fullName" className="text-xs font-semibold">Full name</Label>
+                      <Label htmlFor="fullName" className="text-xs font-semibold">
+                        Full name
+                      </Label>
                       <Input
                         id="fullName"
                         value={form.name}
@@ -273,7 +295,9 @@ export default function MemberProfile() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="emailInput" className="text-xs font-semibold">Email address</Label>
+                      <Label htmlFor="emailInput" className="text-xs font-semibold">
+                        Email address
+                      </Label>
                       <Input
                         id="emailInput"
                         value={form.email}
@@ -282,7 +306,9 @@ export default function MemberProfile() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="phoneInput" className="text-xs font-semibold">Phone number</Label>
+                      <Label htmlFor="phoneInput" className="text-xs font-semibold">
+                        Phone number
+                      </Label>
                       <PhoneInput
                         id="phoneInput"
                         value={form.phone}
@@ -306,7 +332,9 @@ export default function MemberProfile() {
                       </Select>
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="nationality" className="text-xs font-semibold">Nationality</Label>
+                      <Label htmlFor="nationality" className="text-xs font-semibold">
+                        Nationality
+                      </Label>
                       <Input
                         id="nationality"
                         value={form.nationality}
@@ -315,7 +343,9 @@ export default function MemberProfile() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="dobInput" className="text-xs font-semibold">Date of birth</Label>
+                      <Label htmlFor="dobInput" className="text-xs font-semibold">
+                        Date of birth
+                      </Label>
                       <Input
                         id="dobInput"
                         type="date"
@@ -334,8 +364,12 @@ export default function MemberProfile() {
                   <div className="flex items-center gap-2 pb-2 border-b border-muted">
                     <GraduationCap className="h-5 w-5 text-primary" />
                     <div>
-                      <h3 className="font-bold text-secondary dark:text-foreground text-sm font-display">Academic Credentials</h3>
-                      <p className="text-[10px] text-muted-foreground">University settings and active program info</p>
+                      <h3 className="font-bold text-secondary dark:text-foreground text-sm font-display">
+                        Academic Credentials
+                      </h3>
+                      <p className="text-[10px] text-muted-foreground">
+                        University settings and active program info
+                      </p>
                     </div>
                   </div>
 
@@ -377,7 +411,9 @@ export default function MemberProfile() {
                     )}
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="institutionName" className="text-xs font-semibold">Institution Name</Label>
+                      <Label htmlFor="institutionName" className="text-xs font-semibold">
+                        Institution Name
+                      </Label>
                       <Input
                         id="institutionName"
                         value={form.university}
@@ -456,7 +492,9 @@ export default function MemberProfile() {
                         <SelectContent>
                           {LEVELS.map((l) => (
                             <SelectItem key={l} value={l}>
-                              {l === "Alumni" || l === "Graduate" || l === "Completed" ? l : `Level ${l}`}
+                              {l === "Alumni" || l === "Graduate" || l === "Completed"
+                                ? l
+                                : `Level ${l}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -481,7 +519,9 @@ export default function MemberProfile() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="indexInput" className="text-xs font-semibold">Index / Student Number</Label>
+                      <Label htmlFor="indexInput" className="text-xs font-semibold">
+                        Index / Student Number
+                      </Label>
                       <Input
                         id="indexInput"
                         value={form.indexNumber}
@@ -492,7 +532,9 @@ export default function MemberProfile() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="addressInput" className="text-xs font-semibold">Contact Address</Label>
+                      <Label htmlFor="addressInput" className="text-xs font-semibold">
+                        Contact Address
+                      </Label>
                       <Input
                         id="addressInput"
                         value={form.address}
@@ -511,8 +553,12 @@ export default function MemberProfile() {
                   <div className="flex items-center gap-2 pb-2 border-b border-muted">
                     <Sparkles className="h-5 w-5 text-primary" />
                     <div>
-                      <h3 className="font-bold text-secondary dark:text-foreground text-sm font-display">Affiliation & Focus</h3>
-                      <p className="text-[10px] text-muted-foreground">Community networks and short user biography</p>
+                      <h3 className="font-bold text-secondary dark:text-foreground text-sm font-display">
+                        Affiliation & Focus
+                      </h3>
+                      <p className="text-[10px] text-muted-foreground">
+                        Community networks and short user biography
+                      </p>
                     </div>
                   </div>
 
@@ -556,7 +602,9 @@ export default function MemberProfile() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="bioInput" className="text-xs font-semibold">Short biography</Label>
+                    <Label htmlFor="bioInput" className="text-xs font-semibold">
+                      Short biography
+                    </Label>
                     <Textarea
                       id="bioInput"
                       rows={3}
@@ -571,9 +619,10 @@ export default function MemberProfile() {
 
               {/* Action Trigger */}
               <div className="flex justify-end gap-2">
-                <Button type="submit" className="px-6 font-semibold shadow-sm">Save Changes</Button>
+                <Button type="submit" className="px-6 font-semibold shadow-sm">
+                  Save Changes
+                </Button>
               </div>
-
             </form>
           </motion.div>
         </TabsContent>
@@ -584,13 +633,18 @@ export default function MemberProfile() {
             <Card className="border shadow-elegant overflow-hidden relative max-w-2xl mx-auto">
               <div className="h-2 flag-stripe" />
               <CardContent className="p-6 sm:p-8 space-y-6">
-                
                 {/* Passport Card Header */}
                 <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-muted">
                   <Avatar className="h-24 w-24 border-2 border-primary shadow-soft">
                     <AvatarImage src={form.avatar} />
                     <AvatarFallback className="text-2xl font-bold bg-primary text-primary-foreground">
-                      {form.name ? form.name.split(" ").map(p => p[0]).slice(0, 2).join("") : "U"}
+                      {form.name
+                        ? form.name
+                            .split(" ")
+                            .map((p) => p[0])
+                            .slice(0, 2)
+                            .join("")
+                        : "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="text-center sm:text-left space-y-1.5 flex-1 min-w-0">
@@ -608,44 +662,67 @@ export default function MemberProfile() {
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm font-semibold text-primary truncate">{form.university || "No Institution Registered"}</p>
-                    <p className="text-xs text-muted-foreground truncate">{form.program} · Level {form.level}</p>
+                    <p className="text-sm font-semibold text-primary truncate">
+                      {form.university || "No Institution Registered"}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {form.program} · Level {form.level}
+                    </p>
                   </div>
                 </div>
 
                 {/* Grid Details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-xs">
-                  
                   <div className="flex gap-2.5 items-start">
                     <Mail className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">Email Address</div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 truncate">{form.email || "—"}</div>
+                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
+                        Email Address
+                      </div>
+                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 truncate">
+                        {form.email || "—"}
+                      </div>
                     </div>
                   </div>
 
                   <div className="flex gap-2.5 items-start">
                     <Phone className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">Phone Number</div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">{form.phone || "—"}</div>
+                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
+                        Phone Number
+                      </div>
+                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">
+                        {form.phone || "—"}
+                      </div>
                     </div>
                   </div>
 
                   <div className="flex gap-2.5 items-start">
                     <Globe className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">Nationality & Gender</div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 capitalize">{form.nationality} · {form.gender}</div>
+                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
+                        Nationality & Gender
+                      </div>
+                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 capitalize">
+                        {form.nationality} · {form.gender}
+                      </div>
                     </div>
                   </div>
 
                   <div className="flex gap-2.5 items-start">
                     <Calendar className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">Date of Birth</div>
+                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
+                        Date of Birth
+                      </div>
                       <div className="font-semibold text-secondary dark:text-foreground mt-0.5">
-                        {form.dob ? new Date(form.dob).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                        {form.dob
+                          ? new Date(form.dob).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : "—"}
                       </div>
                     </div>
                   </div>
@@ -653,47 +730,63 @@ export default function MemberProfile() {
                   <div className="flex gap-2.5 items-start">
                     <GraduationCap className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">Faculty & Dept</div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 line-clamp-1">{form.faculty} / {form.department}</div>
+                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
+                        Faculty & Dept
+                      </div>
+                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 line-clamp-1">
+                        {form.faculty} / {form.department}
+                      </div>
                     </div>
                   </div>
 
                   <div className="flex gap-2.5 items-start">
                     <Hash className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">Student Index Number</div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">{form.indexNumber || "—"}</div>
+                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
+                        Student Index Number
+                      </div>
+                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">
+                        {form.indexNumber || "—"}
+                      </div>
                     </div>
                   </div>
 
                   <div className="flex gap-2.5 items-start">
                     <BookOpen className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">Network Niche & Church</div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">{form.niche} ({form.church})</div>
+                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
+                        Network Niche & Church
+                      </div>
+                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">
+                        {form.niche} ({form.church})
+                      </div>
                     </div>
                   </div>
 
                   <div className="flex gap-2.5 items-start">
                     <MapPin className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">Contact Address</div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 line-clamp-1">{form.address || "—"}</div>
+                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
+                        Contact Address
+                      </div>
+                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 line-clamp-1">
+                        {form.address || "—"}
+                      </div>
                     </div>
                   </div>
-
                 </div>
 
                 {/* Bio Block */}
                 {form.bio && (
                   <div className="pt-4 border-t border-muted bg-muted/10 rounded-xl p-3.5 mt-2">
-                    <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px] mb-1">Biography / Career Focus</div>
+                    <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px] mb-1">
+                      Biography / Career Focus
+                    </div>
                     <p className="text-xs text-muted-foreground leading-relaxed italic">
                       "{form.bio}"
                     </p>
                   </div>
                 )}
-
               </CardContent>
             </Card>
           </motion.div>
@@ -701,20 +794,31 @@ export default function MemberProfile() {
 
         {/* Tab 3: SECURITY */}
         <TabsContent value="security">
-          <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-md mx-auto">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="max-w-md mx-auto"
+          >
             <Card className="border shadow-soft">
               <CardContent className="p-6">
                 <div className="flex items-center gap-2.5 pb-2 border-b border-muted mb-4">
                   <Lock className="h-5 w-5 text-primary" />
                   <div>
-                    <h3 className="font-bold text-secondary dark:text-foreground text-sm font-display">Change Password</h3>
-                    <p className="text-[10px] text-muted-foreground">Modify active credential tokens</p>
+                    <h3 className="font-bold text-secondary dark:text-foreground text-sm font-display">
+                      Change Password
+                    </h3>
+                    <p className="text-[10px] text-muted-foreground">
+                      Modify active credential tokens
+                    </p>
                   </div>
                 </div>
 
                 <form onSubmit={changePassword} className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="currPw" className="text-xs font-semibold">Current password</Label>
+                    <Label htmlFor="currPw" className="text-xs font-semibold">
+                      Current password
+                    </Label>
                     <Input
                       id="currPw"
                       type="password"
@@ -724,7 +828,9 @@ export default function MemberProfile() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="newPw" className="text-xs font-semibold">New password</Label>
+                    <Label htmlFor="newPw" className="text-xs font-semibold">
+                      New password
+                    </Label>
                     <Input
                       id="newPw"
                       type="password"
@@ -734,7 +840,9 @@ export default function MemberProfile() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="confPw" className="text-xs font-semibold">Confirm new password</Label>
+                    <Label htmlFor="confPw" className="text-xs font-semibold">
+                      Confirm new password
+                    </Label>
                     <Input
                       id="confPw"
                       type="password"
@@ -743,7 +851,9 @@ export default function MemberProfile() {
                       className="h-9"
                     />
                   </div>
-                  <Button type="submit" className="w-full font-semibold mt-2 h-9">Update password</Button>
+                  <Button type="submit" className="w-full font-semibold mt-2 h-9">
+                    Update password
+                  </Button>
                 </form>
               </CardContent>
             </Card>
