@@ -210,8 +210,7 @@ export default function Register() {
           >
             <Link to="/dashboard">Go to Dashboard</Link>
           </Button>
-        </div>
-      </div>
+      </AuthShell>
     );
   }
 
@@ -437,7 +436,6 @@ export default function Register() {
                 <span className="text-2xl font-black text-slate-200">0{step}</span>
                 <span className="text-slate-300 text-xs font-bold">/02</span>
               </div>
-            </div>
 
               <form onSubmit={submitRegister} className="space-y-5">
                 <div className="space-y-2 text-center">
@@ -491,6 +489,6 @@ export default function Register() {
           )}
         </AnimatePresence>
       </div>
-    </div>
+    </AuthShell>
   );
 }
