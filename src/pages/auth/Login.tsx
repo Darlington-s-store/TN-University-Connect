@@ -4,7 +4,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { LogIn, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
-import Logo from "@/components/Logo";
+import AuthShell from "@/components/auth/AuthShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
