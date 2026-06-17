@@ -17,7 +17,7 @@ import {
   ShieldCheck,
   AlertCircle,
 } from "lucide-react";
-import AuthShell from "@/components/auth/AuthShell";
+import RegisterShell from "@/components/auth/RegisterShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -190,47 +190,47 @@ export default function Register() {
 
   if (done) {
     return (
-      <AuthShell title="Welcome aboard!" subtitle="Your account has been created successfully.">
-        <div className="text-center py-8">
-          <div className="h-20 w-20 rounded-full bg-primary/10 grid place-items-center mx-auto mb-6">
-            <CheckCircle2 className="h-10 w-10 text-primary animate-bounce" />
+      <RegisterShell title="Welcome aboard!" subtitle="Your account has been created successfully.">
+        <div className="text-center py-6">
+          <div className="h-20 w-20 rounded-full bg-accent/15 border border-accent/30 grid place-items-center mx-auto mb-6">
+            <CheckCircle2 className="h-10 w-10 text-accent animate-bounce" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-black text-secondary tracking-tight">Welcome aboard!</h1>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <h2 className="text-2xl font-black text-white tracking-tight">You're all set!</h2>
+            <p className="text-sm text-white/70 leading-relaxed">
               Your account has been successfully created. We are setting up your student dashboard.
             </p>
           </div>
-          <p className="text-xs text-muted-foreground animate-pulse">
+          <p className="text-xs text-white/50 animate-pulse my-5">
             Redirecting you to your dashboard...
           </p>
           <Button
             asChild
-            className="w-full h-11 bg-ghana-green hover:bg-ghana-green/90 rounded-xl font-bold"
+            className="w-full h-11 bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl font-bold"
           >
             <Link to="/dashboard">Go to Dashboard</Link>
           </Button>
         </div>
-      </AuthShell>
+      </RegisterShell>
     );
   }
 
   return (
-    <AuthShell
-      title="Create Account"
-      subtitle="Join Ghana's unified university student & alumni network"
+    <RegisterShell
+      title="Join the Network"
+      subtitle="Create your account to connect with Ghana's universities, alumni, and student community."
+      step={step}
+      totalSteps={2}
     >
-      {/* Navigation tab control */}
-      <div className="flex bg-muted/60 p-1 rounded-xl mb-6 border">
+      {/* Already-a-member nudge — Login lives on a different screen */}
+      <div className="mb-6 flex items-center justify-center gap-2 text-xs text-white/60">
+        <span>Already have an account?</span>
         <Link
           to="/login"
-          className="flex-1 text-center py-2 text-xs font-semibold text-muted-foreground hover:text-secondary transition-all rounded-lg"
+          className="font-bold text-accent hover:text-accent/80 underline-offset-4 hover:underline"
         >
-          Sign In
+          Sign in here →
         </Link>
-        <div className="flex-1 text-center py-2 text-xs font-bold bg-card text-secondary shadow-soft rounded-lg border">
-          Sign Up
-        </div>
       </div>
 
       <div className="relative overflow-hidden min-h-[420px]">
@@ -490,6 +490,6 @@ export default function Register() {
           )}
         </AnimatePresence>
       </div>
-    </AuthShell>
+    </RegisterShell>
   );
 }
