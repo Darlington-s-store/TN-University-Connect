@@ -17,7 +17,7 @@ import {
   ShieldCheck,
   AlertCircle,
 } from "lucide-react";
-import AuthShell from "@/components/auth/AuthShell";
+import RegisterShell from "@/components/auth/RegisterShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,7 +40,21 @@ const registerSchema = z.object({
   level: z.string().min(1, "Select your academic level"),
   email: z.string().trim().email("Enter a valid email").max(255),
   phone: z.string().trim().min(9, "Enter a valid phone number"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .refine((val) => /[A-Z]/.test(val), {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .refine((val) => /[a-z]/.test(val), {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .refine((val) => /[0-9]/.test(val), {
+      message: "Password must contain at least one number",
+    })
+    .refine((val) => /[^A-Za-z0-9]/.test(val), {
+      message: "Password must contain at least one special character",
+    }),
 });
 
 export default function Register() {
@@ -76,7 +90,7 @@ export default function Register() {
       hasNumber: /[0-9]/.test(pw),
       hasUpper: /[A-Z]/.test(pw),
       hasLower: /[a-z]/.test(pw),
-      notCommon: pw.length > 0 && !["password", "12345678", "qwertyui", "password123"].includes(pw.toLowerCase()),
+      hasSpecial: /[^A-Za-z0-9]/.test(pw),
     };
   }, [form.password]);
 
@@ -87,7 +101,7 @@ export default function Register() {
     if (passChecks.hasNumber) score++;
     if (passChecks.hasUpper) score++;
     if (passChecks.hasLower) score++;
-    if (passChecks.notCommon) score++;
+    if (passChecks.hasSpecial) score++;
     return score;
   }, [passChecks]);
 
@@ -120,8 +134,9 @@ export default function Register() {
       await sendVerificationCode(form.email, form.phone);
       setStep(2);
       toast.success("Verification code sent to your email!");
-    } catch (err) {
-      toast.error("Failed to send verification code. Try again.");
+    } catch (err: unknown) {
+      const e = err as Error;
+      toast.error(e.message || "Failed to send verification code. Try again.");
     } finally {
       setVerificationLoading(false);
     }
@@ -179,7 +194,8 @@ export default function Register() {
       await sendVerificationCode(form.email, form.phone);
       toast.success("New verification code sent!");
     } catch (err) {
-      toast.error("Resend failed.");
+      const e = err as Error;
+      toast.error(e.message || "Resend failed.");
     } finally {
       setVerificationLoading(false);
     }
@@ -187,36 +203,47 @@ export default function Register() {
 
   if (done) {
     return (
-      <AuthShell title="Welcome aboard!" subtitle="Your account has been created successfully.">
-        <div className="text-center py-8">
-          <div className="h-20 w-20 rounded-full bg-primary/10 grid place-items-center mx-auto mb-6">
-            <CheckCircle2 className="h-10 w-10 text-primary animate-bounce" />
+      <RegisterShell title="Welcome aboard!" subtitle="Your account has been created successfully.">
+        <div className="text-center py-6">
+          <div className="h-20 w-20 rounded-full bg-accent/15 border border-accent/30 grid place-items-center mx-auto mb-6">
+            <CheckCircle2 className="h-10 w-10 text-accent animate-bounce" />
           </div>
-          <p className="text-muted-foreground mb-6">Redirecting you to your dashboard...</p>
-          <Button asChild>
-            <Link to="/dashboard">Go to dashboard</Link>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-white tracking-tight">You're all set!</h2>
+            <p className="text-sm text-white/70 leading-relaxed">
+              Your account has been successfully created. We are setting up your student dashboard.
+            </p>
+          </div>
+          <p className="text-xs text-white/50 animate-pulse my-5">
+            Redirecting you to your dashboard...
+          </p>
+          <Button
+            asChild
+            className="w-full h-11 bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl font-bold"
+          >
+            <Link to="/dashboard">Go to Dashboard</Link>
           </Button>
         </div>
-      </AuthShell>
+      </RegisterShell>
     );
   }
 
   return (
-    <AuthShell
-      title="Create Account"
-      subtitle="Join Ghana's unified university student & alumni network"
+    <RegisterShell
+      title="Join the Network"
+      subtitle="Create your account to connect with Ghana's universities, alumni, and student community."
+      step={step}
+      totalSteps={2}
     >
-      {/* Navigation tab control */}
-      <div className="flex bg-muted/60 p-1 rounded-xl mb-6 border">
+      {/* Already-a-member nudge — Login lives on a different screen */}
+      <div className="mb-6 flex items-center justify-center gap-2 text-xs text-white/60">
+        <span>Already have an account?</span>
         <Link
           to="/login"
-          className="flex-1 text-center py-2 text-xs font-semibold text-muted-foreground hover:text-secondary transition-all rounded-lg"
+          className="font-bold text-accent hover:text-accent/80 underline-offset-4 hover:underline"
         >
-          Sign In
+          Sign in here →
         </Link>
-        <div className="flex-1 text-center py-2 text-xs font-bold bg-card text-secondary shadow-soft rounded-lg border">
-          Sign Up
-        </div>
       </div>
 
       <div className="relative overflow-hidden min-h-[420px]">
@@ -231,10 +258,11 @@ export default function Register() {
               className="space-y-4"
             >
               <form onSubmit={handleCreateAccount} className="space-y-4" noValidate>
-                
                 {/* 1. Name Input */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="name" className="text-xs font-semibold">Full name</Label>
+                  <Label htmlFor="name" className="text-xs font-semibold">
+                    Full name
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -245,13 +273,19 @@ export default function Register() {
                       className="pl-9 h-9.5 text-sm"
                     />
                   </div>
-                  {errors.name && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.name}</p>}
+                  {errors.name && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.name}
+                    </p>
+                  )}
                 </div>
 
                 {/* 2. Grid Role & Level */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="status" className="text-xs font-semibold">I am a</Label>
+                    <Label htmlFor="status" className="text-xs font-semibold">
+                      I am a
+                    </Label>
                     <Select
                       value={form.status}
                       onValueChange={(v) => setForm({ ...form, status: v })}
@@ -266,11 +300,17 @@ export default function Register() {
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
-                    {errors.status && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.status}</p>}
+                    {errors.status && (
+                      <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" /> {errors.status}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="level" className="text-xs font-semibold">Academic Level</Label>
+                    <Label htmlFor="level" className="text-xs font-semibold">
+                      Academic Level
+                    </Label>
                     <Select
                       value={form.level}
                       onValueChange={(v) => setForm({ ...form, level: v })}
@@ -285,13 +325,19 @@ export default function Register() {
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
-                    {errors.level && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.level}</p>}
+                    {errors.level && (
+                      <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" /> {errors.level}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* 3. Email Input */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="text-xs font-semibold">Email address</Label>
+                  <Label htmlFor="email" className="text-xs font-semibold">
+                    Email address
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -303,23 +349,35 @@ export default function Register() {
                       className="pl-9 h-9.5 text-sm"
                     />
                   </div>
-                  {errors.email && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.email}</p>}
+                  {errors.email && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.email}
+                    </p>
+                  )}
                 </div>
 
                 {/* 4. Phone Input */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="phone" className="text-xs font-semibold">Phone number</Label>
+                  <Label htmlFor="phone" className="text-xs font-semibold">
+                    Phone number
+                  </Label>
                   <PhoneInput
                     id="phone"
                     value={form.phone}
                     onChange={(v) => setForm({ ...form, phone: v })}
                   />
-                  {errors.phone && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.phone}</p>}
+                  {errors.phone && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.phone}
+                    </p>
+                  )}
                 </div>
 
                 {/* 5. Password Input */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
+                  <Label htmlFor="password" className="text-xs font-semibold">
+                    Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -338,7 +396,11 @@ export default function Register() {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  {errors.password && <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {errors.password}</p>}
+                  {errors.password && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.password}
+                    </p>
+                  )}
 
                   {/* Password strength & requirements checklist */}
                   {(form.password || isPasswordFocused) && (
@@ -363,25 +425,45 @@ export default function Register() {
 
                       {/* Checklist Grid */}
                       <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-[10px] text-muted-foreground">
-                        <div className={`flex items-center gap-1 ${passChecks.length ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.length ? "text-primary" : "text-muted/60"}`} />
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.length ? "text-ghana-green font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.length ? "text-ghana-green" : "text-muted/60"}`}
+                          />
                           <span>8+ characters</span>
                         </div>
-                        <div className={`flex items-center gap-1 ${passChecks.hasNumber ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.hasNumber ? "text-primary" : "text-slate-300"}`} />
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.hasNumber ? "text-ghana-green font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.hasNumber ? "text-ghana-green" : "text-muted/60"}`}
+                          />
                           <span>One number</span>
                         </div>
-                        <div className={`flex items-center gap-1 ${passChecks.hasUpper ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.hasUpper ? "text-primary" : "text-slate-300"}`} />
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.hasUpper ? "text-ghana-green font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.hasUpper ? "text-ghana-green" : "text-muted/60"}`}
+                          />
                           <span>Uppercase</span>
                         </div>
-                        <div className={`flex items-center gap-1 ${passChecks.hasLower ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.hasLower ? "text-primary" : "text-slate-300"}`} />
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.hasLower ? "text-ghana-green font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.hasLower ? "text-ghana-green" : "text-muted/60"}`}
+                          />
                           <span>Lowercase</span>
                         </div>
-                        <div className={`flex items-center gap-1 ${passChecks.notCommon ? "text-primary font-semibold" : ""}`}>
-                          <CheckCircle2 className={`h-3 w-3 ${passChecks.notCommon ? "text-primary" : "text-slate-300"}`} />
-                          <span>Not common</span>
+                        <div
+                          className={`flex items-center gap-1 ${passChecks.hasSpecial ? "text-ghana-green font-semibold" : ""}`}
+                        >
+                          <CheckCircle2
+                            className={`h-3 w-3 ${passChecks.hasSpecial ? "text-ghana-green" : "text-muted/60"}`}
+                          />
+                          <span>Special character</span>
                         </div>
                       </div>
                     </motion.div>
@@ -393,7 +475,7 @@ export default function Register() {
                   disabled={verificationLoading}
                   className="w-full mt-6 h-10 font-semibold text-xs"
                 >
-                  {verificationLoading ? "Sending Verification..." : "Create Account"} 
+                  {verificationLoading ? "Sending Verification..." : "Create Account"}
                   <ArrowRight className="h-4 w-4 ml-1.5" />
                 </Button>
               </form>
@@ -413,15 +495,24 @@ export default function Register() {
                 <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
                   <Mail className="h-4.5 w-4.5" />
                 </div>
-                <h4 className="font-bold text-secondary text-sm font-display">Security Code Sent!</h4>
+                <h4 className="font-bold text-secondary text-sm font-display">
+                  Security Code Sent!
+                </h4>
                 <p className="text-[11px] text-muted-foreground mt-1 max-w-sm leading-normal">
                   We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>.
                 </p>
               </div>
+              <div className="text-right">
+                <span className="text-2xl font-black text-slate-200">0{step}</span>
+                <span className="text-slate-300 text-xs font-bold">/02</span>
+              </div>
 
               <form onSubmit={submitRegister} className="space-y-5">
                 <div className="space-y-2 text-center">
-                  <Label htmlFor="verificationCode" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  <Label
+                    htmlFor="verificationCode"
+                    className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
+                  >
                     Enter 6-Digit Code
                   </Label>
                   <Input
@@ -471,6 +562,6 @@ export default function Register() {
           )}
         </AnimatePresence>
       </div>
-    </AuthShell>
+    </RegisterShell>
   );
 }

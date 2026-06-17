@@ -73,11 +73,46 @@ export default function App() {
                 </Route>
 
                 {/* Auth */}
-                <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
-                <Route path="/admin/login" element={<PageTransition><AdminLogin /></PageTransition>} />
-                <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
-                <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
-                <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+                <Route
+                  path="/login"
+                  element={
+                    <PageTransition>
+                      <Login />
+                    </PageTransition>
+                  }
+                />
+                <Route
+                  path="/admin/login"
+                  element={
+                    <PageTransition>
+                      <AdminLogin />
+                    </PageTransition>
+                  }
+                />
+                <Route
+                  path="/register"
+                  element={
+                    <PageTransition>
+                      <Register />
+                    </PageTransition>
+                  }
+                />
+                <Route
+                  path="/forgot-password"
+                  element={
+                    <PageTransition>
+                      <ForgotPassword />
+                    </PageTransition>
+                  }
+                />
+                <Route
+                  path="/reset-password"
+                  element={
+                    <PageTransition>
+                      <ResetPassword />
+                    </PageTransition>
+                  }
+                />
 
                 {/* Member */}
                 <Route
@@ -109,7 +144,14 @@ export default function App() {
                   <Route path="/admin/settings" element={<AdminSettings />} />
                 </Route>
 
-                <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+                <Route
+                  path="*"
+                  element={
+                    <PageTransition>
+                      <NotFound />
+                    </PageTransition>
+                  }
+                />
               </Routes>
               <Toaster richColors position="top-right" />
             </BrowserRouter>

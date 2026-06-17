@@ -2,24 +2,31 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import heroVideo from "@/assets/hero-video.mp4.asset.json";
 import heroBg from "@/assets/hero-bg.jpg";
 
 export default function Hero() {
   return (
     <section
       className="relative min-h-[85vh] flex items-center justify-center text-white overflow-hidden"
-      aria-label="TN Universities Connect — Hero"
+      aria-label="TN Universities Connect ??? Hero"
     >
-      {/* Background image & gradient overlay */}
+      {/* Background video & gradient overlay */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={heroBg}
-          alt="Ghanaian University Campus"
-          className="h-full w-full object-cover object-center scale-100"
-        />
-        {/* Layered gradients for a clean professional lookup */}
-        <div className="absolute inset-0 bg-slate-950/85" />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent" />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster={heroBg}
+          className="h-full w-full object-cover object-center"
+          aria-hidden="true"
+        >
+          <source src={heroVideo.url} type="video/mp4" />
+        </video>
+        {/* Layered gradients for a clean professional look */}
+        <div className="absolute inset-0 bg-slate-950/75" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
       </div>
 
       <div className="container relative z-10 mx-auto px-4 sm:px-6 py-20 text-center">
