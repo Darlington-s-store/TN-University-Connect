@@ -70,7 +70,7 @@ export default function Register() {
   const [form, setForm] = useState({
     name: "",
     status: "", // Dropdown: Student, Alumni, Faculty, Other
-    level: "",  // Dropdown: Undergraduate, Postgraduate, High School, Other
+    level: "", // Dropdown: Undergraduate, Postgraduate, High School, Other
     email: "",
     phone: "",
     password: "",
@@ -105,14 +105,15 @@ export default function Register() {
     return score;
   }, [passChecks]);
 
-  const strengthLabel = ["Too weak", "Weak", "Fair", "Good", "Strong"][Math.max(0, strengthScore - 1)] || "Too weak";
+  const strengthLabel =
+    ["Too weak", "Weak", "Fair", "Good", "Strong"][Math.max(0, strengthScore - 1)] || "Too weak";
   const strengthColor = [
     "bg-destructive", // 0
     "bg-destructive", // 1
     "bg-destructive", // 2
-    "bg-ghana-gold",   // 3
-    "bg-primary",      // 4
-    "bg-primary",      // 5
+    "bg-ghana-gold", // 3
+    "bg-primary", // 4
+    "bg-primary", // 5
   ][strengthScore];
 
   // Submit Step 1: Send Verification Code
