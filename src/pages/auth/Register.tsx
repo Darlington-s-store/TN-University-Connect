@@ -397,7 +397,7 @@ export default function Register() {
                           <CheckCircle2 className={`h-3 w-3 ${passChecks.notCommon ? "text-primary" : "text-muted/60"}`} />
                           <span>Not common</span>
                         </div>
-                        <div className="text-[11px] text-white/40 font-medium mt-0.5">{s.desc}</div>
+                        <div className="text-[11px] text-muted-foreground font-medium mt-0.5 col-span-2">{strengthLabel}</div>
                       </div>
                     </motion.div>
                   )}
