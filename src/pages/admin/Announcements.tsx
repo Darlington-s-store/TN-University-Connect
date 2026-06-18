@@ -136,14 +136,19 @@ export default function AdminAnnouncements() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <Badge variant="outline" className="border-accent text-accent-foreground mb-2">
-          System Broadcast
-        </Badge>
-        <h1 className="text-3xl font-bold text-secondary">System Announcements</h1>
-        <p className="text-muted-foreground">
-          Create, edit and publish network announcements broadcasted to students.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <Badge variant="outline" className="border-accent text-accent-foreground mb-2">
+            System Broadcast
+          </Badge>
+          <h1 className="text-3xl font-bold text-secondary">System Announcements</h1>
+          <p className="text-muted-foreground">
+            Create, edit and publish network announcements broadcasted to students.
+          </p>
+        </div>
+        <Button onClick={openNewAnn} className="gap-1.5 font-bold shrink-0">
+          <Plus className="h-4 w-4" /> New Announcement
+        </Button>
       </div>
 
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 max-w-6xl">
