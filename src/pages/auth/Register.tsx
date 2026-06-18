@@ -294,7 +294,6 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
                   )}
                 </div>
 
-
                 {/* 3. Email Input */}
                 <div className="space-y-1.5">
                   <Label htmlFor="email" className="text-xs font-semibold">
