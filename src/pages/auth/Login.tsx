@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 import { LogIn, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
-import RegisterShell from "@/components/auth/RegisterShell";
+import AuthShell from "@/components/auth/AuthShell";
+import Register from "./Register";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,14 +20,24 @@ const schema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export default function Login() {
+export default function Login({ defaultTab = "login" }: { defaultTab?: "login" | "register" }) {
   const navigate = useNavigate();
   const { login, googleLogin, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState<"login" | "register">(defaultTab);
   const [form, setForm] = useState({ email: "", password: "", remember: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
+
+  const handleTabChange = (tab: "login" | "register") => {
+    setActiveTab(tab);
+    navigate(tab === "login" ? "/login" : "/register", { replace: true });
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,158 +94,193 @@ export default function Login() {
   };
 
   return (
-    <RegisterShell
-      title="Welcome Back"
-      subtitle="Sign in to connect with your university workspace"
+    <AuthShell
+      title={activeTab === "login" ? "Welcome Back" : "Join the Network"}
+      subtitle={
+        activeTab === "login"
+          ? "Sign in to connect with your university workspace"
+          : "Create your account to connect with Ghana's universities, alumni, and student community."
+      }
     >
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-      >
-        <form onSubmit={submit} className="space-y-4" noValidate>
-          {/* Email Input */}
-          <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs font-semibold">
-              Email address
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="email"
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="you@example.com"
-                className="pl-9 h-9.5 text-sm"
-              />
-            </div>
-            {errors.email && (
-              <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" /> {errors.email}
-              </p>
-            )}
-          </div>
+      {/* Navigation tab control */}
+      <div className="flex bg-muted/65 p-1 rounded-xl mb-6 border border-muted/80">
+        <button
+          type="button"
+          onClick={() => handleTabChange("login")}
+          className={`flex-1 text-center py-2 text-xs font-bold transition-all rounded-lg ${
+            activeTab === "login"
+              ? "bg-card text-secondary shadow-soft border"
+              : "text-muted-foreground hover:text-secondary"
+          }`}
+        >
+          Sign In
+        </button>
+        <button
+          type="button"
+          onClick={() => handleTabChange("register")}
+          className={`flex-1 text-center py-2 text-xs font-bold transition-all rounded-lg ${
+            activeTab === "register"
+              ? "bg-card text-secondary shadow-soft border"
+              : "text-muted-foreground hover:text-secondary"
+          }`}
+        >
+          Sign Up
+        </button>
+      </div>
 
-          {/* Password Input */}
-          <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-xs font-semibold">
-              Password
-            </Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="pl-9 pr-10 h-9.5 text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary cursor-pointer"
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" /> {errors.password}
-              </p>
-            )}
-          </div>
-
-          {/* Remember & Forgot */}
-          <div className="flex items-center justify-between text-xs font-semibold">
-            <label className="flex items-center gap-2 cursor-pointer text-muted-foreground">
-              <Checkbox
-                checked={form.remember}
-                onCheckedChange={(v) => setForm({ ...form, remember: !!v })}
-              />
-              <span>Remember me</span>
-            </label>
-            <Link to="/forgot-password" className="text-primary hover:underline">
-              Forgot password?
-            </Link>
-          </div>
-
-          {/* Submit Trigger */}
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full h-10 font-semibold text-xs mt-2 shadow-sm"
-          >
-            <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign In"}
-          </Button>
-
-          {/* Social Divider */}
-          {CLIENT_ID && (
-            <>
-              <div className="relative py-3">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-muted/80" />
-                </div>
-                <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-extrabold text-muted-foreground">
-                  <span className="bg-white px-3">or login with</span>
-                </div>
+      {activeTab === "login" ? (
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          <form onSubmit={submit} className="space-y-4" noValidate>
+            {/* Email Input */}
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-xs font-semibold">
+                Email address
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="you@example.com"
+                  className="pl-9 h-9.5 text-sm"
+                />
               </div>
+              {errors.email && (
+                <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" /> {errors.email}
+                </p>
+              )}
+            </div>
 
-              <div className="flex justify-center">
-                {googleLoading ? (
-                  <Button disabled variant="outline" className="w-full h-10 font-semibold text-xs">
-                    <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
-                    Signing in...
-                  </Button>
-                ) : isMockClientId(CLIENT_ID) ? (
-                  <MockGoogleButton
-                    onClick={() => handleGoogleSuccess({ credential: "mock-credential" })}
-                  />
-                ) : (
-                  <div className="w-full [&>div]:!w-full [&_iframe]:!w-full">
-                    <GoogleLogin
-                      onSuccess={handleGoogleSuccess}
-                      onError={() => toast.error("Google sign-in failed")}
-                      theme="outline"
-                      size="large"
-                      text="signin_with"
-                      shape="rectangular"
-                      width="100%"
-                    />
-                  </div>
-                )}
+            {/* Password Input */}
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-xs font-semibold">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  className="pl-9 pr-10 h-9.5 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-            </>
-          )}
-          {/* Signup nudge */}
-          <div className="text-center mt-6 pt-4 border-t border-slate-200">
-            <p className="text-xs text-slate-500">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="font-bold text-ghana-gold hover:text-ghana-gold/80 underline-offset-4 hover:underline"
-              >
-                Sign up here →
+              {errors.password && (
+                <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" /> {errors.password}
+                </p>
+              )}
+            </div>
+
+            {/* Remember & Forgot */}
+            <div className="flex items-center justify-between text-xs font-semibold">
+              <label className="flex items-center gap-2 cursor-pointer text-muted-foreground">
+                <Checkbox
+                  checked={form.remember}
+                  onCheckedChange={(v) => setForm({ ...form, remember: !!v })}
+                />
+                <span>Remember me</span>
+              </label>
+              <Link to="/forgot-password" className="text-primary hover:underline">
+                Forgot password?
               </Link>
-            </p>
-          </div>
-        </form>
-      </motion.div>
-    </RegisterShell>
+            </div>
+
+            {/* Submit Trigger */}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-10 font-semibold text-xs mt-2 shadow-sm"
+            >
+              <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign In"}
+            </Button>
+
+            {/* Social Divider */}
+            {CLIENT_ID && (
+              <>
+                <div className="relative py-3">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-muted/80" />
+                  </div>
+                  <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-extrabold text-muted-foreground">
+                    <span className="bg-white px-3 text-slate-400">or login with</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-center">
+                  {googleLoading ? (
+                    <Button disabled variant="outline" className="w-full h-10 font-semibold text-xs">
+                      <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                      Signing in...
+                    </Button>
+                  ) : isMockClientId(CLIENT_ID) ? (
+                    <MockGoogleButton
+                      onClick={() => handleGoogleSuccess({ credential: "mock-credential" })}
+                    />
+                  ) : (
+                    <div className="w-full [&>div]:!w-full [&_iframe]:!w-full">
+                      <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={() => toast.error("Google sign-in failed")}
+                        theme="outline"
+                        size="large"
+                        text="signin_with"
+                        shape="rectangular"
+                        width="100%"
+                      />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+            {/* Signup nudge */}
+            <div className="text-center mt-6 pt-4 border-t border-slate-200">
+              <p className="text-xs text-slate-500">
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => handleTabChange("register")}
+                  className="font-bold text-ghana-gold hover:text-ghana-gold/80 underline-offset-4 hover:underline"
+                >
+                  Sign up here →
+                </button>
+              </p>
+            </div>
+          </form>
+        </motion.div>
+      ) : (
+        <Register noShell />
+      )}
+    </AuthShell>
   );
 }

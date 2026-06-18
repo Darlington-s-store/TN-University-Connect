@@ -77,7 +77,7 @@ export default function App() {
                   path="/login"
                   element={
                     <PageTransition>
-                      <Login />
+                      <Login defaultTab="login" />
                     </PageTransition>
                   }
                 />
@@ -93,7 +93,7 @@ export default function App() {
                   path="/register"
                   element={
                     <PageTransition>
-                      <Register />
+                      <Login defaultTab="register" />
                     </PageTransition>
                   }
                 />
