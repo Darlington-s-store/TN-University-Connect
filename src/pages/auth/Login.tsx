@@ -4,7 +4,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { LogIn, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
-import AuthShell from "@/components/auth/AuthShell";
+import RegisterShell from "@/components/auth/RegisterShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -83,20 +83,10 @@ export default function Login() {
   };
 
   return (
-    <AuthShell title="Welcome Back" subtitle="Sign in to connect with your university workspace">
-      {/* Navigation tab control */}
-      <div className="flex bg-muted/65 p-1 rounded-xl mb-6 border border-muted/80">
-        <div className="flex-1 text-center py-2 text-xs font-bold bg-card text-secondary shadow-soft cursor-default rounded-lg border">
-          Sign In
-        </div>
-        <Link
-          to="/register"
-          className="flex-1 text-center py-2 text-xs font-semibold text-muted-foreground hover:text-secondary transition-all rounded-lg"
-        >
-          Sign Up
-        </Link>
-      </div>
-
+    <RegisterShell
+      title="Welcome Back"
+      subtitle="Sign in to connect with your university workspace"
+    >
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -186,7 +176,7 @@ export default function Login() {
                   <span className="w-full border-t border-muted/80" />
                 </div>
                 <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-extrabold text-muted-foreground">
-                  <span className="bg-background px-3">or login with</span>
+                  <span className="bg-white px-3">or login with</span>
                 </div>
               </div>
 
@@ -231,8 +221,20 @@ export default function Login() {
               </div>
             </>
           )}
+          {/* Signup nudge */}
+          <div className="text-center mt-6 pt-4 border-t border-slate-200">
+            <p className="text-xs text-slate-500">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="font-bold text-ghana-gold hover:text-ghana-gold/80 underline-offset-4 hover:underline"
+              >
+                Sign up here →
+              </Link>
+            </p>
+          </div>
         </form>
       </motion.div>
-    </AuthShell>
+    </RegisterShell>
   );
 }

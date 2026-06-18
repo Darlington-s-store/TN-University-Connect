@@ -1,114 +1,134 @@
 import { ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { Sparkles } from "lucide-react";
-import heroVideo from "@/assets/hero-video.mp4.asset.json";
-import heroBg from "@/assets/hero-bg.jpg";
 import Logo from "@/components/Logo";
 
-/**
- * RegisterShell — intentionally different from AuthShell (Login uses split-screen
- * with a static graphic; Register uses a centered glass card over a video bg).
- */
 export default function RegisterShell({
   title,
   subtitle,
   step,
   totalSteps = 2,
   children,
-  footer,
 }: {
   title: string;
   subtitle?: string;
   step?: number;
   totalSteps?: number;
   children: ReactNode;
-  footer?: ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen flex flex-col bg-secondary text-white overflow-hidden">
-      {/* Video background */}
-      <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          poster={heroBg}
-          className="h-full w-full object-cover"
-          aria-hidden="true"
-        >
-          <source src={heroVideo.url} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-secondary/85" />
-        <div className="absolute inset-0 bg-gradient-to-br from-ghana-green/25 via-transparent to-ghana-red/20" />
-        <div className="absolute -top-32 -right-32 w-[480px] h-[480px] rounded-full bg-accent/20 blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 w-[480px] h-[480px] rounded-full bg-ghana-red/15 blur-3xl" />
+    <div className="min-h-screen grid lg:grid-cols-[42%_58%]">
+      {/* ── Left panel: Ghanaian cultural splash ── */}
+      <div className="hidden lg:flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-[#0a2810] via-[#0d3315] to-[#041a0a] p-12">
+        {/* Kente-inspired woven stripe pattern */}
+        <div className="absolute inset-0 z-0 opacity-20">
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_6px,#D4A017_6px,#D4A017_8px,transparent_8px,transparent_14px,#CF1020_14px,#CF1020_16px,transparent_16px,transparent_22px)]" />
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_12px,rgba(255,255,255,0.03)_12px,rgba(255,255,255,0.03)_13px)]" />
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,rgba(212,160,23,0.04)_20px,rgba(212,160,23,0.04)_21px)]" />
+        </div>
+
+        {/* Glow orbs */}
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-ghana-gold/10 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-ghana-red/10 blur-3xl" />
+
+        {/* Ghana flag top border */}
+        <div className="absolute top-0 inset-x-0 h-1.5 z-10 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
+
+        {/* Logo */}
+        <div className="relative z-10">
+          <Logo variant="light" />
+        </div>
+
+        {/* Center content */}
+        <div className="relative z-10 space-y-8">
+          {/* Akwaaba */}
+          <div>
+            <h2 className="text-5xl font-black tracking-tight text-white leading-[1.1]">
+              Akwaaba!
+            </h2>
+            <p className="mt-3 text-lg text-white/70 max-w-sm leading-relaxed font-medium">
+              Welcome to Ghana's national university network
+            </p>
+          </div>
+
+          {/* Ghana Star */}
+          <svg
+            viewBox="0 0 100 100"
+            className="w-16 h-16 text-ghana-gold opacity-80"
+            fill="currentColor"
+          >
+            <polygon points="50,5 61,38 97,38 68,60 79,95 50,73 21,95 32,60 3,38 39,38" />
+          </svg>
+
+          {/* Sankofa Proverb */}
+          <blockquote className="border-l-4 border-ghana-gold/60 pl-5 max-w-xs">
+            <p className="text-sm text-white/80 italic leading-relaxed">
+              "Se wo were fi na wosan kofa a yenkyi."
+            </p>
+            <footer className="mt-1.5 text-xs text-white/50 font-medium tracking-wide">
+              — It is not taboo to go back and fetch what you forgot
+            </footer>
+          </blockquote>
+
+          {/* Flag colour dots */}
+          <div className="flex gap-2">
+            <span className="h-2 w-10 rounded-full bg-ghana-red" />
+            <span className="h-2 w-10 rounded-full bg-ghana-gold" />
+            <span className="h-2 w-10 rounded-full bg-ghana-green" />
+          </div>
+        </div>
+
+        <div className="relative z-10 text-xs text-white/30">
+          © {new Date().getFullYear()} TN Universities Connect
+        </div>
       </div>
 
-      {/* Flag accent */}
-      <div className="absolute top-0 inset-x-0 h-1 z-30 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
+      {/* ── Right panel: form area ── */}
+      <div className="flex flex-col justify-center px-6 py-10 sm:px-14 lg:px-18 bg-gradient-to-br from-white via-slate-50 to-white relative">
+        {/* Logo on mobile */}
+        <div className="lg:hidden mb-6">
+          <Logo />
+        </div>
 
-      {/* Header */}
-      <header className="relative z-10 container mx-auto px-6 pt-8 flex items-center justify-between">
-        <Logo variant="light" />
-        <Link
-          to="/"
-          className="text-xs text-white/60 hover:text-white transition-colors hidden sm:inline-flex"
-        >
-          ← Back to home
-        </Link>
-      </header>
+        {/* Ghana flag top border on mobile */}
+        <div className="lg:hidden absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
 
-      {/* Center card */}
-      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-10 sm:py-16">
-        <div className="w-full max-w-2xl">
-          {/* Step badge */}
+        <div className="max-w-md w-full mx-auto">
+          {/* Flag accent bar above form */}
+          <div className="hidden lg:flex gap-1.5 mb-6">
+            <span className="h-1 w-8 rounded-full bg-ghana-red" />
+            <span className="h-1 w-8 rounded-full bg-ghana-gold" />
+            <span className="h-1 w-8 rounded-full bg-ghana-green" />
+          </div>
+
+          {/* Step indicator */}
           {typeof step === "number" && (
-            <div className="flex items-center justify-center mb-5">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 border border-accent/30 backdrop-blur-md">
-                <Sparkles className="h-3.5 w-3.5 text-accent" />
-                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
-                  Step {step} of {totalSteps}
-                </span>
-              </div>
+            <div className="flex items-center gap-2 mb-6">
+              {Array.from({ length: totalSteps }, (_, i) => (
+                <div
+                  key={i}
+                  className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
+                    i < step ? "bg-ghana-gold" : "bg-slate-200"
+                  }`}
+                />
+              ))}
+              <span className="text-[10px] font-bold text-slate-400 ml-1 tracking-wider uppercase">
+                Step {step}/{totalSteps}
+              </span>
             </div>
           )}
 
           {/* Title */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-              <span className="bg-gradient-to-r from-white via-white to-accent bg-clip-text text-transparent">
-                {title}
-              </span>
-            </h1>
-            {subtitle && (
-              <p className="mt-3 text-sm sm:text-base text-white/70 max-w-md mx-auto leading-relaxed">
-                {subtitle}
-              </p>
-            )}
-          </div>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{title}</h1>
+          {subtitle && <p className="mt-2 text-sm text-slate-500 leading-relaxed">{subtitle}</p>}
 
-          {/* Glass card */}
-          <div className="relative rounded-3xl bg-white/[0.04] border border-white/10 backdrop-blur-2xl shadow-2xl overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            <div className="p-6 sm:p-10 [&_label]:text-white/85 [&_input]:bg-white/[0.06] [&_input]:border-white/15 [&_input]:text-white [&_input]:placeholder:text-white/40 [&_button[role=combobox]]:bg-white/[0.06] [&_button[role=combobox]]:border-white/15 [&_button[role=combobox]]:text-white">
-              {children}
-            </div>
-          </div>
-
-          {footer && <div className="mt-6 text-center text-sm text-white/70">{footer}</div>}
-
-          <div className="mt-8 text-center">
-            <Link to="/" className="text-xs text-white/50 hover:text-white sm:hidden">
-              ← Back to home
-            </Link>
-          </div>
+          <div className="mt-8">{children}</div>
         </div>
-      </main>
 
-      <footer className="relative z-10 py-4 text-center text-xs text-white/40">
-        © {new Date().getFullYear()} TN Universities Connect
-      </footer>
+        <div className="mt-10 text-center lg:hidden">
+          <a href="/" className="text-xs text-slate-400 hover:text-slate-600 transition-colors">
+            ← Back to home
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
