@@ -36,8 +36,6 @@ import {
 // Validation schema for registering user
 const registerSchema = z.object({
   name: z.string().trim().min(2, "Full name is required").max(100),
-  status: z.string().min(1, "Select your role"),
-  level: z.string().min(1, "Select your academic level"),
   email: z.string().trim().email("Enter a valid email").max(255),
   phone: z.string().trim().min(9, "Enter a valid phone number"),
   password: z
@@ -69,8 +67,6 @@ export default function Register() {
   // Form fields
   const [form, setForm] = useState({
     name: "",
-    status: "", // Dropdown: Student, Alumni, Faculty, Other
-    level: "", // Dropdown: Undergraduate, Postgraduate, High School, Other
     email: "",
     phone: "",
     password: "",
@@ -172,8 +168,8 @@ export default function Register() {
         faculty: "",
         department: "",
         program: "",
-        level: form.level,
-        status: form.status,
+        level: "",
+        status: "Active Student",
         church: "",
         niche: "",
       });
@@ -281,58 +277,6 @@ export default function Register() {
                   )}
                 </div>
 
-                {/* 2. Grid Role & Level */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="status" className="text-xs font-semibold">
-                      I am a
-                    </Label>
-                    <Select
-                      value={form.status}
-                      onValueChange={(v) => setForm({ ...form, status: v })}
-                    >
-                      <SelectTrigger id="status" className="h-9.5 text-sm">
-                        <SelectValue placeholder="Select Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Student">Student</SelectItem>
-                        <SelectItem value="Alumni">Alumni</SelectItem>
-                        <SelectItem value="Faculty">Faculty Member</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.status && (
-                      <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" /> {errors.status}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="level" className="text-xs font-semibold">
-                      Academic Level
-                    </Label>
-                    <Select
-                      value={form.level}
-                      onValueChange={(v) => setForm({ ...form, level: v })}
-                    >
-                      <SelectTrigger id="level" className="h-9.5 text-sm">
-                        <SelectValue placeholder="Select Level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Undergraduate">Undergraduate</SelectItem>
-                        <SelectItem value="Postgraduate">Postgraduate</SelectItem>
-                        <SelectItem value="High School">High School</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.level && (
-                      <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" /> {errors.level}
-                      </p>
-                    )}
-                  </div>
-                </div>
 
                 {/* 3. Email Input */}
                 <div className="space-y-1.5">
