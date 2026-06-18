@@ -55,7 +55,7 @@ const registerSchema = z.object({
     }),
 });
 
-export default function Register() {
+export default function Register({ noShell = false }: { noShell?: boolean }) {
   const navigate = useNavigate();
   const { register } = useAuth();
 
@@ -199,49 +199,66 @@ export default function Register() {
   };
 
   if (done) {
+    const successContent = (
+      <div className="text-center py-6">
+        <div className="h-20 w-20 rounded-full bg-accent/15 border border-accent/30 grid place-items-center mx-auto mb-6">
+          <CheckCircle2 className="h-10 w-10 text-accent animate-bounce" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-black text-white tracking-tight">You're all set!</h2>
+          <p className="text-sm text-white/70 leading-relaxed">
+            Your account has been successfully created. We are setting up your student dashboard.
+          </p>
+        </div>
+        <p className="text-xs text-white/50 animate-pulse my-5">
+          Redirecting you to your dashboard...
+        </p>
+        <Button
+          asChild
+          className="w-full h-11 bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl font-bold"
+        >
+          <Link to="/dashboard">Go to Dashboard</Link>
+        </Button>
+      </div>
+    );
+
+    if (noShell) {
+      return successContent;
+    }
+
     return (
       <RegisterShell title="Welcome aboard!" subtitle="Your account has been created successfully.">
-        <div className="text-center py-6">
-          <div className="h-20 w-20 rounded-full bg-accent/15 border border-accent/30 grid place-items-center mx-auto mb-6">
-            <CheckCircle2 className="h-10 w-10 text-accent animate-bounce" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-2xl font-black text-white tracking-tight">You're all set!</h2>
-            <p className="text-sm text-white/70 leading-relaxed">
-              Your account has been successfully created. We are setting up your student dashboard.
-            </p>
-          </div>
-          <p className="text-xs text-white/50 animate-pulse my-5">
-            Redirecting you to your dashboard...
-          </p>
-          <Button
-            asChild
-            className="w-full h-11 bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl font-bold"
-          >
-            <Link to="/dashboard">Go to Dashboard</Link>
-          </Button>
-        </div>
+        {successContent}
       </RegisterShell>
     );
   }
 
-  return (
-    <RegisterShell
-      title="Join the Network"
-      subtitle="Create your account to connect with Ghana's universities, alumni, and student community."
-      step={step}
-      totalSteps={2}
-    >
-      {/* Already-a-member nudge — Login lives on a different screen */}
-      <div className="mb-6 flex items-center justify-center gap-2 text-xs text-white/60">
-        <span>Already have an account?</span>
-        <Link
-          to="/login"
-          className="font-bold text-accent hover:text-accent/80 underline-offset-4 hover:underline"
-        >
-          Sign in here →
-        </Link>
-      </div>
+  const formContent = (
+    <>
+      {/* Step badge if noShell */}
+      {noShell && typeof step === "number" && (
+        <div className="flex items-center justify-center mb-5">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 border border-accent/30 backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5 text-accent" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
+              Step {step} of 2
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Already-a-member nudge — only show if not in tabs */}
+      {!noShell && (
+        <div className="mb-6 flex items-center justify-center gap-2 text-xs text-white/60">
+          <span>Already have an account?</span>
+          <Link
+            to="/login"
+            className="font-bold text-accent hover:text-accent/80 underline-offset-4 hover:underline"
+          >
+            Sign in here →
+          </Link>
+        </div>
+      )}
 
       <div className="relative overflow-hidden min-h-[420px]">
         <AnimatePresence mode="wait">
@@ -507,6 +524,21 @@ export default function Register() {
           )}
         </AnimatePresence>
       </div>
+    </>
+  );
+
+  if (noShell) {
+    return formContent;
+  }
+
+  return (
+    <RegisterShell
+      title="Join the Network"
+      subtitle="Create your account to connect with Ghana's universities, alumni, and student community."
+      step={step}
+      totalSteps={2}
+    >
+      {formContent}
     </RegisterShell>
   );
 }
