@@ -8,6 +8,7 @@ import { GoogleProvider } from "@/lib/google";
 import Preloader from "@/components/Preloader";
 import BreakingNewsOverlay from "@/components/BreakingNewsOverlay";
 import PageTransition from "@/components/PageTransition";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import "./App.css";
 
 import PublicLayout from "@/components/layout/PublicLayout";
@@ -25,7 +26,6 @@ import NotFound from "@/pages/NotFound";
 
 import Login from "@/pages/auth/Login";
 import AdminLogin from "@/pages/auth/AdminLogin";
-import Register from "@/pages/auth/Register";
 import ForgotPassword from "@/pages/auth/ForgotPassword";
 import ResetPassword from "@/pages/auth/ResetPassword";
 
@@ -53,111 +53,113 @@ function RequireAuth({ children, role }: { children: ReactElement; role?: "admin
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <GoogleProvider>
-          <TooltipProvider>
-            <Preloader />
-            <BrowserRouter>
-              <BreakingNewsOverlay />
-              <Routes>
-                {/* Public */}
-                <Route element={<PublicLayout />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/announcements" element={<Announcements />} />
-                  <Route path="/announcements/:id" element={<AnnouncementDetail />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:id" element={<BlogDetail />} />
-                  <Route path="/contact" element={<Contact />} />
-                </Route>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <GoogleProvider>
+            <TooltipProvider>
+              <Preloader />
+              <BrowserRouter>
+                <BreakingNewsOverlay />
+                <Routes>
+                  {/* Public */}
+                  <Route element={<PublicLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/announcements" element={<Announcements />} />
+                    <Route path="/announcements/:id" element={<AnnouncementDetail />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogDetail />} />
+                    <Route path="/contact" element={<Contact />} />
+                  </Route>
 
-                {/* Auth */}
-                <Route
-                  path="/login"
-                  element={
-                    <PageTransition>
-                      <Login defaultTab="login" />
-                    </PageTransition>
-                  }
-                />
-                <Route
-                  path="/admin/login"
-                  element={
-                    <PageTransition>
-                      <AdminLogin />
-                    </PageTransition>
-                  }
-                />
-                <Route
-                  path="/register"
-                  element={
-                    <PageTransition>
-                      <Login defaultTab="register" />
-                    </PageTransition>
-                  }
-                />
-                <Route
-                  path="/forgot-password"
-                  element={
-                    <PageTransition>
-                      <ForgotPassword />
-                    </PageTransition>
-                  }
-                />
-                <Route
-                  path="/reset-password"
-                  element={
-                    <PageTransition>
-                      <ResetPassword />
-                    </PageTransition>
-                  }
-                />
+                  {/* Auth */}
+                  <Route
+                    path="/login"
+                    element={
+                      <PageTransition>
+                        <Login defaultTab="login" />
+                      </PageTransition>
+                    }
+                  />
+                  <Route
+                    path="/admin/login"
+                    element={
+                      <PageTransition>
+                        <AdminLogin />
+                      </PageTransition>
+                    }
+                  />
+                  <Route
+                    path="/register"
+                    element={
+                      <PageTransition>
+                        <Login defaultTab="register" />
+                      </PageTransition>
+                    }
+                  />
+                  <Route
+                    path="/forgot-password"
+                    element={
+                      <PageTransition>
+                        <ForgotPassword />
+                      </PageTransition>
+                    }
+                  />
+                  <Route
+                    path="/reset-password"
+                    element={
+                      <PageTransition>
+                        <ResetPassword />
+                      </PageTransition>
+                    }
+                  />
 
-                {/* Member */}
-                <Route
-                  element={
-                    <RequireAuth>
-                      <MemberLayout />
-                    </RequireAuth>
-                  }
-                >
-                  <Route path="/dashboard" element={<MemberDashboard />} />
-                  <Route path="/profile" element={<MemberProfile />} />
-                  <Route path="/student-info" element={<StudentForm />} />
-                </Route>
+                  {/* Member */}
+                  <Route
+                    element={
+                      <RequireAuth>
+                        <MemberLayout />
+                      </RequireAuth>
+                    }
+                  >
+                    <Route path="/dashboard" element={<MemberDashboard />} />
+                    <Route path="/profile" element={<MemberProfile />} />
+                    <Route path="/student-info" element={<StudentForm />} />
+                  </Route>
 
-                {/* Admin */}
-                <Route
-                  element={
-                    <RequireAuth role="admin">
-                      <AdminLayout />
-                    </RequireAuth>
-                  }
-                >
-                  <Route path="/admin" element={<AdminDashboard />} />
-                  <Route path="/admin/students" element={<AdminStudents />} />
-                  <Route path="/admin/analytics" element={<AdminAnalytics />} />
-                  <Route path="/admin/announcements" element={<AdminAnnouncements />} />
-                  <Route path="/admin/blog" element={<AdminBlog />} />
-                  <Route path="/admin/messages" element={<AdminMessages />} />
-                  <Route path="/admin/settings" element={<AdminSettings />} />
-                </Route>
+                  {/* Admin */}
+                  <Route
+                    element={
+                      <RequireAuth role="admin">
+                        <AdminLayout />
+                      </RequireAuth>
+                    }
+                  >
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/students" element={<AdminStudents />} />
+                    <Route path="/admin/analytics" element={<AdminAnalytics />} />
+                    <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+                    <Route path="/admin/blog" element={<AdminBlog />} />
+                    <Route path="/admin/messages" element={<AdminMessages />} />
+                    <Route path="/admin/settings" element={<AdminSettings />} />
+                  </Route>
 
-                <Route
-                  path="*"
-                  element={
-                    <PageTransition>
-                      <NotFound />
-                    </PageTransition>
-                  }
-                />
-              </Routes>
-              <Toaster richColors position="top-right" />
-            </BrowserRouter>
-          </TooltipProvider>
-        </GoogleProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+                  <Route
+                    path="*"
+                    element={
+                      <PageTransition>
+                        <NotFound />
+                      </PageTransition>
+                    }
+                  />
+                </Routes>
+                <Toaster richColors position="top-right" />
+              </BrowserRouter>
+            </TooltipProvider>
+          </GoogleProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
