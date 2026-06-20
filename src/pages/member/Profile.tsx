@@ -633,10 +633,10 @@ export default function MemberProfile() {
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="max-w-2xl mx-auto space-y-6"
+            className="space-y-6"
           >
             {/* Header Card */}
-            <Card className="border shadow-sm overflow-hidden">
+            <Card className="border shadow-soft overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-center gap-5">
                   <Avatar className="h-20 w-20 border-2 border-primary/20">
@@ -682,7 +682,7 @@ export default function MemberProfile() {
             </Card>
 
             {/* Personal Details */}
-            <Card className="border shadow-sm">
+            <Card className="border shadow-soft">
               <CardContent className="p-5 space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b">
                   <User className="h-4 w-4 text-primary" />
@@ -738,7 +738,7 @@ export default function MemberProfile() {
             </Card>
 
             {/* Academic Credentials */}
-            <Card className="border shadow-sm">
+            <Card className="border shadow-soft">
               <CardContent className="p-5 space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b">
                   <GraduationCap className="h-4 w-4 text-primary" />
@@ -814,7 +814,7 @@ export default function MemberProfile() {
             </Card>
 
             {/* Affiliation & Focus */}
-            <Card className="border shadow-sm">
+            <Card className="border shadow-soft">
               <CardContent className="p-5 space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b">
                   <BookOpen className="h-4 w-4 text-primary" />
