@@ -63,53 +63,53 @@
 :root {
   --radius: 0.75rem;
 
-  /* Ghana brand */
-  --ghana-red: oklch(0.547 0.215 27.5); /* #D71920 */
-  --ghana-gold: oklch(0.832 0.165 85); /* #F5C518 */
-  --ghana-green: oklch(0.475 0.135 152); /* #006B2D */
-  --deep-navy: oklch(0.225 0.062 260); /* #0B1F3A */
+  /* Ghana brand - human curated modern palette */
+  --ghana-red: oklch(0.53 0.18 24.5); /* Deep rich cherry/crimson red */
+  --ghana-gold: oklch(0.79 0.13 74); /* Warm amber/honey gold - premium & accessible */
+  --ghana-green: oklch(0.43 0.11 146); /* Deep emerald/forest green */
+  --deep-navy: oklch(0.18 0.04 250); /* Dark slate obsidian navy */
 
   --background: oklch(1 0 0);
-  --foreground: oklch(0.225 0.062 260);
+  --foreground: var(--deep-navy);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.225 0.062 260);
+  --card-foreground: var(--deep-navy);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.225 0.062 260);
+  --popover-foreground: var(--deep-navy);
 
-  --primary: oklch(0.475 0.135 152); /* Ghana Green */
+  --primary: var(--ghana-green);
   --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.225 0.062 260); /* Deep Navy */
+  --secondary: var(--deep-navy);
   --secondary-foreground: oklch(1 0 0);
 
   --muted: oklch(0.968 0.005 240); /* Light Gray #F5F5F5 */
   --muted-foreground: oklch(0.45 0.02 260);
 
-  --accent: oklch(0.832 0.165 85); /* Ghana Gold */
-  --accent-foreground: oklch(0.225 0.062 260);
+  --accent: var(--ghana-gold);
+  --accent-foreground: var(--deep-navy);
 
-  --destructive: oklch(0.547 0.215 27.5); /* Ghana Red */
+  --destructive: var(--ghana-red);
   --destructive-foreground: oklch(1 0 0);
 
   --border: oklch(0.91 0.008 240);
   --input: oklch(0.93 0.008 240);
-  --ring: oklch(0.475 0.135 152);
+  --ring: var(--ghana-green);
 
-  --chart-1: oklch(0.475 0.135 152); /* green */
-  --chart-2: oklch(0.547 0.215 27.5); /* red */
-  --chart-3: oklch(0.832 0.165 85); /* gold */
-  --chart-4: oklch(0.225 0.062 260); /* navy */
+  --chart-1: var(--ghana-green);
+  --chart-2: var(--ghana-red);
+  --chart-3: var(--ghana-gold);
+  --chart-4: var(--deep-navy);
   --chart-5: oklch(0.55 0.05 260);
 
-  --sidebar: oklch(0.225 0.062 260);
+  --sidebar: var(--deep-navy);
   --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.832 0.165 85);
-  --sidebar-primary-foreground: oklch(0.225 0.062 260);
-  --sidebar-accent: oklch(0.3 0.05 260);
+  --sidebar-primary: var(--ghana-gold);
+  --sidebar-primary-foreground: var(--deep-navy);
+  --sidebar-accent: oklch(0.25 0.04 250);
   --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.3 0.04 260);
-  --sidebar-ring: oklch(0.832 0.165 85);
+  --sidebar-border: oklch(0.25 0.03 250);
+  --sidebar-ring: var(--ghana-gold);
 
   /* Curated gradients & shadows */
   --gradient-flag: linear-gradient(
@@ -118,36 +118,36 @@
     var(--ghana-gold) 50%,
     var(--ghana-green) 100%
   );
-  --gradient-hero: linear-gradient(135deg, oklch(0.475 0.135 152) 0%, oklch(0.225 0.062 260) 100%);
+  --gradient-hero: linear-gradient(135deg, var(--ghana-green) 0%, var(--deep-navy) 100%);
   --gradient-subtle: linear-gradient(180deg, oklch(1 0 0) 0%, oklch(0.97 0.005 240) 100%);
 
   --shadow-elegant: 0 10px 30px -10px color-mix(in oklab, var(--ghana-green) 25%, transparent);
   --shadow-soft: 0 4px 12px -4px color-mix(in oklab, var(--deep-navy) 12%, transparent);
   --shadow-gold: 0 8px 24px -8px color-mix(in oklab, var(--ghana-gold) 40%, transparent);
 
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .dark {
-  --background: oklch(0.18 0.04 260);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.225 0.062 260);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.225 0.062 260);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.55 0.14 152);
+  --background: oklch(0.14 0.02 250);
+  --foreground: oklch(0.98 0.01 240);
+  --card: oklch(0.18 0.03 250);
+  --card-foreground: oklch(0.98 0.01 240);
+  --popover: oklch(0.18 0.03 250);
+  --popover-foreground: oklch(0.98 0.01 240);
+  --primary: oklch(0.52 0.11 146);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.3 0.05 260);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.27 0.04 260);
-  --muted-foreground: oklch(0.7 0.03 240);
-  --accent: oklch(0.832 0.165 85);
-  --accent-foreground: oklch(0.225 0.062 260);
-  --destructive: oklch(0.6 0.2 27.5);
+  --secondary: oklch(0.25 0.04 250);
+  --secondary-foreground: oklch(0.98 0.01 240);
+  --muted: oklch(0.22 0.03 250);
+  --muted-foreground: oklch(0.7 0.02 240);
+  --accent: var(--ghana-gold);
+  --accent-foreground: var(--deep-navy);
+  --destructive: oklch(0.58 0.18 24.5);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.55 0.14 152);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.52 0.11 146);
 }
 
 @layer base {
@@ -194,6 +194,55 @@
 }
 @utility transition-smooth {
   transition: var(--transition-smooth);
+}
+@utility hover-underline-animate {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: currentColor;
+    transform-origin: bottom right;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  &:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+}
+@utility hover-lift {
+  transition: var(--transition-smooth);
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px -12px color-mix(in oklab, var(--deep-navy) 15%, transparent);
+    border-color: color-mix(in oklab, var(--primary) 25%, var(--border));
+  }
+}
+@utility hover-lift-gold {
+  transition: var(--transition-smooth);
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px -12px color-mix(in oklab, var(--ghana-gold) 35%, transparent);
+    border-color: color-mix(in oklab, var(--ghana-gold) 30%, var(--border));
+  }
+}
+@utility hover-glow-primary {
+  transition: var(--transition-smooth);
+  &:hover {
+    box-shadow: 0 0 25px -2px color-mix(in oklab, var(--primary) 40%, transparent),
+                0 4px 12px -2px color-mix(in oklab, var(--primary) 20%, transparent);
+  }
+}
+@utility hover-glow-accent {
+  transition: var(--transition-smooth);
+  &:hover {
+    box-shadow: 0 0 25px -2px color-mix(in oklab, var(--accent) 50%, transparent),
+                0 4px 12px -2px color-mix(in oklab, var(--accent) 25%, transparent);
+  }
 }
 
 /* ---------- App-wide keyframes & helpers ---------- */

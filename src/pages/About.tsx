@@ -55,39 +55,25 @@ export default function About() {
   return (
     <div className="bg-white">
       {/* MODERN HERO */}
-      <section className="relative overflow-hidden bg-secondary text-white py-24 lg:py-32">
+      <section className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28">
         <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            poster={heroBg}
-            className="h-full w-full object-cover"
-            aria-hidden="true"
-          >
-            <source src={heroVideo.url} type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-secondary/75" />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/40 via-transparent to-secondary" />
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary/95 to-slate-950" />
+          <div className="absolute inset-0 opacity-15 mix-blend-overlay bg-[radial-gradient(rgba(255,255,255,0.2)_1px,transparent_1px)] [background-size:20px_20px]" />
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4" />
         </div>
 
-        <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center flex flex-col items-center">
-          <div className="max-w-3xl">
-            <Badge className="bg-accent text-accent-foreground mb-6 px-4 py-1 text-xs uppercase tracking-widest font-bold">
-              Our Story
-            </Badge>
-            <h1 className="text-4xl sm:text-6xl font-bold leading-[1.1] mb-8">
-              Building the digital infrastructure for{" "}
-              <span className="text-accent">Ghanaian excellence.</span>
-            </h1>
-            <p className="text-xl text-white/70 leading-relaxed max-w-2xl mx-auto">
-              TN Universities Connect is more than a platform—it's a movement. We are dedicated to
-              bridging the gap between talent and opportunity across every campus in Ghana.
-            </p>
-          </div>
+        <div className="container relative mx-auto px-4 sm:px-6 z-10 max-w-4xl text-center flex flex-col items-center justify-center space-y-6">
+          <h1 className="text-4xl sm:text-6xl font-bold leading-[1.1]">
+            Building the digital infrastructure for{" "}
+            <span className="bg-gradient-to-r from-accent via-ghana-gold to-white bg-clip-text text-transparent font-black">
+              Ghanaian excellence.
+            </span>
+          </h1>
+          <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-2xl mx-auto">
+            TN Universities Connect is more than a platform—it's a movement. We are dedicated to
+            bridging the gap between talent and opportunity across every campus in Ghana.
+          </p>
         </div>
       </section>
 

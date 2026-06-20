@@ -59,16 +59,15 @@ export default function Contact() {
       {/* MODERN HERO */}
       <section className="relative overflow-hidden bg-secondary text-white py-20 lg:py-28">
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,rgba(0,107,45,0.1)_0%,transparent_50%)]" />
-          <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(215,25,32,0.1)_0%,transparent_50%)]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary/95 to-slate-950" />
+          <div className="absolute inset-0 opacity-15 mix-blend-overlay bg-[radial-gradient(rgba(255,255,255,0.2)_1px,transparent_1px)] [background-size:20px_20px]" />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4" />
         </div>
 
-        <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center flex flex-col items-center">
-          <Badge className="bg-accent text-accent-foreground mb-6 px-4 py-1 uppercase tracking-widest font-bold">
-            Contact Us
-          </Badge>
-          <h1 className="text-4xl sm:text-6xl font-bold mb-6">Let's Connect</h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+        <div className="container relative mx-auto px-4 sm:px-6 z-10 max-w-4xl text-center flex flex-col items-center justify-center space-y-6">
+          <h1 className="text-4xl sm:text-6xl font-bold leading-[1.1]">Let's Connect</h1>
+          <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-2xl mx-auto">
             Have a question, partnership proposal, or just want to say hello? Our team is here to
             help you navigate the TNUC ecosystem.
           </p>

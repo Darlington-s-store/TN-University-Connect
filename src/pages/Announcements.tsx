@@ -76,63 +76,30 @@ export default function Announcements() {
 
   return (
     <div className="bg-background min-h-screen">
-      {/* HERO — video background */}
+      {/* HERO — dashboard-style header */}
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className="relative overflow-hidden text-white py-24 lg:py-32"
+        className="relative overflow-hidden text-white py-20 lg:py-28"
       >
         <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            poster={heroBg}
-            className="h-full w-full object-cover"
-            aria-hidden="true"
-          >
-            <source src={heroVideo.url} type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-secondary/80" />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/40 via-transparent to-background" />
-          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(0,107,45,0.25)_0%,transparent_55%)]" />
-          <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_80%,rgba(215,25,32,0.18)_0%,transparent_50%)]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary/95 to-slate-950" />
+          <div className="absolute inset-0 opacity-15 mix-blend-overlay bg-[radial-gradient(rgba(255,255,255,0.2)_1px,transparent_1px)] [background-size:20px_20px]" />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-ghana-red/5 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4" />
         </div>
 
-        <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 border border-accent/30 backdrop-blur-md mb-6">
-            <Megaphone className="h-3.5 w-3.5 text-accent" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent">
-              Press Center
-            </span>
-          </div>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-5 tracking-tight leading-[1.05]">
+        <div className="container relative mx-auto px-4 sm:px-6 z-10 max-w-4xl text-center flex flex-col items-center justify-center space-y-6">
+          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.05]">
             <span className="bg-gradient-to-r from-white via-white to-accent bg-clip-text text-transparent">
               Latest Updates
             </span>
           </h1>
-          <p className="text-base sm:text-lg text-white/75 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
             Official announcements, scholarship updates, and institutional news from across the
             Ghanaian academic landscape.
           </p>
-
-          {/* Live stats */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm">
-            <div className="flex items-center gap-2 text-white/80">
-              <span className="h-2 w-2 rounded-full bg-ghana-green animate-pulse" />
-              <span className="font-bold text-white">{all.length}</span> live announcements
-            </div>
-            <div className="flex items-center gap-2 text-white/80">
-              <Sparkles className="h-4 w-4 text-accent" />
-              <span className="font-bold text-white">{categories.length}</span> categories
-            </div>
-            <div className="flex items-center gap-2 text-white/80">
-              <TrendingUp className="h-4 w-4 text-ghana-red" />
-              Updated daily
-            </div>
-          </div>
         </div>
       </motion.section>
 

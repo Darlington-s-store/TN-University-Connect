@@ -134,7 +134,7 @@ function UniversityLogo({
 
   return (
     <div
-      className="h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center rounded-2xl p-2 shrink-0 border shadow-soft transition-all duration-300 group-hover:scale-105"
+      className="h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center rounded-2xl p-2 shrink-0 border shadow-soft transition-all duration-500 ease-out group-hover:scale-105 group-hover:rotate-2 group-hover:shadow-md"
       style={{
         backgroundColor: name.includes("Cape Coast") ? bg : error ? bg : "#ffffff",
         borderColor: name.includes("Cape Coast") || error ? bg : "#f1f5f9",
@@ -222,10 +222,11 @@ export default function Home() {
             <Button
               asChild
               variant="outline"
-              className="rounded-xl border-secondary/15 hover:bg-slate-50"
+              className="group rounded-xl border-secondary/15 hover:bg-slate-50 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98]"
             >
               <Link to="/announcements" className="font-bold">
-                View All <ArrowRight className="h-4 w-4 ml-1.5" />
+                View All{" "}
+                <ArrowRight className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </Button>
           </div>
@@ -240,7 +241,7 @@ export default function Home() {
                 transition={{ delay: i * 0.1 }}
                 className="flex"
               >
-                <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 bg-white overflow-hidden rounded-2xl flex flex-col w-full hover:-translate-y-1">
+                <Card className="group border border-slate-100 shadow-soft hover-lift bg-white overflow-hidden rounded-2xl flex flex-col w-full">
                   <div className="relative h-56 overflow-hidden bg-slate-100">
                     <img
                       src={resolveAnnouncementImage(a.image) || cardPattern}
@@ -250,7 +251,7 @@ export default function Home() {
                         if (!e.currentTarget.src.includes(cardPattern))
                           e.currentTarget.src = cardPattern;
                       }}
-                      className="absolute inset-0 h-full w-full object-contain group-hover:scale-105 transition-transform duration-500"
+                      className="absolute inset-0 h-full w-full object-contain group-hover:scale-103 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent" />
                     <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white">
@@ -277,9 +278,10 @@ export default function Home() {
                     </div>
                     <Link
                       to={`/announcements/${a.id}`}
-                      className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary group-hover:gap-2.5 transition-all w-fit"
+                      className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary hover-underline-animate group-hover:gap-2 transition-all w-fit"
                     >
-                      Read more <ArrowRight className="h-3 w-3" />
+                      Read more{" "}
+                      <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-300" />
                     </Link>
                   </CardContent>
                 </Card>
@@ -307,10 +309,11 @@ export default function Home() {
             <Button
               asChild
               variant="outline"
-              className="rounded-xl border-secondary/15 hover:bg-slate-100"
+              className="group rounded-xl border-secondary/15 hover:bg-slate-100 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98]"
             >
               <Link to="/blog" className="font-bold">
-                Read All <ArrowRight className="h-4 w-4 ml-1.5" />
+                Read All{" "}
+                <ArrowRight className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </Button>
           </div>
@@ -325,13 +328,13 @@ export default function Home() {
                 transition={{ delay: i * 0.1 }}
                 className="flex"
               >
-                <Card className="group border border-slate-100 shadow-soft hover:shadow-elegant transition-all duration-300 overflow-hidden bg-white rounded-2xl flex flex-col w-full hover:-translate-y-1">
+                <Card className="group border border-slate-100 shadow-soft hover-lift overflow-hidden bg-white rounded-2xl flex flex-col w-full">
                   <div className="aspect-[16/10] relative overflow-hidden bg-muted">
                     {b.image ? (
                       <img
                         src={resolveBlogImage(b.image)}
                         alt={b.title}
-                        className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="absolute inset-0 h-full w-full object-cover group-hover:scale-103 transition-transform duration-500"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 grid place-items-center">
@@ -358,9 +361,10 @@ export default function Home() {
                     </div>
                     <Link
                       to={`/blog/${b.id}`}
-                      className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary w-fit"
+                      className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-primary hover-underline-animate group-hover:gap-2 transition-all w-fit"
                     >
-                      Read article <ArrowRight className="h-3 w-3" />
+                      Read article{" "}
+                      <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform duration-300" />
                     </Link>
                   </CardContent>
                 </Card>
@@ -387,7 +391,7 @@ export default function Home() {
             {PARTNER_UNIVERSITIES.map((u) => (
               <div
                 key={u.name}
-                className="group flex flex-col items-center justify-center p-5 bg-slate-50/50 rounded-2xl border border-slate-100 hover:border-primary/30 hover:bg-white hover:shadow-elegant hover:-translate-y-1 transition-all duration-300 cursor-default"
+                className="group flex flex-col items-center justify-center p-5 bg-slate-50/50 rounded-2xl border border-slate-100 hover-lift-gold hover:bg-white cursor-default"
               >
                 <UniversityLogo
                   name={u.name}
@@ -396,7 +400,7 @@ export default function Home() {
                   bg={u.bg}
                   text={u.text}
                 />
-                <span className="text-center font-extrabold text-xs sm:text-sm text-secondary mt-4 leading-tight line-clamp-2 h-10 flex items-center justify-center">
+                <span className="text-center font-extrabold text-xs sm:text-sm text-secondary group-hover:text-primary transition-colors mt-4 leading-tight line-clamp-2 h-10 flex items-center justify-center">
                   {u.name}
                 </span>
               </div>
@@ -434,7 +438,6 @@ export default function Home() {
                 <Card className="bg-white/5 border border-white/10 backdrop-blur-md h-full text-white">
                   <CardContent className="p-7 flex flex-col justify-between h-full">
                     <div>
-                      <Quote className="h-8 w-8 text-accent mb-4" />
                       <p className="text-white/80 leading-relaxed italic text-sm">"{t.quote}"</p>
                     </div>
                     <div className="mt-6 pt-5 border-t border-white/10">
@@ -463,14 +466,18 @@ export default function Home() {
                 tertiary institution in Ghana.
               </p>
               <div className="flex flex-wrap justify-center gap-4 pt-2">
-                <Button asChild size="lg" className="rounded-xl h-12 px-8 font-bold">
+                <Button
+                  asChild
+                  size="lg"
+                  className="rounded-xl h-12 px-8 font-bold hover:hover-glow-primary hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300"
+                >
                   <Link to="/register">Create Your Account</Link>
                 </Button>
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
-                  className="rounded-xl h-12 px-8 font-bold border-secondary/15 hover:bg-slate-50"
+                  className="rounded-xl h-12 px-8 font-bold border-secondary/15 hover:bg-slate-50 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300"
                 >
                   <Link to="/contact">Contact Support</Link>
                 </Button>

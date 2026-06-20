@@ -26,6 +26,7 @@ export default function Hero() {
         </video>
         {/* Layered gradients for a clean professional look */}
         <div className="absolute inset-0 bg-slate-950/75" />
+        <div className="absolute inset-0 opacity-20 mix-blend-overlay bg-[radial-gradient(rgba(255,255,255,0.25)_1px,transparent_1px)] [background-size:24px_24px]" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
       </div>
 
@@ -54,17 +55,18 @@ export default function Hero() {
             <Button
               asChild
               size="lg"
-              className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-md h-14 px-8 text-base font-bold rounded-xl transition-all duration-300 hover:translate-y-[-2px]"
+              className="group bg-accent text-accent-foreground hover:bg-accent/95 hover:shadow-gold hover:hover-glow-accent h-14 px-8 text-base font-bold rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]"
             >
               <Link to="/register">
-                Get Started <ArrowRight className="h-4 w-4 ml-2" />
+                Get Started{" "}
+                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </Button>
             <Button
               asChild
               size="lg"
               variant="outline"
-              className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white backdrop-blur-sm h-14 px-8 text-base font-bold rounded-xl transition-all duration-300 hover:translate-y-[-2px]"
+              className="bg-white/5 border-white/25 text-white hover:bg-white/10 hover:border-white/50 hover:text-white backdrop-blur-sm h-14 px-8 text-base font-bold rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]"
             >
               <Link to="/about">Explore Network</Link>
             </Button>

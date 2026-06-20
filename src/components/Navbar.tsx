@@ -91,17 +91,17 @@ export default function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <Logo />
 
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-6">
           {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               end={l.end}
               className={({ isActive }) =>
-                `px-4 py-2 rounded-md text-sm font-medium transition-smooth ${
+                `py-2 text-sm font-semibold transition-all duration-300 relative ${
                   isActive
-                    ? "text-primary bg-primary/10"
-                    : "text-foreground/80 hover:text-primary hover:bg-muted"
+                    ? "text-primary after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-primary"
+                    : "text-foreground/70 hover:text-primary hover-underline-animate"
                 }`
               }
             >
@@ -117,7 +117,7 @@ export default function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative text-muted-foreground hover:text-secondary flex cursor-pointer"
+                className="relative text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all duration-300 hover:scale-105 flex cursor-pointer"
               >
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
@@ -252,10 +252,10 @@ export default function Navbar() {
                     end={l.end}
                     onClick={() => setOpen(false)}
                     className={({ isActive }) =>
-                      `px-4 py-3 rounded-md text-sm font-medium block transition-all duration-200 ${
+                      `px-4 py-3 rounded-xl text-sm font-semibold block transition-all duration-300 relative overflow-hidden ${
                         isActive
-                          ? "text-primary bg-primary/10"
-                          : "text-foreground/80 hover:text-primary hover:bg-muted/60"
+                          ? "text-primary bg-primary/5 border-l-2 border-primary pl-5"
+                          : "text-foreground/80 hover:text-primary hover:bg-muted/30 border-l-2 border-transparent hover:pl-5"
                       }`
                     }
                   >
