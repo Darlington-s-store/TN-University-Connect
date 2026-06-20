@@ -190,7 +190,6 @@ export const markAnnouncementAsRead = async (id: string): Promise<void> => {
   if (!res.ok) throw new Error(data.message || "Failed to mark announcement as read");
 };
 
-
 // ---------- Blog ----------
 export const getBlogs = async (): Promise<BlogPost[]> => {
   const res = await fetch(`${API_URL}/api/blogs`);
