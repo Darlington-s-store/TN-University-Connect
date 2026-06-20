@@ -15,7 +15,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getAnnouncements, Announcement } from "@/lib/data";
+import {
+  getAnnouncements,
+  Announcement,
+  getReadAnnouncements,
+  markAnnouncementAsRead,
+} from "@/lib/data";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -96,19 +101,42 @@ export default function MemberLayout() {
     loadAnnouncements();
 
     // Load read announcements
-    const stored = localStorage.getItem("tnu_read_announcements");
-    if (stored) {
-      setReadIds(JSON.parse(stored));
+    async function loadReadAnnouncements() {
+      if (user) {
+        try {
+          const ids = await getReadAnnouncements();
+          setReadIds(ids);
+        } catch (err) {
+          console.error("Failed to load read announcements in MemberLayout:", err);
+          const stored = localStorage.getItem("tnu_read_announcements");
+          if (stored) setReadIds(JSON.parse(stored));
+        }
+      } else {
+        const stored = localStorage.getItem("tnu_read_announcements");
+        if (stored) {
+          setReadIds(JSON.parse(stored));
+        }
+      }
     }
-  }, [location.pathname]);
+    loadReadAnnouncements();
+  }, [location.pathname, user]);
 
   const unreadAnnouncements = announcements.filter((a) => !readIds.includes(a.id));
   const unreadCount = unreadAnnouncements.length;
 
-  const markAsRead = (id: string) => {
+  const markAsRead = async (id: string) => {
     const next = [...readIds, id];
     setReadIds(next);
-    localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
+    if (user) {
+      try {
+        await markAnnouncementAsRead(id);
+      } catch (err) {
+        console.error("Failed to mark announcement as read on backend:", err);
+        localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
+      }
+    } else {
+      localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
+    }
     navigate(`/announcements/${id}`);
   };
 

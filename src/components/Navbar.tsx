@@ -14,7 +14,12 @@ import {
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
-import { getAnnouncements, Announcement } from "@/lib/data";
+import {
+  getAnnouncements,
+  Announcement,
+  getReadAnnouncements,
+  markAnnouncementAsRead,
+} from "@/lib/data";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,11 +61,25 @@ export default function Navbar() {
     loadAnnouncements();
 
     // Load read announcements
-    const stored = localStorage.getItem("tnu_read_announcements");
-    if (stored) {
-      setReadIds(JSON.parse(stored));
+    async function loadReadAnnouncements() {
+      if (user) {
+        try {
+          const ids = await getReadAnnouncements();
+          setReadIds(ids);
+        } catch (err) {
+          console.error("Failed to load read announcements in Navbar:", err);
+          const stored = localStorage.getItem("tnu_read_announcements");
+          if (stored) setReadIds(JSON.parse(stored));
+        }
+      } else {
+        const stored = localStorage.getItem("tnu_read_announcements");
+        if (stored) {
+          setReadIds(JSON.parse(stored));
+        }
+      }
     }
-  }, [location.pathname]);
+    loadReadAnnouncements();
+  }, [location.pathname, user]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -72,10 +91,19 @@ export default function Navbar() {
   const unreadAnnouncements = announcements.filter((a) => !readIds.includes(a.id));
   const unreadCount = unreadAnnouncements.length;
 
-  const markAsRead = (id: string) => {
+  const markAsRead = async (id: string) => {
     const next = [...readIds, id];
     setReadIds(next);
-    localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
+    if (user) {
+      try {
+        await markAnnouncementAsRead(id);
+      } catch (err) {
+        console.error("Failed to mark announcement as read on backend:", err);
+        localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
+      }
+    } else {
+      localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
+    }
     navigate(`/announcements/${id}`);
   };
 
@@ -177,12 +205,22 @@ export default function Navbar() {
           {/* Desktop Auth Buttons / Dropdowns */}
           <div className="hidden lg:flex items-center gap-2">
             {user ? (
-              <Button
-                onClick={() => navigate(user.role === "admin" ? "/admin" : "/dashboard")}
-                variant="default"
-              >
-                {user.role === "admin" ? "Admin Panel" : "Dashboard"}
-              </Button>
+              <div className="flex items-center gap-2">
+                {user.role === "member" && !user.profileComplete && (
+                  <Button
+                    onClick={() => navigate("/student-info")}
+                    className="bg-ghana-gold hover:bg-ghana-gold/90 text-slate-900 shadow-glow-accent font-bold hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  >
+                    Register Student
+                  </Button>
+                )}
+                <Button
+                  onClick={() => navigate(user.role === "admin" ? "/admin" : "/dashboard")}
+                  variant={user.role === "member" && !user.profileComplete ? "outline" : "default"}
+                >
+                  {user.role === "admin" ? "Admin Panel" : "Dashboard"}
+                </Button>
+              </div>
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -275,15 +313,31 @@ export default function Navbar() {
                 className="pt-3 mt-2 border-t border-border space-y-2"
               >
                 {user ? (
-                  <Button
-                    onClick={() => {
-                      setOpen(false);
-                      navigate(user.role === "admin" ? "/admin" : "/dashboard");
-                    }}
-                    className="w-full"
-                  >
-                    {user.role === "admin" ? "Admin Panel" : "Dashboard"}
-                  </Button>
+                  <div className="space-y-2">
+                    {user.role === "member" && !user.profileComplete && (
+                      <Button
+                        onClick={() => {
+                          setOpen(false);
+                          navigate("/student-info");
+                        }}
+                        className="w-full bg-ghana-gold hover:bg-ghana-gold/90 text-slate-900 font-bold"
+                      >
+                        Register Student
+                      </Button>
+                    )}
+                    <Button
+                      onClick={() => {
+                        setOpen(false);
+                        navigate(user.role === "admin" ? "/admin" : "/dashboard");
+                      }}
+                      variant={
+                        user.role === "member" && !user.profileComplete ? "outline" : "default"
+                      }
+                      className="w-full"
+                    >
+                      {user.role === "admin" ? "Admin Panel" : "Dashboard"}
+                    </Button>
+                  </div>
                 ) : (
                   <>
                     <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold px-1">

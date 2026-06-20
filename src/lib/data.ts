@@ -172,6 +172,25 @@ export const deleteAnnouncement = async (id: string): Promise<void> => {
   if (!res.ok) throw new Error(data.message || "Failed to delete announcement");
 };
 
+export const getReadAnnouncements = async (): Promise<string[]> => {
+  const res = await fetch(`${API_URL}/api/announcements/read`, {
+    headers: getAuthHeaders(),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to fetch read announcements");
+  return data.readIds;
+};
+
+export const markAnnouncementAsRead = async (id: string): Promise<void> => {
+  const res = await fetch(`${API_URL}/api/announcements/read/${id}`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to mark announcement as read");
+};
+
+
 // ---------- Blog ----------
 export const getBlogs = async (): Promise<BlogPost[]> => {
   const res = await fetch(`${API_URL}/api/blogs`);

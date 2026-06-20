@@ -133,27 +133,36 @@ export default function StudentForm() {
         const student = await getStudentMe();
         if (student) {
           setExisting(student);
+          const isComplete = !!(student.university && student.department);
           setForm({
-            fullName: student.fullName,
-            email: student.email,
-            phone: student.phone,
-            gender: student.gender,
-            dob: student.dob,
-            nationality: student.nationality || "Ghanaian",
-            church: student.church || "",
-            niche: student.niche || "",
-            schoolType: student.schoolType || "",
-            uniType: student.uniType || "",
-            university: student.university,
-            faculty: student.faculty || "",
-            department: student.department,
-            program: student.program,
-            level: student.level,
-            status: student.status || "Active Student",
-            indexNumber: student.indexNumber,
-            address: student.address,
+            fullName: student.fullName || user?.name || "",
+            email: student.email || user?.email || "",
+            phone: student.phone || user?.phone || "",
+            gender: student.gender || user?.gender || "male",
+            dob:
+              student.dob && student.dob !== new Date().toISOString().slice(0, 10)
+                ? student.dob
+                : "",
+            nationality: student.nationality || user?.nationality || "Ghanaian",
+            church: student.church || user?.church || "",
+            niche: student.niche || user?.niche || "",
+            schoolType: student.schoolType || user?.schoolType || "",
+            uniType: student.uniType || user?.uniType || "",
+            university: student.university || user?.university || "",
+            faculty: student.faculty || user?.faculty || "",
+            department: student.department || user?.department || "",
+            program: student.program || user?.program || "",
+            level: student.level || user?.level || "",
+            status: student.status || user?.status || "Active Student",
+            indexNumber:
+              student.indexNumber && !student.indexNumber.startsWith("STU")
+                ? student.indexNumber
+                : "",
+            address: student.address && student.address !== "Accra, Ghana" ? student.address : "",
           });
-          setStep("done");
+          if (isComplete) {
+            setStep("done");
+          }
         }
       } catch (err) {
         console.error("Failed to load student info:", err);
@@ -163,7 +172,34 @@ export default function StudentForm() {
     }
     load();
     setSchools(getGhanaSchools());
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    if (user && !existing) {
+      setForm((prev) => ({
+        ...prev,
+        fullName: prev.fullName || user.name || "",
+        email: prev.email || user.email || "",
+        phone: prev.phone || user.phone || "",
+        gender:
+          prev.gender === "male" && user.gender
+            ? (user.gender as "male" | "female" | "other")
+            : prev.gender,
+        nationality:
+          prev.nationality === "Ghanaian" && user.nationality ? user.nationality : prev.nationality,
+        church: prev.church || user.church || "",
+        niche: prev.niche || user.niche || "",
+        schoolType: prev.schoolType || user.schoolType || "",
+        uniType: prev.uniType || user.uniType || "",
+        university: prev.university || user.university || "",
+        faculty: prev.faculty || user.faculty || "",
+        department: prev.department || user.department || "",
+        program: prev.program || user.program || "",
+        level: prev.level || user.level || "",
+        status: prev.status === "Active Student" && user.status ? user.status : prev.status,
+      }));
+    }
+  }, [user, existing]);
 
   // Reset institution when school type or sub-type shifts
   useEffect(() => {

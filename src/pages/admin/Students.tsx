@@ -34,6 +34,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   getGhanaSchools,
+  getCustomSchools,
   saveCustomSchools,
   getHiddenSchools,
   saveHiddenSchools,
@@ -355,8 +356,7 @@ export default function AdminStudents() {
     e.preventDefault();
     if (!newSchool.name.trim()) return toast.error("School name is required");
 
-    const customRaw = localStorage.getItem("tnu_custom_schools");
-    const customList = customRaw ? JSON.parse(customRaw) : [];
+    const customList = getCustomSchools();
 
     // Check duplication
     const fullList = [...getGhanaSchools()];
@@ -391,11 +391,8 @@ export default function AdminStudents() {
           saveHiddenSchools(hidden);
         }
       } else {
-        const customRaw = localStorage.getItem("tnu_custom_schools");
-        if (customRaw) {
-          const list: GhanaSchool[] = JSON.parse(customRaw);
-          saveCustomSchools(list.filter((s) => s.name !== name));
-        }
+        const list = getCustomSchools();
+        saveCustomSchools(list.filter((s) => s.name !== name));
       }
       toast.success(`"${name}" removed`);
       loadData();
@@ -419,14 +416,11 @@ export default function AdminStudents() {
 
     const isDefault = GHANA_SCHOOLS.some((g) => g.name === editingSchool.name);
     if (!isDefault) {
-      const customRaw = localStorage.getItem("tnu_custom_schools");
-      if (customRaw) {
-        const list: GhanaSchool[] = JSON.parse(customRaw);
-        const idx = list.findIndex((s) => s.name === editingSchool.name);
-        if (idx >= 0) {
-          list[idx] = { ...editingSchool };
-          saveCustomSchools(list);
-        }
+      const list = getCustomSchools();
+      const idx = list.findIndex((s) => s.name === editingSchool.name);
+      if (idx >= 0) {
+        list[idx] = { ...editingSchool };
+        saveCustomSchools(list);
       }
     }
 

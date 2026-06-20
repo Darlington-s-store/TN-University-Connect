@@ -134,149 +134,158 @@ export default function Login({ defaultTab = "login" }: { defaultTab?: "login" |
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
         >
-          <form onSubmit={submit} className="space-y-4" noValidate>
-            {/* Email Input */}
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs font-semibold">
-                Email address
-              </Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="you@example.com"
-                  className="pl-9 h-9.5 text-sm"
-                />
-              </div>
-              {errors.email && (
-                <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" /> {errors.email}
-                </p>
-              )}
-            </div>
-
-            {/* Password Input */}
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-xs font-semibold">
-                Password
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="pl-9 pr-10 h-9.5 text-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary cursor-pointer"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" /> {errors.password}
-                </p>
-              )}
-            </div>
-
-            {/* Remember & Forgot */}
-            <div className="flex items-center justify-between text-xs font-semibold">
-              <label className="flex items-center gap-2 cursor-pointer text-muted-foreground">
-                <Checkbox
-                  checked={form.remember}
-                  onCheckedChange={(v) => setForm({ ...form, remember: !!v })}
-                />
-                <span>Remember me</span>
-              </label>
-              <Link to="/forgot-password" className="text-primary hover:underline">
-                Forgot password?
-              </Link>
-            </div>
-
-            {/* Submit Trigger */}
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full h-10 font-semibold text-xs mt-2 shadow-sm"
-            >
-              <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign In"}
-            </Button>
-
-            {/* Social Divider */}
-            {CLIENT_ID && (
-              <>
-                <div className="relative py-3">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-muted/80" />
-                  </div>
-                  <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-extrabold text-muted-foreground">
-                    <span className="bg-white px-3 text-slate-400">or login with</span>
-                  </div>
-                </div>
-
-                <div className="flex justify-center">
-                  {googleLoading ? (
-                    <Button disabled variant="outline" className="w-full h-10 font-semibold text-xs">
-                      <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                        />
-                      </svg>
-                      Signing in...
-                    </Button>
-                  ) : isMockClientId(CLIENT_ID) ? (
-                    <MockGoogleButton
-                      onClick={() => handleGoogleSuccess({ credential: "mock-credential" })}
+          <div className="bg-card border border-border/80 shadow-elegant rounded-3xl overflow-hidden backdrop-blur-md relative">
+            <div className="h-1.5 flag-stripe" />
+            <div className="p-6 sm:p-8">
+              <form onSubmit={submit} className="space-y-4" noValidate>
+                {/* Email Input */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-xs font-semibold">
+                    Email address
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="you@example.com"
+                      className="pl-9 h-9.5 text-sm"
                     />
-                  ) : (
-                    <div className="w-full [&>div]:!w-full [&_iframe]:!w-full">
-                      <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={() => toast.error("Google sign-in failed")}
-                        theme="outline"
-                        size="large"
-                        text="signin_with"
-                        shape="rectangular"
-                        width="100%"
-                      />
-                    </div>
+                  </div>
+                  {errors.email && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.email}
+                    </p>
                   )}
                 </div>
-              </>
-            )}
-            {/* Signup nudge */}
-            <div className="text-center mt-6 pt-4 border-t border-slate-200">
-              <p className="text-xs text-slate-500">
-                Don't have an account?{" "}
-                <button
-                  type="button"
-                  onClick={() => handleTabChange("register")}
-                  className="font-bold text-ghana-gold hover:text-ghana-gold/80 underline-offset-4 hover:underline"
+
+                {/* Password Input */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="password" className="text-xs font-semibold">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={form.password}
+                      onChange={(e) => setForm({ ...form, password: e.target.value })}
+                      className="pl-9 pr-10 h-9.5 text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> {errors.password}
+                    </p>
+                  )}
+                </div>
+
+                {/* Remember & Forgot */}
+                <div className="flex items-center justify-between text-xs font-semibold">
+                  <label className="flex items-center gap-2 cursor-pointer text-muted-foreground">
+                    <Checkbox
+                      checked={form.remember}
+                      onCheckedChange={(v) => setForm({ ...form, remember: !!v })}
+                    />
+                    <span>Remember me</span>
+                  </label>
+                  <Link to="/forgot-password" className="text-primary hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+
+                {/* Submit Trigger */}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-10 font-semibold text-xs mt-2 shadow-sm"
                 >
-                  Sign up here →
-                </button>
-              </p>
+                  <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign In"}
+                </Button>
+
+                {/* Social Divider */}
+                {CLIENT_ID && (
+                  <>
+                    <div className="relative py-3">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-muted/80" />
+                      </div>
+                      <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-extrabold text-muted-foreground">
+                        <span className="bg-card px-3 text-slate-400">or login with</span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                      {googleLoading ? (
+                        <Button
+                          disabled
+                          variant="outline"
+                          className="w-full h-10 font-semibold text-xs"
+                        >
+                          <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                              fill="none"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            />
+                          </svg>
+                          Signing in...
+                        </Button>
+                      ) : isMockClientId(CLIENT_ID) ? (
+                        <MockGoogleButton
+                          onClick={() => handleGoogleSuccess({ credential: "mock-credential" })}
+                        />
+                      ) : (
+                        <div className="w-full [&>div]:!w-full [&_iframe]:!w-full">
+                          <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={() => toast.error("Google sign-in failed")}
+                            theme="outline"
+                            size="large"
+                            text="signin_with"
+                            shape="rectangular"
+                            width="100%"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+                {/* Signup nudge */}
+                <div className="text-center mt-6 pt-4 border-t border-slate-200">
+                  <p className="text-xs text-slate-500">
+                    Don't have an account?{" "}
+                    <button
+                      type="button"
+                      onClick={() => handleTabChange("register")}
+                      className="font-bold text-ghana-gold hover:text-ghana-gold/80 underline-offset-4 hover:underline"
+                    >
+                      Sign up here →
+                    </button>
+                  </p>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </motion.div>
       ) : (
         <Register noShell />

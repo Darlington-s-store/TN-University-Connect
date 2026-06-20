@@ -205,33 +205,145 @@ export const NICHES = [
   "Performance & Commercial Talent",
 ];
 
-export function getHiddenSchools(): string[] {
-  const raw = localStorage.getItem("tnu_hidden_schools");
-  if (raw) {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error(e);
-    }
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+async function persistSettings(patch: any) {
+  try {
+    const token = localStorage.getItem("tnu_token");
+    await fetch(`${API_URL}/api/settings`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(patch),
+    });
+  } catch (err) {
+    console.error("Failed to persist schools settings:", err);
   }
-  return [];
+}
+
+// Memory caches initialized with localStorage fallbacks
+let customSchools: GhanaSchool[] = (() => {
+  const raw = localStorage.getItem("tnu_custom_schools");
+  try {
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+})();
+
+let hiddenSchools: string[] = (() => {
+  const raw = localStorage.getItem("tnu_hidden_schools");
+  try {
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+})();
+
+let customFaculties: string[] = (() => {
+  const raw = localStorage.getItem("tnu_custom_faculties");
+  try {
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+})();
+
+let hiddenFaculties: string[] = (() => {
+  const raw = localStorage.getItem("tnu_hidden_faculties");
+  try {
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+})();
+
+let customProgrammes: string[] = (() => {
+  const raw = localStorage.getItem("tnu_custom_programmes");
+  try {
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+})();
+
+let hiddenProgrammes: string[] = (() => {
+  const raw = localStorage.getItem("tnu_hidden_programmes");
+  try {
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+})();
+
+let customLevels: string[] = (() => {
+  const raw = localStorage.getItem("tnu_custom_levels");
+  try {
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+})();
+
+let hiddenLevels: string[] = (() => {
+  const raw = localStorage.getItem("tnu_hidden_levels");
+  try {
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+})();
+
+export function initSchools(settings: any) {
+  if (settings.customSchools) {
+    customSchools = settings.customSchools;
+    localStorage.setItem("tnu_custom_schools", JSON.stringify(settings.customSchools));
+  }
+  if (settings.hiddenSchools) {
+    hiddenSchools = settings.hiddenSchools;
+    localStorage.setItem("tnu_hidden_schools", JSON.stringify(settings.hiddenSchools));
+  }
+  if (settings.customFaculties) {
+    customFaculties = settings.customFaculties;
+    localStorage.setItem("tnu_custom_faculties", JSON.stringify(settings.customFaculties));
+  }
+  if (settings.hiddenFaculties) {
+    hiddenFaculties = settings.hiddenFaculties;
+    localStorage.setItem("tnu_hidden_faculties", JSON.stringify(settings.hiddenFaculties));
+  }
+  if (settings.customProgrammes) {
+    customProgrammes = settings.customProgrammes;
+    localStorage.setItem("tnu_custom_programmes", JSON.stringify(settings.customProgrammes));
+  }
+  if (settings.hiddenProgrammes) {
+    hiddenProgrammes = settings.hiddenProgrammes;
+    localStorage.setItem("tnu_hidden_programmes", JSON.stringify(settings.hiddenProgrammes));
+  }
+  if (settings.customLevels) {
+    customLevels = settings.customLevels;
+    localStorage.setItem("tnu_custom_levels", JSON.stringify(settings.customLevels));
+  }
+  if (settings.hiddenLevels) {
+    hiddenLevels = settings.hiddenLevels;
+    localStorage.setItem("tnu_hidden_levels", JSON.stringify(settings.hiddenLevels));
+  }
+}
+
+export function getHiddenSchools(): string[] {
+  return hiddenSchools;
 }
 
 export function saveHiddenSchools(hidden: string[]) {
+  hiddenSchools = hidden;
   localStorage.setItem("tnu_hidden_schools", JSON.stringify(hidden));
+  persistSettings({ hiddenSchools: hidden });
 }
 
 export function getGhanaSchools(): GhanaSchool[] {
   const hidden = getHiddenSchools();
-  const raw = localStorage.getItem("tnu_custom_schools");
-  let all = [...GHANA_SCHOOLS];
-  if (raw) {
-    try {
-      all = [...all, ...JSON.parse(raw)];
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  const all = [...GHANA_SCHOOLS, ...customSchools];
   const seen = new Set<string>();
   return all.filter((s) => {
     if (hidden.includes(s.name)) return false;
@@ -241,8 +353,14 @@ export function getGhanaSchools(): GhanaSchool[] {
   });
 }
 
+export function getCustomSchools(): GhanaSchool[] {
+  return customSchools;
+}
+
 export function saveCustomSchools(custom: GhanaSchool[]) {
+  customSchools = custom;
   localStorage.setItem("tnu_custom_schools", JSON.stringify(custom));
+  persistSettings({ customSchools: custom });
 }
 
 // ── Faculties ──────────────────────────────────────────
@@ -256,35 +374,23 @@ export function getFaculties(): string[] {
 }
 
 export function getCustomFaculties(): string[] {
-  const raw = localStorage.getItem("tnu_custom_faculties");
-  if (raw) {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  return [];
+  return customFaculties;
 }
 
 export function saveCustomFaculties(list: string[]) {
+  customFaculties = list;
   localStorage.setItem("tnu_custom_faculties", JSON.stringify(list));
+  persistSettings({ customFaculties: list });
 }
 
 export function getHiddenFaculties(): string[] {
-  const raw = localStorage.getItem("tnu_hidden_faculties");
-  if (raw) {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  return [];
+  return hiddenFaculties;
 }
 
 export function saveHiddenFaculties(hidden: string[]) {
+  hiddenFaculties = hidden;
   localStorage.setItem("tnu_hidden_faculties", JSON.stringify(hidden));
+  persistSettings({ hiddenFaculties: hidden });
 }
 
 // ── Programmes ─────────────────────────────────────────
@@ -298,35 +404,23 @@ export function getProgrammes(): string[] {
 }
 
 export function getCustomProgrammes(): string[] {
-  const raw = localStorage.getItem("tnu_custom_programmes");
-  if (raw) {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  return [];
+  return customProgrammes;
 }
 
 export function saveCustomProgrammes(list: string[]) {
+  customProgrammes = list;
   localStorage.setItem("tnu_custom_programmes", JSON.stringify(list));
+  persistSettings({ customProgrammes: list });
 }
 
 export function getHiddenProgrammes(): string[] {
-  const raw = localStorage.getItem("tnu_hidden_programmes");
-  if (raw) {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  return [];
+  return hiddenProgrammes;
 }
 
 export function saveHiddenProgrammes(hidden: string[]) {
+  hiddenProgrammes = hidden;
   localStorage.setItem("tnu_hidden_programmes", JSON.stringify(hidden));
+  persistSettings({ hiddenProgrammes: hidden });
 }
 
 // ── Levels ─────────────────────────────────────────────
@@ -340,33 +434,21 @@ export function getLevels(): string[] {
 }
 
 export function getCustomLevels(): string[] {
-  const raw = localStorage.getItem("tnu_custom_levels");
-  if (raw) {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  return [];
+  return customLevels;
 }
 
 export function saveCustomLevels(list: string[]) {
+  customLevels = list;
   localStorage.setItem("tnu_custom_levels", JSON.stringify(list));
+  persistSettings({ customLevels: list });
 }
 
 export function getHiddenLevels(): string[] {
-  const raw = localStorage.getItem("tnu_hidden_levels");
-  if (raw) {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  return [];
+  return hiddenLevels;
 }
 
 export function saveHiddenLevels(hidden: string[]) {
+  hiddenLevels = hidden;
   localStorage.setItem("tnu_hidden_levels", JSON.stringify(hidden));
+  persistSettings({ hiddenLevels: hidden });
 }

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import { LogIn } from "lucide-react";
+import { LogIn, Mail, Lock, AlertCircle } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,34 +54,65 @@ export default function AdminLogin() {
       title="Admin Login"
       subtitle="Enter your credentials to access the administrative dashboard."
     >
-      <form onSubmit={submit} className="space-y-4" noValidate>
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            placeholder=""
-          />
-          {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
-        </div>
+      <div className="bg-card border border-border/80 shadow-elegant rounded-3xl overflow-hidden backdrop-blur-md relative">
+        <div className="h-1.5 flag-stripe" />
+        <div className="p-6 sm:p-8">
+          <form onSubmit={submit} className="space-y-4" noValidate>
+            {/* Email Input */}
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-xs font-semibold">
+                Email address
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="admin@university.edu.gh"
+                  className="pl-9 h-9.5 text-sm"
+                />
+              </div>
+              {errors.email && (
+                <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" /> {errors.email}
+                </p>
+              )}
+            </div>
 
-        <div>
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-          />
-          {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
-        </div>
+            {/* Password Input */}
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-xs font-semibold">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  className="pl-9 h-9.5 text-sm"
+                />
+              </div>
+              {errors.password && (
+                <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" /> {errors.password}
+                </p>
+              )}
+            </div>
 
-        <Button type="submit" disabled={loading} size="lg" className="w-full">
-          <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign in"}
-        </Button>
-      </form>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-10 font-semibold text-xs mt-2 shadow-sm"
+            >
+              <LogIn className="h-4 w-4" /> {loading ? "Signing in..." : "Sign In"}
+            </Button>
+          </form>
+        </div>
+      </div>
     </AuthShell>
   );
 }

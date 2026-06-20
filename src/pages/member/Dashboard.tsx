@@ -116,6 +116,27 @@ export default function MemberDashboard() {
         )}
       </div>
 
+      {!profileComplete && (
+        <div className="bg-gradient-to-r from-ghana-gold/20 via-ghana-gold/10 to-transparent border border-ghana-gold/30 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-soft">
+          <div className="space-y-1">
+            <h2 className="text-base font-bold text-secondary dark:text-foreground flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-ghana-gold animate-ping shrink-0" />
+              Finish Your Student Registration
+            </h2>
+            <p className="text-xs text-muted-foreground max-w-xl">
+              Complete your verification profile now to verify your academic records, access
+              announcements, and join the student registry database.
+            </p>
+          </div>
+          <Button
+            asChild
+            className="bg-ghana-gold hover:bg-ghana-gold/90 text-slate-900 border border-ghana-gold/20 shadow-glow-accent font-bold text-xs h-9 px-4 shrink-0 hover:scale-[1.02] active:scale-[0.98] transition-all"
+          >
+            <Link to="/student-info">Register Student</Link>
+          </Button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="space-y-3">

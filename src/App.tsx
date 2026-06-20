@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { ReactElement } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -9,6 +10,8 @@ import Preloader from "@/components/Preloader";
 import BreakingNewsOverlay from "@/components/BreakingNewsOverlay";
 import PageTransition from "@/components/PageTransition";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { initSchools } from "@/lib/schools";
+import { getSettings } from "@/lib/data";
 import "./App.css";
 
 import PublicLayout from "@/components/layout/PublicLayout";
@@ -52,6 +55,18 @@ function RequireAuth({ children, role }: { children: ReactElement; role?: "admin
 }
 
 export default function App() {
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const settings = await getSettings();
+        initSchools(settings);
+      } catch (err) {
+        console.error("Failed to load settings on app startup:", err);
+      }
+    }
+    loadSettings();
+  }, []);
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
