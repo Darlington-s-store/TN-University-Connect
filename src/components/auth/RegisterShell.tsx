@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import Logo from "@/components/Logo";
+import { CheckCircle2 } from "lucide-react";
 
 export default function RegisterShell({
   title,
@@ -101,18 +102,59 @@ export default function RegisterShell({
 
           {/* Step indicator */}
           {typeof step === "number" && (
-            <div className="flex items-center gap-2 mb-6">
-              {Array.from({ length: totalSteps }, (_, i) => (
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
+              {/* Step 1: Account details */}
+              <div className="flex items-center gap-2.5">
                 <div
-                  key={i}
-                  className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
-                    i < step ? "bg-ghana-gold" : "bg-slate-200"
+                  className={`h-7 w-7 rounded-full flex items-center justify-center text-[11px] font-extrabold transition-all duration-300 ${
+                    step > 1
+                      ? "bg-ghana-green/10 text-ghana-green border border-ghana-green/20"
+                      : "bg-primary text-primary-foreground shadow-sm ring-4 ring-primary/10"
                   }`}
-                />
-              ))}
-              <span className="text-[10px] font-bold text-slate-400 ml-1 tracking-wider uppercase">
-                Step {step}/{totalSteps}
-              </span>
+                >
+                  {step > 1 ? <CheckCircle2 className="h-4.5 w-4.5" /> : "1"}
+                </div>
+                <div className="text-left">
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider block leading-none ${
+                      step >= 1 ? "text-slate-800 font-extrabold" : "text-slate-400"
+                    }`}
+                  >
+                    Account
+                  </span>
+                  <span className="text-[9px] text-slate-400 font-medium">Details</span>
+                </div>
+              </div>
+
+              {/* Connector line */}
+              <div
+                className={`h-0.5 flex-1 mx-3 rounded-full transition-all duration-500 ${
+                  step > 1 ? "bg-ghana-green/30" : "bg-slate-100"
+                }`}
+              />
+
+              {/* Step 2: Verification */}
+              <div className="flex items-center gap-2.5">
+                <div
+                  className={`h-7 w-7 rounded-full flex items-center justify-center text-[11px] font-extrabold transition-all duration-300 ${
+                    step === 2
+                      ? "bg-primary text-primary-foreground shadow-sm ring-4 ring-primary/10"
+                      : "bg-slate-50 text-slate-400 border border-slate-200"
+                  }`}
+                >
+                  2
+                </div>
+                <div className="text-left">
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider block leading-none ${
+                      step === 2 ? "text-slate-800 font-extrabold" : "text-slate-400"
+                    }`}
+                  >
+                    Verify
+                  </span>
+                  <span className="text-[9px] text-slate-400 font-medium">Email OTP</span>
+                </div>
+              </div>
             </div>
           )}
 

@@ -200,25 +200,28 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
 
   if (done) {
     const successContent = (
-      <div className="text-center py-6">
-        <div className="h-20 w-20 rounded-full bg-accent/15 border border-accent/30 grid place-items-center mx-auto mb-6">
-          <CheckCircle2 className="h-10 w-10 text-accent animate-bounce" />
-        </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-black text-white tracking-tight">You're all set!</h2>
-          <p className="text-sm text-white/70 leading-relaxed">
-            Your account has been successfully created. We are setting up your student dashboard.
+      <div className="bg-card border border-border/80 shadow-elegant rounded-3xl overflow-hidden backdrop-blur-md relative">
+        <div className="h-1.5 flag-stripe" />
+        <div className="p-6 sm:p-8 text-center">
+          <div className="h-20 w-20 rounded-full bg-ghana-green/10 border border-ghana-green/20 grid place-items-center mx-auto mb-6">
+            <CheckCircle2 className="h-10 w-10 text-ghana-green animate-bounce" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-secondary tracking-tight">You're all set!</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Your account has been successfully created. We are setting up your student dashboard.
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground/80 animate-pulse my-5 font-semibold">
+            Redirecting you to your dashboard...
           </p>
+          <Button
+            asChild
+            className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-bold"
+          >
+            <Link to="/dashboard">Go to Dashboard</Link>
+          </Button>
         </div>
-        <p className="text-xs text-white/50 animate-pulse my-5">
-          Redirecting you to your dashboard...
-        </p>
-        <Button
-          asChild
-          className="w-full h-11 bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl font-bold"
-        >
-          <Link to="/dashboard">Go to Dashboard</Link>
-        </Button>
       </div>
     );
 
@@ -238,9 +241,9 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
       {/* Step badge if noShell */}
       {noShell && typeof step === "number" && (
         <div className="flex items-center justify-center mb-5">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 border border-accent/30 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5 text-accent" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
               Step {step} of 2
             </span>
           </div>
@@ -249,279 +252,309 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
 
       {/* Already-a-member nudge — only show if not in tabs */}
       {!noShell && (
-        <div className="mb-6 flex items-center justify-center gap-2 text-xs text-white/60">
+        <div className="mb-6 flex items-center justify-center gap-2 text-xs text-slate-500">
           <span>Already have an account?</span>
           <Link
             to="/login"
-            className="font-bold text-accent hover:text-accent/80 underline-offset-4 hover:underline"
+            className="font-bold text-primary hover:text-primary/80 hover:underline transition-colors"
           >
             Sign in here →
           </Link>
         </div>
       )}
 
-      <div className="relative overflow-hidden min-h-[420px]">
-        <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
-            >
-              <form onSubmit={handleCreateAccount} className="space-y-4" noValidate>
-                {/* 1. Name Input */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="name" className="text-xs font-semibold">
-                    Full name
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      placeholder="e.g. Kwame Mensah"
-                      className="pl-9 h-9.5 text-sm"
-                    />
-                  </div>
-                  {errors.name && (
-                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" /> {errors.name}
-                    </p>
-                  )}
-                </div>
-
-                {/* 3. Email Input */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="email" className="text-xs font-semibold">
-                    Email address
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      placeholder="you@university.edu.gh"
-                      className="pl-9 h-9.5 text-sm"
-                    />
-                  </div>
-                  {errors.email && (
-                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" /> {errors.email}
-                    </p>
-                  )}
-                </div>
-
-                {/* 4. Phone Input */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="phone" className="text-xs font-semibold">
-                    Phone number
-                  </Label>
-                  <PhoneInput
-                    id="phone"
-                    value={form.phone}
-                    onChange={(v) => setForm({ ...form, phone: v })}
-                  />
-                  {errors.phone && (
-                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" /> {errors.phone}
-                    </p>
-                  )}
-                </div>
-
-                {/* 5. Password Input */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="password" className="text-xs font-semibold">
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={form.password}
-                      onChange={(e) => setForm({ ...form, password: e.target.value })}
-                      onFocus={() => setIsPasswordFocused(true)}
-                      className="pl-9 pr-10 h-9.5 text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary cursor-pointer"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                  {errors.password && (
-                    <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" /> {errors.password}
-                    </p>
-                  )}
-
-                  {/* Password strength & requirements checklist */}
-                  {(form.password || isPasswordFocused) && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="mt-2.5 space-y-2 border-t pt-2.5 overflow-hidden"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex gap-1 flex-1 max-w-[150px]">
-                          {[1, 2, 3, 4, 5].map((i) => (
-                            <div
-                              key={i}
-                              className={`h-1 flex-1 rounded ${i <= strengthScore ? strengthColor : "bg-muted"}`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-[9px] font-bold text-muted-foreground tracking-wide uppercase">
-                          {strengthLabel}
-                        </span>
-                      </div>
-
-                      {/* Checklist Grid */}
-                      <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-[10px] text-muted-foreground">
-                        <div
-                          className={`flex items-center gap-1 ${passChecks.length ? "text-ghana-green font-semibold" : ""}`}
-                        >
-                          <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.length ? "text-ghana-green" : "text-muted/60"}`}
-                          />
-                          <span>8+ characters</span>
-                        </div>
-                        <div
-                          className={`flex items-center gap-1 ${passChecks.hasNumber ? "text-ghana-green font-semibold" : ""}`}
-                        >
-                          <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.hasNumber ? "text-ghana-green" : "text-muted/60"}`}
-                          />
-                          <span>One number</span>
-                        </div>
-                        <div
-                          className={`flex items-center gap-1 ${passChecks.hasUpper ? "text-ghana-green font-semibold" : ""}`}
-                        >
-                          <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.hasUpper ? "text-ghana-green" : "text-muted/60"}`}
-                          />
-                          <span>Uppercase</span>
-                        </div>
-                        <div
-                          className={`flex items-center gap-1 ${passChecks.hasLower ? "text-ghana-green font-semibold" : ""}`}
-                        >
-                          <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.hasLower ? "text-ghana-green" : "text-muted/60"}`}
-                          />
-                          <span>Lowercase</span>
-                        </div>
-                        <div
-                          className={`flex items-center gap-1 ${passChecks.hasSpecial ? "text-ghana-green font-semibold" : ""}`}
-                        >
-                          <CheckCircle2
-                            className={`h-3 w-3 ${passChecks.hasSpecial ? "text-ghana-green" : "text-muted/60"}`}
-                          />
-                          <span>Special character</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={verificationLoading}
-                  className="w-full mt-6 h-10 font-semibold text-xs"
+      <div className="bg-card border border-border/80 shadow-elegant rounded-3xl overflow-hidden backdrop-blur-md relative">
+        <div className="h-1.5 flag-stripe" />
+        <div className="p-6 sm:p-8">
+          <div className="relative overflow-hidden min-h-[420px]">
+            <AnimatePresence mode="wait">
+              {step === 1 && (
+                <motion.div
+                  key="step1"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-4"
                 >
-                  {verificationLoading ? "Sending Verification..." : "Create Account"}
-                  <ArrowRight className="h-4 w-4 ml-1.5" />
-                </Button>
-              </form>
-            </motion.div>
-          )}
+                  <form onSubmit={handleCreateAccount} className="space-y-4" noValidate>
+                    {/* 1. Name Input */}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="name" className="text-xs font-semibold">
+                        Full name
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="name"
+                          value={form.name}
+                          onChange={(e) => setForm({ ...form, name: e.target.value })}
+                          placeholder="e.g. Kwame Mensah"
+                          className="pl-9 h-9.5 text-sm"
+                        />
+                      </div>
+                      {errors.name && (
+                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" /> {errors.name}
+                        </p>
+                      )}
+                    </div>
 
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-5"
-            >
-              <div className="p-4 bg-primary/5 border border-primary/15 rounded-2xl flex flex-col items-center text-center">
-                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                  <Mail className="h-4.5 w-4.5" />
-                </div>
-                <h4 className="font-bold text-secondary text-sm font-display">
-                  Security Code Sent!
-                </h4>
-                <p className="text-[11px] text-muted-foreground mt-1 max-w-sm leading-normal">
-                  We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>.
-                </p>
-              </div>
-              <div className="text-right">
-                <span className="text-2xl font-black text-slate-200">0{step}</span>
-                <span className="text-slate-300 text-xs font-bold">/02</span>
-              </div>
+                    {/* 3. Email Input */}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="email" className="text-xs font-semibold">
+                        Email address
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="email"
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => setForm({ ...form, email: e.target.value })}
+                          placeholder="you@university.edu.gh"
+                          className="pl-9 h-9.5 text-sm"
+                        />
+                      </div>
+                      {errors.email && (
+                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" /> {errors.email}
+                        </p>
+                      )}
+                    </div>
 
-              <form onSubmit={submitRegister} className="space-y-5">
-                <div className="space-y-2 text-center">
-                  <Label
-                    htmlFor="verificationCode"
-                    className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
-                  >
-                    Enter 6-Digit Code
-                  </Label>
-                  <Input
-                    id="verificationCode"
-                    value={verificationCode}
-                    onChange={(e) =>
-                      setVerificationCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))
-                    }
-                    placeholder="000000"
-                    className="text-center text-2xl font-bold tracking-[0.4em] h-12 focus-visible:ring-primary max-w-xs mx-auto rounded-xl"
-                    maxLength={6}
-                  />
-                </div>
+                    {/* 4. Phone Input */}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="phone" className="text-xs font-semibold">
+                        Phone number
+                      </Label>
+                      <PhoneInput
+                        id="phone"
+                        value={form.phone}
+                        onChange={(v) => setForm({ ...form, phone: v })}
+                      />
+                      {errors.phone && (
+                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" /> {errors.phone}
+                        </p>
+                      )}
+                    </div>
 
-                <div className="flex justify-center text-xs text-muted-foreground">
-                  Didn't receive the code?&nbsp;
-                  <button
-                    type="button"
-                    onClick={resendCode}
-                    className="text-primary hover:underline font-bold"
-                  >
-                    Resend Code
-                  </button>
-                </div>
+                    {/* 5. Password Input */}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="password" className="text-xs font-semibold">
+                        Password
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          value={form.password}
+                          onChange={(e) => setForm({ ...form, password: e.target.value })}
+                          onFocus={() => setIsPasswordFocused(true)}
+                          className="pl-9 pr-10 h-9.5 text-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary cursor-pointer"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                      {errors.password && (
+                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" /> {errors.password}
+                        </p>
+                      )}
 
-                <div className="flex gap-3 mt-6 border-t pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setStep(1)}
-                    className="flex-1 h-9.5 text-xs font-semibold"
-                    disabled={loading}
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="flex-[2] h-9.5 text-xs font-semibold"
-                  >
-                    <UserPlus className="h-4 w-4 mr-1.5" />{" "}
-                    {loading ? "Creating..." : "Confirm & Sign Up"}
-                  </Button>
-                </div>
-              </form>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                      {/* Password strength & requirements checklist */}
+                      {(form.password || isPasswordFocused) && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="mt-2.5 space-y-2 border-t pt-2.5 overflow-hidden"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex gap-1 flex-1 max-w-[150px]">
+                              {[1, 2, 3, 4, 5].map((i) => (
+                                <div
+                                  key={i}
+                                  className={`h-1 flex-1 rounded ${i <= strengthScore ? strengthColor : "bg-muted"}`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-[9px] font-bold text-muted-foreground tracking-wide uppercase">
+                              {strengthLabel}
+                            </span>
+                          </div>
+
+                          {/* Checklist Badges */}
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            <span
+                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
+                                passChecks.length
+                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
+                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
+                              }`}
+                            >
+                              <CheckCircle2
+                                className={`h-2.5 w-2.5 ${passChecks.length ? "text-ghana-green" : "text-slate-300"}`}
+                              />
+                              8+ chars
+                            </span>
+                            <span
+                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
+                                passChecks.hasNumber
+                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
+                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
+                              }`}
+                            >
+                              <CheckCircle2
+                                className={`h-2.5 w-2.5 ${passChecks.hasNumber ? "text-ghana-green" : "text-slate-300"}`}
+                              />
+                              1 Number
+                            </span>
+                            <span
+                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
+                                passChecks.hasUpper
+                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
+                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
+                              }`}
+                            >
+                              <CheckCircle2
+                                className={`h-2.5 w-2.5 ${passChecks.hasUpper ? "text-ghana-green" : "text-slate-300"}`}
+                              />
+                              Uppercase
+                            </span>
+                            <span
+                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
+                                passChecks.hasLower
+                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
+                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
+                              }`}
+                            >
+                              <CheckCircle2
+                                className={`h-2.5 w-2.5 ${passChecks.hasLower ? "text-ghana-green" : "text-slate-300"}`}
+                              />
+                              Lowercase
+                            </span>
+                            <span
+                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
+                                passChecks.hasSpecial
+                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
+                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
+                              }`}
+                            >
+                              <CheckCircle2
+                                className={`h-2.5 w-2.5 ${passChecks.hasSpecial ? "text-ghana-green" : "text-slate-300"}`}
+                              />
+                              Special char
+                            </span>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={verificationLoading}
+                      className="w-full mt-6 h-10 font-semibold text-xs"
+                    >
+                      {verificationLoading ? "Sending Verification..." : "Create Account"}
+                      <ArrowRight className="h-4 w-4 ml-1.5" />
+                    </Button>
+                  </form>
+                </motion.div>
+              )}
+
+              {step === 2 && (
+                <motion.div
+                  key="step2"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-5"
+                >
+                  <div className="p-4 bg-primary/5 border border-primary/15 rounded-2xl flex flex-col items-center text-center">
+                    <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+                      <Mail className="h-4.5 w-4.5" />
+                    </div>
+                    <h4 className="font-bold text-secondary text-sm font-display">
+                      Security Code Sent!
+                    </h4>
+                    <p className="text-[11px] text-muted-foreground mt-1 max-w-sm leading-normal">
+                      We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>
+                      .
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-2xl font-black text-secondary/10">0{step}</span>
+                    <span className="text-secondary/30 text-xs font-bold">/02</span>
+                  </div>
+
+                  <form onSubmit={submitRegister} className="space-y-5">
+                    <div className="space-y-2 text-center">
+                      <Label
+                        htmlFor="verificationCode"
+                        className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
+                      >
+                        Enter 6-Digit Code
+                      </Label>
+                      <Input
+                        id="verificationCode"
+                        value={verificationCode}
+                        onChange={(e) =>
+                          setVerificationCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))
+                        }
+                        placeholder="000000"
+                        className="text-center text-2xl font-bold tracking-[0.4em] h-12 focus-visible:ring-primary max-w-xs mx-auto rounded-xl"
+                        maxLength={6}
+                      />
+                    </div>
+
+                    <div className="flex justify-center text-xs text-muted-foreground">
+                      Didn't receive the code?&nbsp;
+                      <button
+                        type="button"
+                        onClick={resendCode}
+                        className="text-primary hover:underline font-bold"
+                      >
+                        Resend Code
+                      </button>
+                    </div>
+
+                    <div className="flex gap-3 mt-6 border-t pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setStep(1)}
+                        className="flex-1 h-9.5 text-xs font-semibold"
+                        disabled={loading}
+                      >
+                        <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={loading}
+                        className="flex-[2] h-9.5 text-xs font-semibold"
+                      >
+                        <UserPlus className="h-4 w-4 mr-1.5" />{" "}
+                        {loading ? "Creating..." : "Confirm & Sign Up"}
+                      </Button>
+                    </div>
+                  </form>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </>
   );

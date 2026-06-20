@@ -629,15 +629,19 @@ export default function MemberProfile() {
 
         {/* Tab 2: PASSPORT OVERVIEW */}
         <TabsContent value="overview">
-          <motion.div variants={containerVariants} initial="hidden" animate="show">
-            <Card className="border shadow-elegant overflow-hidden relative max-w-2xl mx-auto">
-              <div className="h-2 flag-stripe" />
-              <CardContent className="p-6 sm:p-8 space-y-6">
-                {/* Passport Card Header */}
-                <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-muted">
-                  <Avatar className="h-24 w-24 border-2 border-primary shadow-soft">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="max-w-2xl mx-auto space-y-6"
+          >
+            {/* Header Card */}
+            <Card className="border shadow-sm overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-center gap-5">
+                  <Avatar className="h-20 w-20 border-2 border-primary/20">
                     <AvatarImage src={form.avatar} />
-                    <AvatarFallback className="text-2xl font-bold bg-primary text-primary-foreground">
+                    <AvatarFallback className="text-xl font-bold bg-primary text-primary-foreground">
                       {form.name
                         ? form.name
                             .split(" ")
@@ -647,143 +651,196 @@ export default function MemberProfile() {
                         : "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="text-center sm:text-left space-y-1.5 flex-1 min-w-0">
+                  <div className="text-center sm:text-left flex-1 min-w-0">
                     <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                      <h2 className="text-2xl font-black text-secondary dark:text-foreground font-display tracking-tight truncate">
+                      <h2 className="text-xl font-bold text-secondary dark:text-foreground truncate">
                         {form.name || "—"}
                       </h2>
                       {studentRecord ? (
-                        <Badge className="bg-ghana-green text-white gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border-0">
-                          <CheckCircle className="h-3.5 w-3.5" /> VERIFIED MEMBER
+                        <Badge className="bg-ghana-green text-white text-[10px] px-2 py-0.5 border-0">
+                          <CheckCircle className="h-3 w-3" /> Verified
                         </Badge>
                       ) : (
-                        <Badge className="bg-amber-500 text-white gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border-0 animate-pulse">
-                          <AlertCircle className="h-3.5 w-3.5" /> PENDING VERIFICATION
+                        <Badge
+                          variant="outline"
+                          className="text-amber-600 border-amber-300 text-[10px]"
+                        >
+                          <AlertCircle className="h-3 w-3" /> Pending
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm font-semibold text-primary truncate">
-                      {form.university || "No Institution Registered"}
+                    <p className="text-sm font-semibold text-primary mt-1">
+                      {form.university || "No institution registered"}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {form.program} · Level {form.level}
+                    <p className="text-xs text-muted-foreground">
+                      {form.program && ` ${form.program}`}
+                      {form.level && ` · Level ${form.level}`}
                     </p>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                {/* Grid Details */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-xs">
-                  <div className="flex gap-2.5 items-start">
-                    <Mail className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
-                        Email Address
-                      </div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 truncate">
-                        {form.email || "—"}
-                      </div>
-                    </div>
+            {/* Personal Details */}
+            <Card className="border shadow-sm">
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b">
+                  <User className="h-4 w-4 text-primary" />
+                  <h3 className="font-semibold text-sm text-secondary dark:text-foreground">
+                    Personal Details
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-xs">
+                  <div>
+                    <span className="text-muted-foreground font-medium">Full name</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.name || "—"}
+                    </p>
                   </div>
-
-                  <div className="flex gap-2.5 items-start">
-                    <Phone className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
-                        Phone Number
-                      </div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">
-                        {form.phone || "—"}
-                      </div>
-                    </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Email address</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.email || "—"}
+                    </p>
                   </div>
-
-                  <div className="flex gap-2.5 items-start">
-                    <Globe className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
-                        Nationality & Gender
-                      </div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 capitalize">
-                        {form.nationality} · {form.gender}
-                      </div>
-                    </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Phone number</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.phone || "—"}
+                    </p>
                   </div>
-
-                  <div className="flex gap-2.5 items-start">
-                    <Calendar className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
-                        Date of Birth
-                      </div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">
-                        {form.dob
-                          ? new Date(form.dob).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : "—"}
-                      </div>
-                    </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Gender</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5 capitalize">
+                      {form.gender || "—"}
+                    </p>
                   </div>
-
-                  <div className="flex gap-2.5 items-start">
-                    <GraduationCap className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
-                        Faculty & Dept
-                      </div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 line-clamp-1">
-                        {form.faculty} / {form.department}
-                      </div>
-                    </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Nationality</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.nationality || "—"}
+                    </p>
                   </div>
-
-                  <div className="flex gap-2.5 items-start">
-                    <Hash className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
-                        Student Index Number
-                      </div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">
-                        {form.indexNumber || "—"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2.5 items-start">
-                    <BookOpen className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
-                        Network Niche & Church
-                      </div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5">
-                        {form.niche} ({form.church})
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2.5 items-start">
-                    <MapPin className="h-4.5 w-4.5 text-primary/70 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px]">
-                        Contact Address
-                      </div>
-                      <div className="font-semibold text-secondary dark:text-foreground mt-0.5 line-clamp-1">
-                        {form.address || "—"}
-                      </div>
-                    </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Date of birth</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.dob
+                        ? new Date(form.dob).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : "—"}
+                    </p>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                {/* Bio Block */}
+            {/* Academic Credentials */}
+            <Card className="border shadow-sm">
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b">
+                  <GraduationCap className="h-4 w-4 text-primary" />
+                  <h3 className="font-semibold text-sm text-secondary dark:text-foreground">
+                    Academic Credentials
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-xs">
+                  <div>
+                    <span className="text-muted-foreground font-medium">School type</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.schoolType || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">University sub-type</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.uniType || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Institution</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.university || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Faculty</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.faculty || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Department</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.department || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Programme of study</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.program || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Current level</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.level || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Status</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.status || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">
+                      Index / Student number
+                    </span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.indexNumber || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Contact address</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.address || "—"}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Affiliation & Focus */}
+            <Card className="border shadow-sm">
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b">
+                  <BookOpen className="h-4 w-4 text-primary" />
+                  <h3 className="font-semibold text-sm text-secondary dark:text-foreground">
+                    Affiliation & Focus
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-xs">
+                  <div>
+                    <span className="text-muted-foreground font-medium">Church affiliation</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.church || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground font-medium">Focus niche</span>
+                    <p className="font-medium text-secondary dark:text-foreground mt-0.5">
+                      {form.niche || "—"}
+                    </p>
+                  </div>
+                </div>
                 {form.bio && (
-                  <div className="pt-4 border-t border-muted bg-muted/10 rounded-xl p-3.5 mt-2">
-                    <div className="text-muted-foreground font-bold uppercase tracking-wider text-[9px] mb-1">
-                      Biography / Career Focus
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed italic">
-                      "{form.bio}"
+                  <div className="pt-3 border-t">
+                    <span className="text-muted-foreground font-medium text-xs">Biography</span>
+                    <p className="text-sm text-secondary dark:text-foreground mt-1 leading-relaxed">
+                      {form.bio}
                     </p>
                   </div>
                 )}
