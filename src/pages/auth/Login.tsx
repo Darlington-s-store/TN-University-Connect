@@ -89,8 +89,8 @@ export default function Login() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {/* Dark Glassmorphic Card */}
-        <div className="bg-slate-950/45 backdrop-blur-xl border border-white/[0.06] shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden relative">
+        {/* Premium Glassmorphic Light Card */}
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-100 shadow-[0_20px_50px_rgba(15,23,42,0.06)] rounded-3xl overflow-hidden relative">
           <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
           <div className="p-6 sm:p-8">
             <form onSubmit={submit} className="space-y-5" noValidate>
@@ -98,19 +98,19 @@ export default function Login() {
               <div className="space-y-2">
                 <Label
                   htmlFor="email"
-                  className="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                  className="text-[10px] font-black uppercase tracking-wider text-slate-500"
                 >
                   Email address
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     id="email"
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     placeholder="kwame@university.edu.gh"
-                    className="pl-10.5 h-11 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-600 rounded-xl text-sm transition-colors"
+                    className="pl-10.5 h-11 bg-slate-50/50 border-slate-200/80 text-slate-950 focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-400 rounded-xl text-sm transition-colors"
                   />
                 </div>
                 {errors.email && (
@@ -124,24 +124,24 @@ export default function Login() {
               <div className="space-y-2">
                 <Label
                   htmlFor="password"
-                  className="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                  className="text-[10px] font-black uppercase tracking-wider text-slate-500"
                 >
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     placeholder="••••••••"
-                    className="pl-10.5 pr-10.5 h-11 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-600 rounded-xl text-sm transition-colors"
+                    className="pl-10.5 pr-10.5 h-11 bg-slate-50/50 border-slate-200/80 text-slate-950 focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-400 rounded-xl text-sm transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -155,17 +155,17 @@ export default function Login() {
 
               {/* Remember & Forgot */}
               <div className="flex items-center justify-between text-xs font-bold pt-1">
-                <label className="flex items-center gap-2.5 cursor-pointer text-slate-400 hover:text-slate-350 transition-colors">
+                <label className="flex items-center gap-2.5 cursor-pointer text-slate-600 hover:text-slate-800 transition-colors">
                   <Checkbox
                     checked={form.remember}
                     onCheckedChange={(v) => setForm({ ...form, remember: !!v })}
-                    className="border-white/[0.15] bg-slate-900/50 data-[state=checked]:bg-primary data-[state=checked]:text-white rounded-md"
+                    className="border-slate-300 bg-slate-50 data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-white rounded-md"
                   />
                   <span>Remember me</span>
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-ghana-gold hover:text-ghana-gold/80 hover:underline transition-colors"
+                  className="text-primary hover:text-primary/80 hover:underline transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -175,7 +175,7 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black tracking-wider uppercase text-xs rounded-xl transition-all shadow-[0_4px_20px_rgba(212,160,23,0.15)] hover:shadow-[0_4px_25px_rgba(212,160,23,0.3)] hover:scale-[1.01] active:scale-[0.99]"
+                className="w-full h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black tracking-wider uppercase text-xs rounded-xl transition-all shadow-[0_4px_15px_rgba(212,160,23,0.18)] hover:shadow-[0_4px_20px_rgba(212,160,23,0.3)] hover:scale-[1.01] active:scale-[0.99]"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
@@ -212,10 +212,10 @@ export default function Login() {
                 <>
                   <div className="relative py-2 mt-2">
                     <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-white/[0.06]" />
+                      <span className="w-full border-t border-slate-100" />
                     </div>
                     <div className="relative flex justify-center text-[9px] uppercase tracking-[0.25em] font-black">
-                      <span className="bg-[#0b101c] px-4 text-slate-500">or connect with</span>
+                      <span className="bg-white px-4 text-slate-400">or connect with</span>
                     </div>
                   </div>
 
@@ -224,7 +224,7 @@ export default function Login() {
                       <Button
                         disabled
                         variant="outline"
-                        className="w-full h-11 bg-slate-900/50 border-white/[0.08] text-slate-400 font-bold text-xs rounded-xl"
+                        className="w-full h-11 bg-slate-50 border-slate-200 text-slate-400 font-bold text-xs rounded-xl"
                       >
                         <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
                           <circle
@@ -253,7 +253,7 @@ export default function Login() {
                         <GoogleLogin
                           onSuccess={handleGoogleSuccess}
                           onError={() => toast.error("Google sign-in failed")}
-                          theme="filled_blue"
+                          theme="outline"
                           size="large"
                           text="signin_with"
                           shape="rectangular"
@@ -266,12 +266,12 @@ export default function Login() {
               )}
 
               {/* Register Callout */}
-              <div className="text-center mt-6 pt-5 border-t border-white/[0.06]">
-                <p className="text-xs text-slate-400 font-medium">
+              <div className="text-center mt-6 pt-5 border-t border-slate-100">
+                <p className="text-xs text-slate-500 font-medium">
                   New to TN Connect?{" "}
                   <Link
                     to="/register"
-                    className="font-black text-ghana-gold hover:text-ghana-gold/80 underline underline-offset-4 decoration-2 decoration-ghana-gold/30 hover:decoration-ghana-gold/70 transition-all ml-1"
+                    className="font-black text-primary hover:text-primary/80 underline underline-offset-4 decoration-2 decoration-primary/20 hover:decoration-primary/60 transition-all ml-1"
                   >
                     Create account here →
                   </Link>

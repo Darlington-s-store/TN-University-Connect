@@ -12,7 +12,6 @@ import {
   EyeOff,
   User,
   Lock,
-  Sparkles,
   AlertCircle,
 } from "lucide-react";
 import RegisterShell from "@/components/auth/RegisterShell";
@@ -96,12 +95,12 @@ export default function Register() {
     ["Too weak", "Weak", "Fair", "Good", "Strong"][Math.max(0, strengthScore - 1)] || "Too weak";
 
   const strengthColor = [
-    "bg-destructive", // 0
-    "bg-destructive", // 1
-    "bg-destructive", // 2
-    "bg-ghana-gold", // 3
-    "bg-primary", // 4
-    "bg-primary", // 5
+    "bg-destructive",
+    "bg-destructive",
+    "bg-destructive",
+    "bg-ghana-gold",
+    "bg-primary",
+    "bg-primary",
   ][strengthScore];
 
   // Submit Step 1: Send Verification Code
@@ -194,26 +193,23 @@ export default function Register() {
   if (done) {
     return (
       <RegisterShell title="Welcome aboard!" subtitle="Your account has been created successfully.">
-        <div className="bg-slate-950/45 backdrop-blur-xl border border-white/[0.06] shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden relative">
+        <div className="bg-card border shadow-sm rounded-xl overflow-hidden relative">
           <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
           <div className="p-6 sm:p-8 text-center">
-            <div className="h-20 w-20 rounded-full bg-ghana-green/10 border border-ghana-green/20 grid place-items-center mx-auto mb-6">
-              <CheckCircle2 className="h-10 w-10 text-ghana-green animate-bounce" />
+            <div className="h-20 w-20 rounded-full bg-primary/10 border border-primary/20 grid place-items-center mx-auto mb-6">
+              <CheckCircle2 className="h-10 w-10 text-primary" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-white tracking-tight">You're all set!</h2>
-              <p className="text-sm text-slate-400 leading-relaxed">
+              <h2 className="text-2xl font-bold text-foreground tracking-tight">You're all set!</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 Your account has been successfully created. We are setting up your student
                 dashboard.
               </p>
             </div>
-            <p className="text-xs text-ghana-gold/80 animate-pulse my-5 font-bold">
+            <p className="text-xs text-primary animate-pulse my-5 font-medium">
               Redirecting to your dashboard...
             </p>
-            <Button
-              asChild
-              className="w-full h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider"
-            >
+            <Button asChild className="w-full h-11">
               <Link to="/dashboard">Go to Dashboard</Link>
             </Button>
           </div>
@@ -230,7 +226,7 @@ export default function Register() {
       step={step}
       totalSteps={2}
     >
-      <div className="bg-slate-950/45 backdrop-blur-xl border border-white/[0.06] shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden relative">
+      <div className="bg-card border shadow-sm rounded-xl overflow-hidden relative">
         <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
         <div className="p-6 sm:p-8">
           <div className="relative overflow-hidden min-h-[420px]">
@@ -247,24 +243,19 @@ export default function Register() {
                   <form onSubmit={handleCreateAccount} className="space-y-4" noValidate>
                     {/* Full Name */}
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="name"
-                        className="text-[10px] font-black uppercase tracking-wider text-slate-400"
-                      >
-                        Full name
-                      </Label>
+                      <Label htmlFor="name">Full name</Label>
                       <div className="relative">
-                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="name"
                           value={form.name}
                           onChange={(e) => setForm({ ...form, name: e.target.value })}
                           placeholder="Kwame Mensah"
-                          className="pl-10.5 h-11 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-650 rounded-xl text-sm transition-colors"
+                          className="pl-10"
                         />
                       </div>
                       {errors.name && (
-                        <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
+                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
                           <AlertCircle className="h-3 w-3" /> {errors.name}
                         </p>
                       )}
@@ -272,25 +263,20 @@ export default function Register() {
 
                     {/* Email */}
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="email"
-                        className="text-[10px] font-black uppercase tracking-wider text-slate-400"
-                      >
-                        Email address
-                      </Label>
+                      <Label htmlFor="email">Email address</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="email"
                           type="email"
                           value={form.email}
                           onChange={(e) => setForm({ ...form, email: e.target.value })}
                           placeholder="you@university.edu.gh"
-                          className="pl-10.5 h-11 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-650 rounded-xl text-sm transition-colors"
+                          className="pl-10"
                         />
                       </div>
                       {errors.email && (
-                        <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
+                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
                           <AlertCircle className="h-3 w-3" /> {errors.email}
                         </p>
                       )}
@@ -298,19 +284,14 @@ export default function Register() {
 
                     {/* Phone Number */}
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="phone"
-                        className="text-[10px] font-black uppercase tracking-wider text-slate-400"
-                      >
-                        Phone number
-                      </Label>
+                      <Label htmlFor="phone">Phone number</Label>
                       <PhoneInput
                         id="phone"
                         value={form.phone}
                         onChange={(v) => setForm({ ...form, phone: v })}
                       />
                       {errors.phone && (
-                        <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
+                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
                           <AlertCircle className="h-3 w-3" /> {errors.phone}
                         </p>
                       )}
@@ -318,14 +299,9 @@ export default function Register() {
 
                     {/* Password */}
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="password"
-                        className="text-[10px] font-black uppercase tracking-wider text-slate-400"
-                      >
-                        Password
-                      </Label>
+                      <Label htmlFor="password">Password</Label>
                       <div className="relative">
-                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id="password"
                           type={showPassword ? "text" : "password"}
@@ -333,12 +309,12 @@ export default function Register() {
                           onChange={(e) => setForm({ ...form, password: e.target.value })}
                           onFocus={() => setIsPasswordFocused(true)}
                           placeholder="••••••••"
-                          className="pl-10.5 pr-10.5 h-11 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-650 rounded-xl text-sm transition-colors"
+                          className="pl-10 pr-10"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4" />
@@ -348,7 +324,7 @@ export default function Register() {
                         </button>
                       </div>
                       {errors.password && (
-                        <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
+                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
                           <AlertCircle className="h-3 w-3" /> {errors.password}
                         </p>
                       )}
@@ -358,24 +334,23 @@ export default function Register() {
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
-                          className="mt-3.5 space-y-3.5 border-t border-white/[0.06] pt-3.5 overflow-hidden"
+                          className="mt-3 space-y-3 border-t pt-3 overflow-hidden"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex gap-1 flex-1 max-w-[150px]">
                               {[1, 2, 3, 4, 5].map((i) => (
                                 <div
                                   key={i}
-                                  className={`h-1 flex-1 rounded ${i <= strengthScore ? strengthColor : "bg-white/[0.06]"}`}
+                                  className={`h-1 flex-1 rounded ${i <= strengthScore ? strengthColor : "bg-muted"}`}
                                 />
                               ))}
                             </div>
-                            <span className="text-[9px] font-black text-slate-400 tracking-wide uppercase">
+                            <span className="text-[9px] font-semibold text-muted-foreground tracking-wide uppercase">
                               {strengthLabel}
                             </span>
                           </div>
 
-                          {/* Requirements labels */}
-                          <div className="flex flex-wrap gap-1.5 pt-0.5">
+                          <div className="flex flex-wrap gap-1.5">
                             {[
                               { label: "8+ chars", met: passChecks.length },
                               { label: "1 Number", met: passChecks.hasNumber },
@@ -385,14 +360,14 @@ export default function Register() {
                             ].map((check) => (
                               <span
                                 key={check.label}
-                                className={`inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-full border transition-all duration-300 ${
+                                className={`inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full border transition-all duration-300 ${
                                   check.met
-                                    ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
-                                    : "border-white/[0.06] text-slate-500 bg-white/[0.01] border-dashed"
+                                    ? "border-primary/30 text-primary bg-primary/5"
+                                    : "border-border text-muted-foreground bg-muted/50 border-dashed"
                                 }`}
                               >
                                 <CheckCircle2
-                                  className={`h-2.5 w-2.5 ${check.met ? "text-ghana-green" : "text-slate-600"}`}
+                                  className={`h-2.5 w-2.5 ${check.met ? "text-primary" : "text-muted-foreground/50"}`}
                                 />
                                 {check.label}
                               </span>
@@ -406,15 +381,11 @@ export default function Register() {
                     <Button
                       type="submit"
                       disabled={verificationLoading}
-                      className="w-full mt-6 h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black tracking-wider uppercase text-xs rounded-xl transition-all shadow-[0_4px_20px_rgba(212,160,23,0.15)] hover:scale-[1.01] active:scale-[0.99]"
+                      className="w-full mt-6 h-11"
                     >
                       {verificationLoading ? (
                         <span className="flex items-center gap-2">
-                          <svg
-                            className="animate-spin h-4 w-4 text-slate-950"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                             <circle
                               className="opacity-25"
                               cx="12"
@@ -450,26 +421,22 @@ export default function Register() {
                   transition={{ duration: 0.25 }}
                   className="space-y-5"
                 >
-                  <div className="p-4.5 bg-white/[0.02] border border-white/[0.05] rounded-2xl flex flex-col items-center text-center">
+                  <div className="p-4.5 bg-slate-50 border border-slate-200/80 rounded-2xl flex flex-col items-center text-center">
                     <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
                       <Mail className="h-4.5 w-4.5 text-ghana-gold" />
                     </div>
-                    <h4 className="font-black text-white text-sm">Security Code Sent!</h4>
-                    <p className="text-[11px] text-slate-400 mt-1 max-w-sm leading-relaxed">
+                    <h4 className="font-black text-slate-900 text-sm">Security Code Sent!</h4>
+                    <p className="text-[11px] text-slate-500 mt-1 max-w-sm leading-relaxed">
                       We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>
                       .
                     </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-2xl font-black text-white/5">0{step}</span>
-                    <span className="text-slate-650 text-xs font-bold">/02</span>
                   </div>
 
                   <form onSubmit={submitRegister} className="space-y-5">
                     <div className="space-y-3.5 text-center">
                       <Label
                         htmlFor="verificationCode"
-                        className="text-[10px] font-black uppercase tracking-wider text-slate-450"
+                        className="text-[10px] font-black uppercase tracking-wider text-slate-500 block"
                       >
                         Enter 6-Digit Code
                       </Label>
@@ -480,28 +447,29 @@ export default function Register() {
                           setVerificationCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))
                         }
                         placeholder="000000"
-                        className="text-center text-2xl font-bold tracking-[0.4em] h-12 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 max-w-xs mx-auto rounded-xl"
+                        className="text-center text-2xl font-bold tracking-[0.4em] h-12 bg-slate-50/50 border-slate-200/80 text-slate-950 focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 max-w-xs mx-auto rounded-xl"
                         maxLength={6}
                       />
                     </div>
 
-                    <div className="flex justify-center text-xs text-slate-400 font-medium">
+                    <div className="flex justify-center text-xs text-slate-500 font-medium">
                       Didn't receive the code?&nbsp;
                       <button
                         type="button"
                         onClick={resendCode}
-                        className="text-ghana-gold hover:text-ghana-gold/80 hover:underline font-bold transition-colors"
+                        className="text-primary hover:text-primary/80 hover:underline font-bold transition-colors cursor-pointer"
+                        disabled={verificationLoading}
                       >
                         Resend Code
                       </button>
                     </div>
 
-                    <div className="flex gap-3 mt-6 border-t border-white/[0.06] pt-4">
+                    <div className="flex gap-3 mt-6 border-t border-slate-100 pt-4">
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => setStep(1)}
-                        className="flex-1 h-11 bg-transparent border-white/[0.08] text-slate-350 hover:bg-white/[0.03] text-xs font-bold rounded-xl"
+                        className="flex-1 h-11 bg-transparent border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold rounded-xl"
                         disabled={loading}
                       >
                         <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
@@ -548,12 +516,12 @@ export default function Register() {
           </div>
 
           {/* Sign In Callout */}
-          <div className="text-center mt-6 pt-5 border-t border-white/[0.06]">
-            <p className="text-xs text-slate-400 font-medium">
+          <div className="text-center mt-6 pt-5 border-t border-slate-100">
+            <p className="text-xs text-slate-500 font-medium">
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="font-black text-ghana-gold hover:text-ghana-gold/80 underline underline-offset-4 decoration-2 decoration-ghana-gold/30 hover:decoration-ghana-gold/70 transition-all ml-1"
+                className="font-black text-primary hover:text-primary/80 underline underline-offset-4 decoration-2 decoration-primary/20 hover:decoration-primary/60 transition-all ml-1"
               >
                 Sign in here →
               </Link>
