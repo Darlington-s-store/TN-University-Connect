@@ -115,11 +115,6 @@ export default function Footer() {
       <div className="border-t border-white/5">
         <div className="container mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
           <span>© {new Date().getFullYear()} TN Universities Connect. All rights reserved.</span>
-          <div className="flex items-center gap-1.5 opacity-65">
-            <span className="h-1.5 w-1.5 rounded-full bg-ghana-red" />
-            <span className="h-1.5 w-1.5 rounded-full bg-ghana-gold" />
-            <span className="h-1.5 w-1.5 rounded-full bg-ghana-green" />
-          </div>
         </div>
       </div>
     </motion.footer>
