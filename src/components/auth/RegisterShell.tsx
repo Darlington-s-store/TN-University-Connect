@@ -21,7 +21,6 @@ export default function RegisterShell({
 
       {/* Left panel: Premium Ghanaian Cultural/Brand Panel */}
       <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-gradient-to-br from-[#031c0e] via-[#083018] to-[#010e07] border-r border-white/[0.04]">
-        
         {/* Woven Kente style decorative lines */}
         <div className="absolute inset-0 z-0 opacity-15">
           <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_8px,rgba(212,160,23,0.15)_8px,rgba(212,160,23,0.15)_10px,transparent_10px,transparent_18px,rgba(207,16,32,0.15)_18px,rgba(207,16,32,0.15)_20px)]" />
@@ -29,11 +28,11 @@ export default function RegisterShell({
         </div>
 
         {/* Pulsating glow orbs */}
-        <div 
+        <div
           className="absolute -top-40 -right-40 w-[450px] h-[450px] rounded-full bg-ghana-gold/5 blur-[120px]"
           style={{ animation: "orb-drift 22s infinite ease-in-out" }}
         />
-        <div 
+        <div
           className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-ghana-green/10 blur-[120px]"
           style={{ animation: "orb-drift 28s infinite ease-in-out reverse" }}
         />
@@ -87,7 +86,6 @@ export default function RegisterShell({
 
       {/* Right panel: Modern Form Section */}
       <div className="flex flex-col justify-center px-6 py-10 sm:px-16 lg:px-20 bg-gradient-to-tr from-[#050912] via-[#09101f] to-[#040810] relative overflow-hidden">
-        
         {/* Mobile Header */}
         <div className="lg:hidden mb-6 flex items-center justify-between border-b border-white/[0.05] pb-4">
           <Logo variant="light" />
@@ -95,11 +93,9 @@ export default function RegisterShell({
         </div>
 
         <div className="max-w-md w-full mx-auto relative z-10">
-          
           {/* Step Indicator */}
           {typeof step === "number" && (
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.04]">
-              
               {/* Step 1: Account details */}
               <div className="flex items-center gap-3">
                 <div
@@ -119,7 +115,9 @@ export default function RegisterShell({
                   >
                     Account
                   </span>
-                  <span className="text-[8px] text-slate-500 uppercase tracking-widest mt-0.5 block font-bold">Details</span>
+                  <span className="text-[8px] text-slate-500 uppercase tracking-widest mt-0.5 block font-bold">
+                    Details
+                  </span>
                 </div>
               </div>
 
@@ -149,7 +147,9 @@ export default function RegisterShell({
                   >
                     Verify
                   </span>
-                  <span className="text-[8px] text-slate-500 uppercase tracking-widest mt-0.5 block font-bold">Email OTP</span>
+                  <span className="text-[8px] text-slate-500 uppercase tracking-widest mt-0.5 block font-bold">
+                    Email OTP
+                  </span>
                 </div>
               </div>
             </div>
@@ -157,20 +157,12 @@ export default function RegisterShell({
 
           {/* Form Title & Subtitle */}
           <div className="space-y-2 mb-6">
-            <h1 className="text-3xl font-black text-white tracking-tight leading-none">
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="text-slate-400 text-sm leading-relaxed">
-                {subtitle}
-              </p>
-            )}
+            <h1 className="text-3xl font-black text-white tracking-tight leading-none">{title}</h1>
+            {subtitle && <p className="text-slate-400 text-sm leading-relaxed">{subtitle}</p>}
           </div>
 
           {/* Render children form content */}
-          <div className="relative">
-            {children}
-          </div>
+          <div className="relative">{children}</div>
         </div>
       </div>
     </div>
@@ -179,10 +171,14 @@ export default function RegisterShell({
 
 // Inline animation styles
 const styleBlock = (
-  <style dangerouslySetInnerHTML={{ __html: `
+  <style
+    dangerouslySetInnerHTML={{
+      __html: `
     @keyframes orb-drift {
       0%, 100% { transform: translate(0, 0) scale(1); }
       50% { transform: translate(15px, -15px) scale(1.05); }
     }
-  `}} />
+  `,
+    }}
+  />
 );

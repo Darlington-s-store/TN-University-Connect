@@ -83,10 +83,7 @@ export default function Login() {
   };
 
   return (
-    <AuthShell
-      title="Welcome Back"
-      subtitle="Sign in to connect with your university workspace"
-    >
+    <AuthShell title="Welcome Back" subtitle="Sign in to connect with your university workspace">
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -97,10 +94,12 @@ export default function Login() {
           <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
           <div className="p-6 sm:p-8">
             <form onSubmit={submit} className="space-y-5" noValidate>
-              
               {/* Email Input */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                <Label
+                  htmlFor="email"
+                  className="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                >
                   Email address
                 </Label>
                 <div className="relative">
@@ -123,7 +122,10 @@ export default function Login() {
 
               {/* Password Input */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                <Label
+                  htmlFor="password"
+                  className="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                >
                   Password
                 </Label>
                 <div className="relative">
@@ -161,7 +163,10 @@ export default function Login() {
                   />
                   <span>Remember me</span>
                 </label>
-                <Link to="/forgot-password" className="text-ghana-gold hover:text-ghana-gold/80 hover:underline transition-colors">
+                <Link
+                  to="/forgot-password"
+                  className="text-ghana-gold hover:text-ghana-gold/80 hover:underline transition-colors"
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -174,9 +179,24 @@ export default function Login() {
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    <svg
+                      className="animate-spin h-4 w-4 text-slate-950"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
                     </svg>
                     Signing in...
                   </span>
@@ -207,8 +227,20 @@ export default function Login() {
                         className="w-full h-11 bg-slate-900/50 border-white/[0.08] text-slate-400 font-bold text-xs rounded-xl"
                       >
                         <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
                         </svg>
                         Verifying Google...
                       </Button>
@@ -245,7 +277,6 @@ export default function Login() {
                   </Link>
                 </p>
               </div>
-
             </form>
           </div>
         </div>

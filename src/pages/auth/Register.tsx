@@ -94,7 +94,7 @@ export default function Register() {
 
   const strengthLabel =
     ["Too weak", "Weak", "Fair", "Good", "Strong"][Math.max(0, strengthScore - 1)] || "Too weak";
-  
+
   const strengthColor = [
     "bg-destructive", // 0
     "bg-destructive", // 1
@@ -203,7 +203,8 @@ export default function Register() {
             <div className="space-y-2">
               <h2 className="text-2xl font-black text-white tracking-tight">You're all set!</h2>
               <p className="text-sm text-slate-400 leading-relaxed">
-                Your account has been successfully created. We are setting up your student dashboard.
+                Your account has been successfully created. We are setting up your student
+                dashboard.
               </p>
             </div>
             <p className="text-xs text-ghana-gold/80 animate-pulse my-5 font-bold">
@@ -244,10 +245,12 @@ export default function Register() {
                   className="space-y-4"
                 >
                   <form onSubmit={handleCreateAccount} className="space-y-4" noValidate>
-                    
                     {/* Full Name */}
                     <div className="space-y-2">
-                      <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                      <Label
+                        htmlFor="name"
+                        className="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                      >
                         Full name
                       </Label>
                       <div className="relative">
@@ -269,7 +272,10 @@ export default function Register() {
 
                     {/* Email */}
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                      <Label
+                        htmlFor="email"
+                        className="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                      >
                         Email address
                       </Label>
                       <div className="relative">
@@ -292,7 +298,10 @@ export default function Register() {
 
                     {/* Phone Number */}
                     <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                      <Label
+                        htmlFor="phone"
+                        className="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                      >
                         Phone number
                       </Label>
                       <PhoneInput
@@ -309,7 +318,10 @@ export default function Register() {
 
                     {/* Password */}
                     <div className="space-y-2">
-                      <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                      <Label
+                        htmlFor="password"
+                        className="text-[10px] font-black uppercase tracking-wider text-slate-400"
+                      >
                         Password
                       </Label>
                       <div className="relative">
@@ -328,7 +340,11 @@ export default function Register() {
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
                         >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
                         </button>
                       </div>
                       {errors.password && (
@@ -394,9 +410,24 @@ export default function Register() {
                     >
                       {verificationLoading ? (
                         <span className="flex items-center gap-2">
-                          <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          <svg
+                            className="animate-spin h-4 w-4 text-slate-950"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            />
                           </svg>
                           Sending OTP...
                         </span>
@@ -423,11 +454,10 @@ export default function Register() {
                     <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
                       <Mail className="h-4.5 w-4.5 text-ghana-gold" />
                     </div>
-                    <h4 className="font-black text-white text-sm">
-                      Security Code Sent!
-                    </h4>
+                    <h4 className="font-black text-white text-sm">Security Code Sent!</h4>
                     <p className="text-[11px] text-slate-400 mt-1 max-w-sm leading-relaxed">
-                      We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>.
+                      We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>
+                      .
                     </p>
                   </div>
                   <div className="text-right">
@@ -483,9 +513,24 @@ export default function Register() {
                       >
                         {loading ? (
                           <span className="flex items-center gap-2">
-                            <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            <svg
+                              className="animate-spin h-4 w-4 text-slate-950"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                              />
                             </svg>
                             Creating...
                           </span>
@@ -514,7 +559,6 @@ export default function Register() {
               </Link>
             </p>
           </div>
-
         </div>
       </div>
     </RegisterShell>

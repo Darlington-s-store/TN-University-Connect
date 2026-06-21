@@ -19,13 +19,12 @@ export default function AuthShell({
 
       {/* Left panel: Premium Brand Splash */}
       <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-gradient-to-br from-[#070c18] via-[#0f172a] to-[#02050b] border-r border-white/[0.04]">
-        
         {/* Animated ambient glow orbs */}
-        <div 
+        <div
           className="absolute -top-40 -right-40 w-[450px] h-[450px] rounded-full bg-ghana-gold/5 blur-[120px]"
           style={{ animation: "orb-drift 20s infinite ease-in-out" }}
         />
-        <div 
+        <div
           className="absolute -bottom-40 -left-40 w-[450px] h-[450px] rounded-full bg-ghana-red/5 blur-[120px]"
           style={{ animation: "orb-drift 25s infinite ease-in-out reverse" }}
         />
@@ -44,10 +43,15 @@ export default function AuthShell({
         {/* Text Showcase */}
         <div className="relative z-10 space-y-6 my-auto">
           <h2 className="text-4xl xl:text-5xl font-black leading-[1.15] text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-100 to-slate-400">
-            Guide.<br />Work.<br />Inspire.
+            Guide.
+            <br />
+            Work.
+            <br />
+            Inspire.
           </h2>
           <p className="text-slate-400 text-sm leading-relaxed max-w-sm font-medium">
-            Join a nationwide community of students, academic leaders, and distinguished alumni shaping the future of Ghana.
+            Join a nationwide community of students, academic leaders, and distinguished alumni
+            shaping the future of Ghana.
           </p>
 
           {/* Minimal glowing kente accent */}
@@ -66,7 +70,6 @@ export default function AuthShell({
 
       {/* Right panel: Modern Form Section */}
       <div className="flex flex-col justify-center px-6 py-12 sm:px-16 lg:px-20 bg-gradient-to-tr from-[#050912] via-[#09101f] to-[#040810] relative overflow-hidden">
-        
         {/* Mobile Header */}
         <div className="lg:hidden mb-8 flex items-center justify-between border-b border-white/[0.05] pb-4">
           <Logo variant="light" />
@@ -74,34 +77,23 @@ export default function AuthShell({
         </div>
 
         <div className="max-w-md w-full mx-auto relative z-10">
-          
           {/* Header */}
           <div className="space-y-2 mb-8">
-            <h1 className="text-3xl font-black text-white tracking-tight leading-none">
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="text-slate-400 text-sm leading-relaxed">
-                {subtitle}
-              </p>
-            )}
+            <h1 className="text-3xl font-black text-white tracking-tight leading-none">{title}</h1>
+            {subtitle && <p className="text-slate-400 text-sm leading-relaxed">{subtitle}</p>}
           </div>
 
           {/* Render children form content */}
-          <div className="relative">
-            {children}
-          </div>
+          <div className="relative">{children}</div>
 
           {/* Bottom link info */}
           {footer && (
-            <div className="mt-8 text-xs text-slate-500 text-center font-semibold">
-              {footer}
-            </div>
+            <div className="mt-8 text-xs text-slate-500 text-center font-semibold">{footer}</div>
           )}
 
           <div className="mt-8 text-center">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors duration-300 font-bold uppercase tracking-wider"
             >
               <span>← Back to home</span>
@@ -115,10 +107,14 @@ export default function AuthShell({
 
 // Inline animation styles
 const styleBlock = (
-  <style dangerouslySetInnerHTML={{ __html: `
+  <style
+    dangerouslySetInnerHTML={{
+      __html: `
     @keyframes orb-drift {
       0%, 100% { transform: translate(0, 0) scale(1); }
       50% { transform: translate(20px, -20px) scale(1.1); }
     }
-  `}} />
+  `,
+    }}
+  />
 );

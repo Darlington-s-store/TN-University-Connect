@@ -52,17 +52,15 @@ export default function Preloader({ minDuration = 1400 }: { minDuration?: number
       `}</style>
 
       {/* Ambient background glows */}
-      <div 
+      <div
         className="absolute w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-[#0a3a1b]/15 via-[#d4a017]/5 to-[#cf1020]/10 blur-[90px]"
         style={{ animation: "ambient-pulse 5s ease-in-out infinite" }}
       />
 
       {/* Glassmorphic Loader Card */}
       <div className="relative z-10 flex flex-col items-center p-8 rounded-3xl bg-slate-950/40 backdrop-blur-xl border border-white/[0.08] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] max-w-sm w-full mx-4">
-        
         {/* Ring & Logo Area */}
         <div className="relative w-36 h-36 flex items-center justify-center mb-6">
-          
           {/* Concentric rotating SVG rings representing connectivity */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
             {/* Outer Slow Track (Green) */}
@@ -109,7 +107,7 @@ export default function Preloader({ minDuration = 1400 }: { minDuration?: number
           </svg>
 
           {/* Logo Frame */}
-          <div 
+          <div
             className="w-24 h-24 rounded-full overflow-hidden bg-white/95 border border-white/20 p-1 flex items-center justify-center shadow-lg"
             style={{ animation: "logo-breathe 3s ease-in-out infinite" }}
           >
