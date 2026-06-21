@@ -1,28 +1,17 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, Calendar, ArrowRight, Megaphone, Sparkles, TrendingUp, X } from "lucide-react";
+import { Search, Calendar, ArrowRight, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getAnnouncements, Announcement } from "@/lib/data";
 import cardPattern from "@/assets/card-pattern.jpg";
-import annAgm from "@/assets/ann-agm.jpg";
-import annDimes from "@/assets/ann-dimes.jpg";
-import annHyundai from "@/assets/ann-hyundai-stem.png";
-import annLegal from "@/assets/ann-legal.jpg";
-import heroVideo from "@/assets/hero-video.mp4.asset.json";
-import heroBg from "@/assets/hero-bg.jpg";
 
 function resolveAnnouncementImage(imgStr?: string) {
   if (!imgStr) return undefined;
   if (imgStr.startsWith("http")) return imgStr;
-  if (imgStr.includes("ann-agm") || imgStr.includes("agm")) return annAgm;
-  if (imgStr.includes("ann-dimes") || imgStr.includes("dimes")) return annDimes;
-  if (imgStr.includes("ann-hyundai") || imgStr.includes("hyundai") || imgStr.includes("stem"))
-    return annHyundai;
-  if (imgStr.includes("ann-legal") || imgStr.includes("legal")) return annLegal;
   return imgStr;
 }
 
@@ -76,43 +65,34 @@ export default function Announcements() {
 
   return (
     <div className="bg-background min-h-screen">
-      {/* HERO — dashboard-style header */}
+      {/* HERO */}
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="relative overflow-hidden text-white py-20 lg:py-28"
+        transition={{ duration: 0.5 }}
+        className="relative overflow-hidden text-white py-16 lg:py-20"
       >
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary/95 to-slate-950" />
-          <div className="absolute inset-0 opacity-15 mix-blend-overlay bg-[radial-gradient(rgba(255,255,255,0.2)_1px,transparent_1px)] [background-size:20px_20px]" />
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-ghana-red/5 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4" />
-        </div>
-
-        <div className="container relative mx-auto px-4 sm:px-6 z-10 max-w-4xl text-center flex flex-col items-center justify-center space-y-6">
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.05]">
-            <span className="bg-gradient-to-r from-white via-white to-accent bg-clip-text text-transparent">
-              Latest Updates
-            </span>
-          </h1>
-          <p className="text-lg sm:text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary/95 to-slate-950" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
+        <div className="container relative mx-auto px-4 sm:px-6 z-10 text-center">
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight mb-3">Announcements</h1>
+          <p className="text-base sm:text-lg text-white/70 max-w-2xl mx-auto">
             Official announcements, scholarship updates, and institutional news from across the
             Ghanaian academic landscape.
           </p>
         </div>
       </motion.section>
 
-      {/* FEATURED — only when not filtering */}
+      {/* FEATURED */}
       {!isFiltering && featured && (
         <motion.section
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="container mx-auto px-4 sm:px-6 -mt-16 relative z-20"
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="container mx-auto px-4 sm:px-6 mt-8 relative z-10"
         >
           <Link to={`/announcements/${featured.id}`} className="group block">
-            <Card className="overflow-hidden border-none shadow-2xl rounded-3xl bg-card">
+            <Card className="overflow-hidden border shadow-sm hover:shadow-lg transition-all rounded-xl bg-card">
               <div className="grid lg:grid-cols-5">
                 <div className="lg:col-span-3 aspect-[16/10] lg:aspect-auto relative overflow-hidden bg-muted">
                   <img
@@ -125,17 +105,17 @@ export default function Announcements() {
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-secondary/70 via-transparent to-transparent lg:bg-gradient-to-r" />
-                  <div className="absolute top-5 left-5">
-                    <Badge className="bg-accent text-accent-foreground border-0 font-bold uppercase tracking-wider px-3 py-1 text-[11px] shadow-lg">
+                  <div className="absolute top-4 left-4">
+                    <Badge className="bg-accent text-accent-foreground border-0 font-bold text-[10px] px-2.5 py-1 shadow">
                       ★ Featured
                     </Badge>
                   </div>
                 </div>
-                <CardContent className="lg:col-span-2 p-8 lg:p-12 flex flex-col justify-center">
-                  <div className="flex items-center gap-3 mb-4 text-xs">
+                <CardContent className="lg:col-span-2 p-6 lg:p-8 flex flex-col justify-center">
+                  <div className="flex items-center gap-3 mb-3 text-xs">
                     <Badge
                       variant="secondary"
-                      className="bg-primary/10 text-primary border-none font-bold"
+                      className="bg-primary/10 text-primary border-none font-bold text-[10px]"
                     >
                       {featured.category}
                     </Badge>
@@ -144,14 +124,14 @@ export default function Announcements() {
                       {new Date(featured.date).toLocaleDateString("en-GB", { dateStyle: "long" })}
                     </span>
                   </div>
-                  <h2 className="text-2xl lg:text-3xl font-extrabold text-secondary leading-tight mb-4 group-hover:text-primary transition-colors">
+                  <h2 className="text-xl lg:text-2xl font-bold text-secondary dark:text-foreground leading-tight mb-3 group-hover:text-primary transition-colors">
                     {featured.title}
                   </h2>
-                  <p className="text-muted-foreground leading-relaxed line-clamp-3 mb-6">
+                  <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4">
                     {featured.excerpt}
                   </p>
-                  <div className="inline-flex items-center gap-2 text-sm font-bold text-primary group-hover:gap-3 transition-all">
-                    Read full announcement <ArrowRight className="h-4 w-4" />
+                  <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary group-hover:gap-2.5 transition-all">
+                    Read full announcement <ArrowRight className="h-3.5 w-3.5" />
                   </div>
                 </CardContent>
               </div>

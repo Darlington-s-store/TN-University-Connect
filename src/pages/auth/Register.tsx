@@ -12,9 +12,7 @@ import {
   EyeOff,
   User,
   Lock,
-  GraduationCap,
   Sparkles,
-  ShieldCheck,
   AlertCircle,
 } from "lucide-react";
 import RegisterShell from "@/components/auth/RegisterShell";
@@ -25,13 +23,6 @@ import { useAuth } from "@/lib/auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { sendVerificationCode, verifyCode } from "@/lib/verification";
 import { PhoneInput } from "@/components/PhoneInput";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 // Validation schema for registering user
 const registerSchema = z.object({
@@ -55,7 +46,7 @@ const registerSchema = z.object({
     }),
 });
 
-export default function Register({ noShell = false }: { noShell?: boolean }) {
+export default function Register() {
   const navigate = useNavigate();
   const { register } = useAuth();
 
@@ -103,6 +94,7 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
 
   const strengthLabel =
     ["Too weak", "Weak", "Fair", "Good", "Strong"][Math.max(0, strengthScore - 1)] || "Too weak";
+  
   const strengthColor = [
     "bg-destructive", // 0
     "bg-destructive", // 1
@@ -198,73 +190,47 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
     }
   };
 
+  // Success view
   if (done) {
-    const successContent = (
-      <div className="bg-card border border-border/80 shadow-elegant rounded-3xl overflow-hidden backdrop-blur-md relative">
-        <div className="h-1.5 flag-stripe" />
-        <div className="p-6 sm:p-8 text-center">
-          <div className="h-20 w-20 rounded-full bg-ghana-green/10 border border-ghana-green/20 grid place-items-center mx-auto mb-6">
-            <CheckCircle2 className="h-10 w-10 text-ghana-green animate-bounce" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-2xl font-black text-secondary tracking-tight">You're all set!</h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Your account has been successfully created. We are setting up your student dashboard.
-            </p>
-          </div>
-          <p className="text-xs text-muted-foreground/80 animate-pulse my-5 font-semibold">
-            Redirecting you to your dashboard...
-          </p>
-          <Button
-            asChild
-            className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-bold"
-          >
-            <Link to="/dashboard">Go to Dashboard</Link>
-          </Button>
-        </div>
-      </div>
-    );
-
-    if (noShell) {
-      return successContent;
-    }
-
     return (
       <RegisterShell title="Welcome aboard!" subtitle="Your account has been created successfully.">
-        {successContent}
+        <div className="bg-slate-950/45 backdrop-blur-xl border border-white/[0.06] shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden relative">
+          <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
+          <div className="p-6 sm:p-8 text-center">
+            <div className="h-20 w-20 rounded-full bg-ghana-green/10 border border-ghana-green/20 grid place-items-center mx-auto mb-6">
+              <CheckCircle2 className="h-10 w-10 text-ghana-green animate-bounce" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-black text-white tracking-tight">You're all set!</h2>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Your account has been successfully created. We are setting up your student dashboard.
+              </p>
+            </div>
+            <p className="text-xs text-ghana-gold/80 animate-pulse my-5 font-bold">
+              Redirecting to your dashboard...
+            </p>
+            <Button
+              asChild
+              className="w-full h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider"
+            >
+              <Link to="/dashboard">Go to Dashboard</Link>
+            </Button>
+          </div>
+        </div>
       </RegisterShell>
     );
   }
 
-  const formContent = (
-    <>
-      {/* Step badge if noShell */}
-      {noShell && typeof step === "number" && (
-        <div className="flex items-center justify-center mb-5">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-              Step {step} of 2
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Already-a-member nudge — only show if not in tabs */}
-      {!noShell && (
-        <div className="mb-6 flex items-center justify-center gap-2 text-xs text-slate-500">
-          <span>Already have an account?</span>
-          <Link
-            to="/login"
-            className="font-bold text-primary hover:text-primary/80 hover:underline transition-colors"
-          >
-            Sign in here →
-          </Link>
-        </div>
-      )}
-
-      <div className="bg-card border border-border/80 shadow-elegant rounded-3xl overflow-hidden backdrop-blur-md relative">
-        <div className="h-1.5 flag-stripe" />
+  // Active form view
+  return (
+    <RegisterShell
+      title="Join the Network"
+      subtitle="Create your account to connect with Ghana's universities, alumni, and student community."
+      step={step}
+      totalSteps={2}
+    >
+      <div className="bg-slate-950/45 backdrop-blur-xl border border-white/[0.06] shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden relative">
+        <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
         <div className="p-6 sm:p-8">
           <div className="relative overflow-hidden min-h-[420px]">
             <AnimatePresence mode="wait">
@@ -274,58 +240,59 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: 0.25 }}
                   className="space-y-4"
                 >
                   <form onSubmit={handleCreateAccount} className="space-y-4" noValidate>
-                    {/* 1. Name Input */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="name" className="text-xs font-semibold">
+                    
+                    {/* Full Name */}
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
                         Full name
                       </Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                         <Input
                           id="name"
                           value={form.name}
                           onChange={(e) => setForm({ ...form, name: e.target.value })}
-                          placeholder="e.g. Kwame Mensah"
-                          className="pl-9 h-9.5 text-sm"
+                          placeholder="Kwame Mensah"
+                          className="pl-10.5 h-11 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-650 rounded-xl text-sm transition-colors"
                         />
                       </div>
                       {errors.name && (
-                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                        <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
                           <AlertCircle className="h-3 w-3" /> {errors.name}
                         </p>
                       )}
                     </div>
 
-                    {/* 3. Email Input */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="email" className="text-xs font-semibold">
+                    {/* Email */}
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
                         Email address
                       </Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                         <Input
                           id="email"
                           type="email"
                           value={form.email}
                           onChange={(e) => setForm({ ...form, email: e.target.value })}
                           placeholder="you@university.edu.gh"
-                          className="pl-9 h-9.5 text-sm"
+                          className="pl-10.5 h-11 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-650 rounded-xl text-sm transition-colors"
                         />
                       </div>
                       {errors.email && (
-                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                        <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
                           <AlertCircle className="h-3 w-3" /> {errors.email}
                         </p>
                       )}
                     </div>
 
-                    {/* 4. Phone Input */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="phone" className="text-xs font-semibold">
+                    {/* Phone Number */}
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
                         Phone number
                       </Label>
                       <PhoneInput
@@ -334,140 +301,110 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
                         onChange={(v) => setForm({ ...form, phone: v })}
                       />
                       {errors.phone && (
-                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                        <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
                           <AlertCircle className="h-3 w-3" /> {errors.phone}
                         </p>
                       )}
                     </div>
 
-                    {/* 5. Password Input */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="password" className="text-xs font-semibold">
+                    {/* Password */}
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-wider text-slate-400">
                         Password
                       </Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                         <Input
                           id="password"
                           type={showPassword ? "text" : "password"}
                           value={form.password}
                           onChange={(e) => setForm({ ...form, password: e.target.value })}
                           onFocus={() => setIsPasswordFocused(true)}
-                          className="pl-9 pr-10 h-9.5 text-sm"
+                          placeholder="••••••••"
+                          className="pl-10.5 pr-10.5 h-11 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-650 rounded-xl text-sm transition-colors"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary cursor-pointer"
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
                         >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
                       </div>
                       {errors.password && (
-                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
+                        <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
                           <AlertCircle className="h-3 w-3" /> {errors.password}
                         </p>
                       )}
 
-                      {/* Password strength & requirements checklist */}
+                      {/* Password strength checklist */}
                       {(form.password || isPasswordFocused) && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
-                          className="mt-2.5 space-y-2 border-t pt-2.5 overflow-hidden"
+                          className="mt-3.5 space-y-3.5 border-t border-white/[0.06] pt-3.5 overflow-hidden"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex gap-1 flex-1 max-w-[150px]">
                               {[1, 2, 3, 4, 5].map((i) => (
                                 <div
                                   key={i}
-                                  className={`h-1 flex-1 rounded ${i <= strengthScore ? strengthColor : "bg-muted"}`}
+                                  className={`h-1 flex-1 rounded ${i <= strengthScore ? strengthColor : "bg-white/[0.06]"}`}
                                 />
                               ))}
                             </div>
-                            <span className="text-[9px] font-bold text-muted-foreground tracking-wide uppercase">
+                            <span className="text-[9px] font-black text-slate-400 tracking-wide uppercase">
                               {strengthLabel}
                             </span>
                           </div>
 
-                          {/* Checklist Badges */}
-                          <div className="flex flex-wrap gap-1.5 pt-1">
-                            <span
-                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
-                                passChecks.length
-                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
-                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
-                              }`}
-                            >
-                              <CheckCircle2
-                                className={`h-2.5 w-2.5 ${passChecks.length ? "text-ghana-green" : "text-slate-300"}`}
-                              />
-                              8+ chars
-                            </span>
-                            <span
-                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
-                                passChecks.hasNumber
-                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
-                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
-                              }`}
-                            >
-                              <CheckCircle2
-                                className={`h-2.5 w-2.5 ${passChecks.hasNumber ? "text-ghana-green" : "text-slate-300"}`}
-                              />
-                              1 Number
-                            </span>
-                            <span
-                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
-                                passChecks.hasUpper
-                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
-                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
-                              }`}
-                            >
-                              <CheckCircle2
-                                className={`h-2.5 w-2.5 ${passChecks.hasUpper ? "text-ghana-green" : "text-slate-300"}`}
-                              />
-                              Uppercase
-                            </span>
-                            <span
-                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
-                                passChecks.hasLower
-                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
-                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
-                              }`}
-                            >
-                              <CheckCircle2
-                                className={`h-2.5 w-2.5 ${passChecks.hasLower ? "text-ghana-green" : "text-slate-300"}`}
-                              />
-                              Lowercase
-                            </span>
-                            <span
-                              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border transition-all duration-300 ${
-                                passChecks.hasSpecial
-                                  ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
-                                  : "border-slate-200 text-slate-400 bg-slate-50/50 border-dashed"
-                              }`}
-                            >
-                              <CheckCircle2
-                                className={`h-2.5 w-2.5 ${passChecks.hasSpecial ? "text-ghana-green" : "text-slate-300"}`}
-                              />
-                              Special char
-                            </span>
+                          {/* Requirements labels */}
+                          <div className="flex flex-wrap gap-1.5 pt-0.5">
+                            {[
+                              { label: "8+ chars", met: passChecks.length },
+                              { label: "1 Number", met: passChecks.hasNumber },
+                              { label: "Uppercase", met: passChecks.hasUpper },
+                              { label: "Lowercase", met: passChecks.hasLower },
+                              { label: "Special char", met: passChecks.hasSpecial },
+                            ].map((check) => (
+                              <span
+                                key={check.label}
+                                className={`inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-full border transition-all duration-300 ${
+                                  check.met
+                                    ? "border-ghana-green/30 text-ghana-green bg-ghana-green/5"
+                                    : "border-white/[0.06] text-slate-500 bg-white/[0.01] border-dashed"
+                                }`}
+                              >
+                                <CheckCircle2
+                                  className={`h-2.5 w-2.5 ${check.met ? "text-ghana-green" : "text-slate-600"}`}
+                                />
+                                {check.label}
+                              </span>
+                            ))}
                           </div>
                         </motion.div>
                       )}
                     </div>
 
+                    {/* Step submit button */}
                     <Button
                       type="submit"
                       disabled={verificationLoading}
-                      className="w-full mt-6 h-10 font-semibold text-xs"
+                      className="w-full mt-6 h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black tracking-wider uppercase text-xs rounded-xl transition-all shadow-[0_4px_20px_rgba(212,160,23,0.15)] hover:scale-[1.01] active:scale-[0.99]"
                     >
-                      {verificationLoading ? "Sending Verification..." : "Create Account"}
-                      <ArrowRight className="h-4 w-4 ml-1.5" />
+                      {verificationLoading ? (
+                        <span className="flex items-center gap-2">
+                          <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          Sending OTP...
+                        </span>
+                      ) : (
+                        <span className="flex items-center justify-center gap-1.5">
+                          Create Account <ArrowRight className="h-4 w-4" />
+                        </span>
+                      )}
                     </Button>
                   </form>
                 </motion.div>
@@ -479,31 +416,30 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: 0.25 }}
                   className="space-y-5"
                 >
-                  <div className="p-4 bg-primary/5 border border-primary/15 rounded-2xl flex flex-col items-center text-center">
+                  <div className="p-4.5 bg-white/[0.02] border border-white/[0.05] rounded-2xl flex flex-col items-center text-center">
                     <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                      <Mail className="h-4.5 w-4.5" />
+                      <Mail className="h-4.5 w-4.5 text-ghana-gold" />
                     </div>
-                    <h4 className="font-bold text-secondary text-sm font-display">
+                    <h4 className="font-black text-white text-sm">
                       Security Code Sent!
                     </h4>
-                    <p className="text-[11px] text-muted-foreground mt-1 max-w-sm leading-normal">
-                      We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>
-                      .
+                    <p className="text-[11px] text-slate-400 mt-1 max-w-sm leading-relaxed">
+                      We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>.
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black text-secondary/10">0{step}</span>
-                    <span className="text-secondary/30 text-xs font-bold">/02</span>
+                    <span className="text-2xl font-black text-white/5">0{step}</span>
+                    <span className="text-slate-650 text-xs font-bold">/02</span>
                   </div>
 
                   <form onSubmit={submitRegister} className="space-y-5">
-                    <div className="space-y-2 text-center">
+                    <div className="space-y-3.5 text-center">
                       <Label
                         htmlFor="verificationCode"
-                        className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
+                        className="text-[10px] font-black uppercase tracking-wider text-slate-450"
                       >
                         Enter 6-Digit Code
                       </Label>
@@ -514,28 +450,28 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
                           setVerificationCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))
                         }
                         placeholder="000000"
-                        className="text-center text-2xl font-bold tracking-[0.4em] h-12 focus-visible:ring-primary max-w-xs mx-auto rounded-xl"
+                        className="text-center text-2xl font-bold tracking-[0.4em] h-12 bg-slate-900/50 border-white/[0.08] text-white focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 max-w-xs mx-auto rounded-xl"
                         maxLength={6}
                       />
                     </div>
 
-                    <div className="flex justify-center text-xs text-muted-foreground">
+                    <div className="flex justify-center text-xs text-slate-400 font-medium">
                       Didn't receive the code?&nbsp;
                       <button
                         type="button"
                         onClick={resendCode}
-                        className="text-primary hover:underline font-bold"
+                        className="text-ghana-gold hover:text-ghana-gold/80 hover:underline font-bold transition-colors"
                       >
                         Resend Code
                       </button>
                     </div>
 
-                    <div className="flex gap-3 mt-6 border-t pt-4">
+                    <div className="flex gap-3 mt-6 border-t border-white/[0.06] pt-4">
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => setStep(1)}
-                        className="flex-1 h-9.5 text-xs font-semibold"
+                        className="flex-1 h-11 bg-transparent border-white/[0.08] text-slate-350 hover:bg-white/[0.03] text-xs font-bold rounded-xl"
                         disabled={loading}
                       >
                         <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
@@ -543,10 +479,21 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
                       <Button
                         type="submit"
                         disabled={loading}
-                        className="flex-[2] h-9.5 text-xs font-semibold"
+                        className="flex-[2] h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_20px_rgba(212,160,23,0.15)]"
                       >
-                        <UserPlus className="h-4 w-4 mr-1.5" />{" "}
-                        {loading ? "Creating..." : "Confirm & Sign Up"}
+                        {loading ? (
+                          <span className="flex items-center gap-2">
+                            <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                            Creating...
+                          </span>
+                        ) : (
+                          <span className="flex items-center justify-center gap-1.5">
+                            <UserPlus className="h-4 w-4" /> Confirm & Sign Up
+                          </span>
+                        )}
                       </Button>
                     </div>
                   </form>
@@ -554,23 +501,22 @@ export default function Register({ noShell = false }: { noShell?: boolean }) {
               )}
             </AnimatePresence>
           </div>
+
+          {/* Sign In Callout */}
+          <div className="text-center mt-6 pt-5 border-t border-white/[0.06]">
+            <p className="text-xs text-slate-400 font-medium">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-black text-ghana-gold hover:text-ghana-gold/80 underline underline-offset-4 decoration-2 decoration-ghana-gold/30 hover:decoration-ghana-gold/70 transition-all ml-1"
+              >
+                Sign in here →
+              </Link>
+            </p>
+          </div>
+
         </div>
       </div>
-    </>
-  );
-
-  if (noShell) {
-    return formContent;
-  }
-
-  return (
-    <RegisterShell
-      title="Join the Network"
-      subtitle="Create your account to connect with Ghana's universities, alumni, and student community."
-      step={step}
-      totalSteps={2}
-    >
-      {formContent}
     </RegisterShell>
   );
 }

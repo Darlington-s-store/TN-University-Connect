@@ -28,6 +28,7 @@ import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
 
 import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
 import AdminLogin from "@/pages/auth/AdminLogin";
 import ForgotPassword from "@/pages/auth/ForgotPassword";
 import ResetPassword from "@/pages/auth/ResetPassword";
@@ -93,7 +94,7 @@ export default function App() {
                     path="/login"
                     element={
                       <PageTransition>
-                        <Login defaultTab="login" />
+                        <Login />
                       </PageTransition>
                     }
                   />
@@ -109,7 +110,7 @@ export default function App() {
                     path="/register"
                     element={
                       <PageTransition>
-                        <Login defaultTab="register" />
+                        <Register />
                       </PageTransition>
                     }
                   />
