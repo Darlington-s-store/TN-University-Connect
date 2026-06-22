@@ -321,11 +321,11 @@ export default function Register() {
         </div>
 
         <div className="text-center">
-          <Link to="/" className="text-xs text-muted-foreground hover:text-foreground font-medium">
+          <Link to="/" className="text-xs text-white/80 hover:text-white font-medium">
             ← Back to home
           </Link>
         </div>
       </div>
-    </div>
+    </AuthVideoBackground>
   );
 }
