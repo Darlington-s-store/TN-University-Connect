@@ -12,6 +12,8 @@ import { decodeGoogleCredential, CLIENT_ID, isMockClientId } from "@/lib/google-
 import { MockGoogleButton } from "@/lib/google";
 import { PhoneInput } from "@/components/PhoneInput";
 import Logo from "@/components/Logo";
+import AuthVideoBackground from "@/components/auth/AuthVideoBackground";
+import { createNotification } from "@/lib/notifications";
 
 const registerSchema = z.object({
   name: z.string().trim().min(2, "Full name is required").max(100),
