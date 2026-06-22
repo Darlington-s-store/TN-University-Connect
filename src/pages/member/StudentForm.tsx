@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth";
 import { getStudentMe, submitStudentForm, Student } from "@/lib/data";
+import { createNotification } from "@/lib/notifications";
 import {
   FACULTIES,
   DEPARTMENTS,
@@ -324,6 +325,21 @@ export default function StudentForm() {
         program: form.program,
         level: form.level,
         status: form.status,
+      });
+
+      createNotification({
+        recipient_role: "admin",
+        type: existing ? "student.updated" : "student.submitted",
+        title: existing ? "📝 Student profile updated" : "🎓 New student registration submitted",
+        body: `${form.fullName} (${form.email}) ${existing ? "updated" : "submitted"} their student information — ${form.university}, ${form.department}.`,
+        link: "/admin/students",
+        metadata: {
+          studentId: savedStudent?.id,
+          email: form.email,
+          university: form.university,
+          department: form.department,
+          level: form.level,
+        },
       });
 
       toast.success(
