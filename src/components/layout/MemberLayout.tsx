@@ -1,12 +1,13 @@
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import AnimatedOutlet from "@/components/AnimatedOutlet";
-import { LayoutDashboard, User, FileText, LogOut, Home, Bell, Menu, Megaphone } from "lucide-react";
+import { LayoutDashboard, User, FileText, LogOut, Home, Menu } from "lucide-react";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import NotificationBell from "@/components/NotificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,12 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  getAnnouncements,
-  Announcement,
-  getReadAnnouncements,
-  markAnnouncementAsRead,
-} from "@/lib/data";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
