@@ -28,13 +28,7 @@ export default function Register() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [done, setDone] = useState(false);
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
 
@@ -110,28 +104,24 @@ export default function Register() {
 
   if (done) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#fff5f5] via-[#fffdf2] to-[#effaf3] px-4 py-12 relative overflow-hidden">
-        {/* Background orbs in Logo colors */}
-        <div className="absolute -top-40 -right-40 w-[450px] h-[450px] rounded-full bg-ghana-gold/10 blur-[120px]" />
-        <div className="absolute -bottom-40 -left-40 w-[450px] h-[450px] rounded-full bg-ghana-red/6 blur-[120px]" />
-
-        <div className="w-full max-w-md relative z-10 space-y-6">
+      <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+        <div className="w-full max-w-md space-y-6">
           <div className="flex justify-center">
             <Logo />
           </div>
-          <div className="bg-white/80 backdrop-blur-xl border border-slate-100 shadow-[0_20px_50px_rgba(15,23,42,0.06)] rounded-3xl overflow-hidden relative">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
             <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
-            <div className="p-6 sm:p-8 text-center space-y-6">
-              <div className="h-20 w-20 rounded-full bg-primary/10 border border-primary/20 grid place-items-center mx-auto">
-                <CheckCircle2 className="h-10 w-10 text-primary animate-bounce" />
+            <div className="p-8 text-center space-y-5">
+              <div className="h-16 w-16 rounded-full bg-primary/10 grid place-items-center mx-auto">
+                <CheckCircle2 className="h-8 w-8 text-primary" />
               </div>
-              <div className="space-y-2">
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">You're all set!</h2>
-                <p className="text-sm text-slate-500 leading-relaxed">
+              <div className="space-y-1.5">
+                <h2 className="text-2xl font-bold text-foreground">You're all set!</h2>
+                <p className="text-sm text-muted-foreground">
                   Your account has been created. Redirecting to your dashboard...
                 </p>
               </div>
-              <Button asChild className="w-full h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-[0_4px_15px_rgba(212,160,23,0.18)]">
+              <Button asChild className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
                 <Link to="/dashboard">Go to Dashboard</Link>
               </Button>
             </div>
@@ -142,144 +132,112 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#fff5f5] via-[#fffdf2] to-[#effaf3] px-4 py-12 relative overflow-hidden">
-      {/* Background orbs in Logo colors */}
-      <div
-        className="absolute -top-40 -right-40 w-[450px] h-[450px] rounded-full bg-ghana-gold/10 blur-[120px]"
-        style={{ animation: "orb-drift 20s infinite ease-in-out" }}
-      />
-      <div
-        className="absolute -bottom-40 -left-40 w-[450px] h-[450px] rounded-full bg-ghana-red/6 blur-[120px]"
-        style={{ animation: "orb-drift 25s infinite ease-in-out reverse" }}
-      />
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-ghana-green/5 blur-[100px]"
-        style={{ animation: "orb-drift 30s infinite ease-in-out" }}
-      />
-
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes orb-drift {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(20px, -20px) scale(1.05); }
-          }
-        `
-      }} />
-
-      <div className="w-full max-w-md relative z-10 space-y-6">
-        {/* Logo centered */}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
+      <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center">
           <Logo />
         </div>
 
-        {/* Card */}
-        <div className="bg-white/80 backdrop-blur-xl border border-slate-100 shadow-[0_20px_50px_rgba(15,23,42,0.06)] rounded-3xl overflow-hidden relative">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
           <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
           <div className="p-6 sm:p-8 space-y-5">
-            {/* Title & Subtitle */}
-            <div className="text-center space-y-2 mb-4">
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none">Join the Network</h1>
-              <p className="text-slate-500 text-xs leading-relaxed">Create your account to get started.</p>
+            <div className="text-center space-y-1.5">
+              <h1 className="text-2xl font-bold text-foreground tracking-tight">Create your account</h1>
+              <p className="text-muted-foreground text-sm">
+                Join the TN Universities network
+              </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              {/* Full Name */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-wider text-slate-500">
-                  Full name
-                </Label>
+                <Label htmlFor="name" className="text-xs font-semibold text-foreground">Full name</Label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="name"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Kwame Mensah"
-                    className="pl-10.5 h-11 bg-slate-50/50 border-slate-200/80 text-slate-950 focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-400 rounded-xl text-sm transition-colors"
+                    className="pl-10 h-11"
                   />
                 </div>
                 {errors.name && (
-                  <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
+                  <p className="text-xs text-destructive flex items-center gap-1.5">
                     <AlertCircle className="h-3 w-3" /> {errors.name}
                   </p>
                 )}
               </div>
 
-              {/* Email Address */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-wider text-slate-500">
-                  Email address
-                </Label>
+                <Label htmlFor="email" className="text-xs font-semibold text-foreground">Email address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     placeholder="you@university.edu.gh"
-                    className="pl-10.5 h-11 bg-slate-50/50 border-slate-200/80 text-slate-950 focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-400 rounded-xl text-sm transition-colors"
+                    className="pl-10 h-11"
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
+                  <p className="text-xs text-destructive flex items-center gap-1.5">
                     <AlertCircle className="h-3 w-3" /> {errors.email}
                   </p>
                 )}
               </div>
 
-              {/* Phone Number */}
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-wider text-slate-500">
-                  Phone number
-                </Label>
+                <Label htmlFor="phone" className="text-xs font-semibold text-foreground">Phone number</Label>
                 <PhoneInput
                   id="phone"
                   value={form.phone}
                   onChange={(v) => setForm({ ...form, phone: v })}
                 />
                 {errors.phone && (
-                  <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
+                  <p className="text-xs text-destructive flex items-center gap-1.5">
                     <AlertCircle className="h-3 w-3" /> {errors.phone}
                   </p>
                 )}
               </div>
 
-              {/* Password */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-wider text-slate-500">
-                  Password
-                </Label>
+                <Label htmlFor="password" className="text-xs font-semibold text-foreground">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    placeholder="••••••••"
-                    className="pl-10.5 pr-10.5 h-11 bg-slate-50/50 border-slate-200/80 text-slate-950 focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 placeholder:text-slate-400 rounded-xl text-sm transition-colors"
+                    placeholder="At least 8 characters"
+                    className="pl-10 pr-10 h-11"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-[10px] text-ghana-red font-bold mt-1 flex items-center gap-1.5 animate-pulse">
+                  <p className="text-xs text-destructive flex items-center gap-1.5">
                     <AlertCircle className="h-3 w-3" /> {errors.password}
                   </p>
                 )}
               </div>
 
-              {/* Submit Button */}
-              <Button type="submit" disabled={loading} className="w-full h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black tracking-wider uppercase text-xs rounded-xl transition-all shadow-[0_4px_15px_rgba(212,160,23,0.18)] hover:shadow-[0_4px_20px_rgba(212,160,23,0.3)] hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+              >
                 {loading ? (
                   <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
@@ -293,21 +251,20 @@ export default function Register() {
               </Button>
             </form>
 
-            {/* Social Logins */}
             {CLIENT_ID && (
               <>
-                <div className="relative py-2 mt-2">
+                <div className="relative py-1">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-slate-100" />
+                    <span className="w-full border-t border-border" />
                   </div>
-                  <div className="relative flex justify-center text-[9px] uppercase tracking-[0.25em] font-black">
-                    <span className="bg-white px-4 text-slate-400">or sign up with</span>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-card px-3 text-muted-foreground">or sign up with</span>
                   </div>
                 </div>
 
-                <div className="flex justify-center pt-1">
+                <div className="flex justify-center">
                   {googleLoading ? (
-                    <Button disabled variant="outline" className="w-full h-11 bg-slate-50 border-slate-200 text-slate-400 font-bold text-xs rounded-xl">
+                    <Button disabled variant="outline" className="w-full h-11">
                       <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -333,28 +290,20 @@ export default function Register() {
               </>
             )}
 
-            {/* Sign In Callout */}
-            <div className="text-center mt-6 pt-5 border-t border-slate-100">
-              <p className="text-xs text-slate-500 font-medium">
+            <div className="text-center pt-4 border-t border-border">
+              <p className="text-sm text-muted-foreground">
                 Already have an account?{" "}
-                <Link
-                  to="/login"
-                  className="font-black text-primary hover:text-primary/80 underline underline-offset-4 decoration-2 decoration-primary/20 hover:decoration-primary/60 transition-all ml-1"
-                >
-                  Sign in here →
+                <Link to="/login" className="font-semibold text-primary hover:underline">
+                  Sign in
                 </Link>
               </p>
             </div>
           </div>
         </div>
 
-        {/* Back to Home Link */}
-        <div className="text-center pt-2">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors duration-300 font-bold uppercase tracking-wider"
-          >
-            <span>← Back to home</span>
+        <div className="text-center">
+          <Link to="/" className="text-xs text-muted-foreground hover:text-foreground font-medium">
+            ← Back to home
           </Link>
         </div>
       </div>
