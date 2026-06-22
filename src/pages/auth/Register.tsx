@@ -49,7 +49,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await register({
+      const newUser = await register({
         name: form.name,
         email: form.email,
         password: form.password,
@@ -66,6 +66,15 @@ export default function Register() {
         status: "Active Student",
         church: "",
         niche: "",
+      });
+
+      createNotification({
+        recipient_role: "admin",
+        type: "user.register",
+        title: "🎉 New account created",
+        body: `${form.name} (${form.email}) just created a TN Connect account.`,
+        link: "/admin/students",
+        metadata: { userId: newUser?.id, email: form.email, phone: form.phone },
       });
 
       setDone(true);
@@ -94,6 +103,14 @@ export default function Register() {
         toast.error("Access Denied: Administrators must sign in using the Admin Login page.");
         return;
       }
+      createNotification({
+        recipient_role: "admin",
+        type: "user.register",
+        title: "🎉 New Google sign-up / sign-in",
+        body: `${user.name || user.email} just joined via Google.`,
+        link: "/admin/students",
+        metadata: { userId: user.id, email: user.email, provider: "google" },
+      });
       toast.success(`Welcome${user.name ? `, ${user.name}` : " aboard"}!`);
       navigate("/dashboard");
     } catch (e) {
