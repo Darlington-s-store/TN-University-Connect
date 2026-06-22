@@ -100,7 +100,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
+    <AuthVideoBackground>
       <div className="w-full max-w-md space-y-6">
         {/* Logo centered */}
         <div className="flex justify-center">
@@ -261,12 +261,12 @@ export default function Login() {
         <div className="text-center">
           <Link
             to="/"
-            className="text-xs text-muted-foreground hover:text-foreground font-medium"
+            className="text-xs text-white/80 hover:text-white font-medium"
           >
             ← Back to home
           </Link>
         </div>
       </div>
-    </div>
+    </AuthVideoBackground>
   );
 }
