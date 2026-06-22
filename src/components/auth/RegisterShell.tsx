@@ -19,22 +19,26 @@ export default function RegisterShell({
     <div className="min-h-screen grid lg:grid-cols-[45%_55%] bg-slate-50">
       {styleBlock}
 
-      {/* Left panel: Premium Ghanaian Cultural/Brand Panel */}
-      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-gradient-to-br from-[#f4fbf7] via-[#eaf7ee] to-[#d9eed7] border-r border-slate-200/60">
+      {/* Left panel: Premium Ghanaian Cultural/Brand Panel (Logo Tricolor Gradient) */}
+      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-gradient-to-br from-[#fff5f5] via-[#fffdf0] to-[#f0faf4] border-r border-slate-200/80">
         {/* Woven Kente style decorative lines */}
         <div className="absolute inset-0 z-0 opacity-15">
           <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_8px,rgba(212,160,23,0.06)_8px,rgba(212,160,23,0.06)_10px,transparent_10px,transparent_18px,rgba(207,16,32,0.05)_18px,rgba(207,16,32,0.05)_20px)]" />
           <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_16px,rgba(15,23,42,0.01)_16px,rgba(15,23,42,0.01)_17px)]" />
         </div>
 
-        {/* Pulsating glow orbs */}
+        {/* Pulsating glow orbs in Logo colors */}
         <div
-          className="absolute -top-40 -right-40 w-[450px] h-[450px] rounded-full bg-ghana-gold/10 blur-[120px]"
+          className="absolute -top-40 -right-40 w-[450px] h-[450px] rounded-full bg-ghana-gold/12 blur-[120px]"
           style={{ animation: "orb-drift 22s infinite ease-in-out" }}
         />
         <div
-          className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-ghana-green/8 blur-[120px]"
+          className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-ghana-red/8 blur-[120px]"
           style={{ animation: "orb-drift 28s infinite ease-in-out reverse" }}
+        />
+        <div
+          className="absolute top-1/2 left-1/4 w-[350px] h-[350px] rounded-full bg-ghana-green/6 blur-[100px]"
+          style={{ animation: "orb-drift 30s infinite ease-in-out" }}
         />
 
         {/* Top brand border */}

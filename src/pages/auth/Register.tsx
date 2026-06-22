@@ -1,60 +1,33 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import {
-  UserPlus,
-  CheckCircle2,
-  ArrowRight,
-  ArrowLeft,
-  Mail,
-  Eye,
-  EyeOff,
-  User,
-  Lock,
-  AlertCircle,
-} from "lucide-react";
+import { UserPlus, CheckCircle2, Mail, Eye, EyeOff, User, Lock, AlertCircle } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
 import RegisterShell from "@/components/auth/RegisterShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
-import { motion, AnimatePresence } from "framer-motion";
-import { sendVerificationCode, verifyCode } from "@/lib/verification";
+import { decodeGoogleCredential, CLIENT_ID, isMockClientId } from "@/lib/google-utils";
+import { MockGoogleButton } from "@/lib/google";
 import { PhoneInput } from "@/components/PhoneInput";
 
-// Validation schema for registering user
 const registerSchema = z.object({
   name: z.string().trim().min(2, "Full name is required").max(100),
   email: z.string().trim().email("Enter a valid email").max(255),
   phone: z.string().trim().min(9, "Enter a valid phone number"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .refine((val) => /[A-Z]/.test(val), {
-      message: "Password must contain at least one uppercase letter",
-    })
-    .refine((val) => /[a-z]/.test(val), {
-      message: "Password must contain at least one lowercase letter",
-    })
-    .refine((val) => /[0-9]/.test(val), {
-      message: "Password must contain at least one number",
-    })
-    .refine((val) => /[^A-Za-z0-9]/.test(val), {
-      message: "Password must contain at least one special character",
-    }),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export default function Register() {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, googleLogin, logout } = useAuth();
 
-  // Wizard state: Step 1 (Sign Up Form), Step 2 (Verify profile code)
-  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [done, setDone] = useState(false);
 
-  // Form fields
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -63,48 +36,9 @@ export default function Register() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [verificationCode, setVerificationCode] = useState("");
-  const [verificationLoading, setVerificationLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
-  // Password checklist evaluation
-  const passChecks = useMemo(() => {
-    const pw = form.password;
-    return {
-      length: pw.length >= 8,
-      hasNumber: /[0-9]/.test(pw),
-      hasUpper: /[A-Z]/.test(pw),
-      hasLower: /[a-z]/.test(pw),
-      hasSpecial: /[^A-Za-z0-9]/.test(pw),
-    };
-  }, [form.password]);
-
-  // Score count out of 5
-  const strengthScore = useMemo(() => {
-    let score = 0;
-    if (passChecks.length) score++;
-    if (passChecks.hasNumber) score++;
-    if (passChecks.hasUpper) score++;
-    if (passChecks.hasLower) score++;
-    if (passChecks.hasSpecial) score++;
-    return score;
-  }, [passChecks]);
-
-  const strengthLabel =
-    ["Too weak", "Weak", "Fair", "Good", "Strong"][Math.max(0, strengthScore - 1)] || "Too weak";
-
-  const strengthColor = [
-    "bg-destructive",
-    "bg-destructive",
-    "bg-destructive",
-    "bg-ghana-gold",
-    "bg-primary",
-    "bg-primary",
-  ][strengthScore];
-
-  // Submit Step 1: Send Verification Code
-  const handleCreateAccount = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
 
@@ -117,35 +51,8 @@ export default function Register() {
       return;
     }
 
-    setVerificationLoading(true);
-    try {
-      await sendVerificationCode(form.email, form.phone);
-      setStep(2);
-      toast.success("Verification code sent to your email!");
-    } catch (err: unknown) {
-      const e = err as Error;
-      toast.error(e.message || "Failed to send verification code. Try again.");
-    } finally {
-      setVerificationLoading(false);
-    }
-  };
-
-  // Submit Step 2: Verify Code and complete registration
-  const submitRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!verificationCode.trim()) {
-      return toast.error("Verification code is required");
-    }
-
     setLoading(true);
     try {
-      const isValid = await verifyCode(verificationCode);
-      if (!isValid) {
-        toast.error("Invalid or expired verification code");
-        setLoading(false);
-        return;
-      }
-
       await register({
         name: form.name,
         email: form.email,
@@ -166,7 +73,7 @@ export default function Register() {
       });
 
       setDone(true);
-      toast.success("Verification successful! Account created.");
+      toast.success("Account created successfully!");
       setTimeout(() => navigate("/dashboard"), 1500);
     } catch (err: unknown) {
       const e = err as Error;
@@ -176,24 +83,35 @@ export default function Register() {
     }
   };
 
-  const resendCode = async () => {
-    setVerificationLoading(true);
+  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+    if (!credentialResponse.credential) return;
+    const profile = decodeGoogleCredential(credentialResponse.credential);
+    if (!profile) {
+      toast.error("Failed to verify Google credentials");
+      return;
+    }
+    setGoogleLoading(true);
     try {
-      await sendVerificationCode(form.email, form.phone);
-      toast.success("New verification code sent!");
-    } catch (err) {
-      const e = err as Error;
-      toast.error(e.message || "Resend failed.");
+      const user = await googleLogin(profile);
+      if (user.role === "admin") {
+        logout();
+        toast.error("Access Denied: Administrators must sign in using the Admin Login page.");
+        return;
+      }
+      toast.success(`Welcome${user.name ? `, ${user.name}` : " aboard"}!`);
+      navigate("/dashboard");
+    } catch (e) {
+      const error = e as Error;
+      toast.error(error.message || "Google sign-up failed");
     } finally {
-      setVerificationLoading(false);
+      setGoogleLoading(false);
     }
   };
 
-  // Success view
   if (done) {
     return (
       <RegisterShell title="Welcome aboard!" subtitle="Your account has been created successfully.">
-        <div className="bg-card border shadow-sm rounded-xl overflow-hidden relative">
+        <div className="bg-card border shadow-sm rounded-xl overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
           <div className="p-6 sm:p-8 text-center">
             <div className="h-20 w-20 rounded-full bg-primary/10 border border-primary/20 grid place-items-center mx-auto mb-6">
@@ -202,14 +120,10 @@ export default function Register() {
             <div className="space-y-2">
               <h2 className="text-2xl font-bold text-foreground tracking-tight">You're all set!</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Your account has been successfully created. We are setting up your student
-                dashboard.
+                Your account has been created. Redirecting to your dashboard...
               </p>
             </div>
-            <p className="text-xs text-primary animate-pulse my-5 font-medium">
-              Redirecting to your dashboard...
-            </p>
-            <Button asChild className="w-full h-11">
+            <Button asChild className="w-full mt-6">
               <Link to="/dashboard">Go to Dashboard</Link>
             </Button>
           </div>
@@ -218,310 +132,179 @@ export default function Register() {
     );
   }
 
-  // Active form view
   return (
-    <RegisterShell
-      title="Join the Network"
-      subtitle="Create your account to connect with Ghana's universities, alumni, and student community."
-      step={step}
-      totalSteps={2}
-    >
-      <div className="bg-card border shadow-sm rounded-xl overflow-hidden relative">
+    <RegisterShell title="Join the Network" subtitle="Create your account to get started.">
+      <div className="bg-card border shadow-sm rounded-xl overflow-hidden">
         <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
-        <div className="p-6 sm:p-8">
-          <div className="relative overflow-hidden min-h-[420px]">
-            <AnimatePresence mode="wait">
-              {step === 1 && (
-                <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.25 }}
-                  className="space-y-4"
-                >
-                  <form onSubmit={handleCreateAccount} className="space-y-4" noValidate>
-                    {/* Full Name */}
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full name</Label>
-                      <div className="relative">
-                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="name"
-                          value={form.name}
-                          onChange={(e) => setForm({ ...form, name: e.target.value })}
-                          placeholder="Kwame Mensah"
-                          className="pl-10"
-                        />
-                      </div>
-                      {errors.name && (
-                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                          <AlertCircle className="h-3 w-3" /> {errors.name}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Email */}
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email address</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="email"
-                          type="email"
-                          value={form.email}
-                          onChange={(e) => setForm({ ...form, email: e.target.value })}
-                          placeholder="you@university.edu.gh"
-                          className="pl-10"
-                        />
-                      </div>
-                      {errors.email && (
-                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                          <AlertCircle className="h-3 w-3" /> {errors.email}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Phone Number */}
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone number</Label>
-                      <PhoneInput
-                        id="phone"
-                        value={form.phone}
-                        onChange={(v) => setForm({ ...form, phone: v })}
-                      />
-                      {errors.phone && (
-                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                          <AlertCircle className="h-3 w-3" /> {errors.phone}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Password */}
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="password"
-                          type={showPassword ? "text" : "password"}
-                          value={form.password}
-                          onChange={(e) => setForm({ ...form, password: e.target.value })}
-                          onFocus={() => setIsPasswordFocused(true)}
-                          placeholder="••••••••"
-                          className="pl-10 pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                      {errors.password && (
-                        <p className="text-[10px] text-destructive font-medium mt-1 flex items-center gap-1">
-                          <AlertCircle className="h-3 w-3" /> {errors.password}
-                        </p>
-                      )}
-
-                      {/* Password strength checklist */}
-                      {(form.password || isPasswordFocused) && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          className="mt-3 space-y-3 border-t pt-3 overflow-hidden"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex gap-1 flex-1 max-w-[150px]">
-                              {[1, 2, 3, 4, 5].map((i) => (
-                                <div
-                                  key={i}
-                                  className={`h-1 flex-1 rounded ${i <= strengthScore ? strengthColor : "bg-muted"}`}
-                                />
-                              ))}
-                            </div>
-                            <span className="text-[9px] font-semibold text-muted-foreground tracking-wide uppercase">
-                              {strengthLabel}
-                            </span>
-                          </div>
-
-                          <div className="flex flex-wrap gap-1.5">
-                            {[
-                              { label: "8+ chars", met: passChecks.length },
-                              { label: "1 Number", met: passChecks.hasNumber },
-                              { label: "Uppercase", met: passChecks.hasUpper },
-                              { label: "Lowercase", met: passChecks.hasLower },
-                              { label: "Special char", met: passChecks.hasSpecial },
-                            ].map((check) => (
-                              <span
-                                key={check.label}
-                                className={`inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full border transition-all duration-300 ${
-                                  check.met
-                                    ? "border-primary/30 text-primary bg-primary/5"
-                                    : "border-border text-muted-foreground bg-muted/50 border-dashed"
-                                }`}
-                              >
-                                <CheckCircle2
-                                  className={`h-2.5 w-2.5 ${check.met ? "text-primary" : "text-muted-foreground/50"}`}
-                                />
-                                {check.label}
-                              </span>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </div>
-
-                    {/* Step submit button */}
-                    <Button
-                      type="submit"
-                      disabled={verificationLoading}
-                      className="w-full mt-6 h-11"
-                    >
-                      {verificationLoading ? (
-                        <span className="flex items-center gap-2">
-                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                            />
-                          </svg>
-                          Sending OTP...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center gap-1.5">
-                          Create Account <ArrowRight className="h-4 w-4" />
-                        </span>
-                      )}
-                    </Button>
-                  </form>
-                </motion.div>
+        <div className="p-6 sm:p-8 space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <div className="space-y-2">
+              <Label htmlFor="name">Full name</Label>
+              <div className="relative">
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="Your full name"
+                  className="pl-10"
+                />
+              </div>
+              {errors.name && (
+                <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" /> {errors.name}
+                </p>
               )}
+            </div>
 
-              {step === 2 && (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.25 }}
-                  className="space-y-5"
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="you@university.edu.gh"
+                  className="pl-10"
+                />
+              </div>
+              {errors.email && (
+                <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" /> {errors.email}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone number</Label>
+              <PhoneInput
+                id="phone"
+                value={form.phone}
+                onChange={(v) => setForm({ ...form, phone: v })}
+              />
+              {errors.phone && (
+                <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" /> {errors.phone}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  placeholder="Min. 8 characters"
+                  className="pl-10 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >
-                  <div className="p-4.5 bg-slate-50 border border-slate-200/80 rounded-2xl flex flex-col items-center text-center">
-                    <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                      <Mail className="h-4.5 w-4.5 text-ghana-gold" />
-                    </div>
-                    <h4 className="font-black text-slate-900 text-sm">Security Code Sent!</h4>
-                    <p className="text-[11px] text-slate-500 mt-1 max-w-sm leading-relaxed">
-                      We have dispatched a 6-digit confirmation key to <strong>{form.email}</strong>
-                      .
-                    </p>
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" /> {errors.password}
+                </p>
+              )}
+            </div>
+
+            <Button type="submit" disabled={loading} className="w-full h-11">
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  Creating account...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <UserPlus className="h-4 w-4" /> Create Account
+                </span>
+              )}
+            </Button>
+          </form>
+
+          {CLIENT_ID && (
+            <>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs text-muted-foreground">
+                  <span className="bg-card px-3">or sign up with</span>
+                </div>
+              </div>
+
+              <div className="flex justify-center">
+                {googleLoading ? (
+                  <Button disabled variant="outline" className="w-full h-11">
+                    <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
+                    </svg>
+                    Connecting Google...
+                  </Button>
+                ) : isMockClientId(CLIENT_ID) ? (
+                  <MockGoogleButton
+                    onClick={() => handleGoogleSuccess({ credential: "mock-credential" })}
+                  />
+                ) : (
+                  <div className="w-full [&>div]:!w-full [&_iframe]:!w-full">
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={() => toast.error("Google sign-up failed")}
+                      theme="outline"
+                      size="large"
+                      text="signup_with"
+                      shape="rectangular"
+                      width="100%"
+                    />
                   </div>
+                )}
+              </div>
+            </>
+          )}
 
-                  <form onSubmit={submitRegister} className="space-y-5">
-                    <div className="space-y-3.5 text-center">
-                      <Label
-                        htmlFor="verificationCode"
-                        className="text-[10px] font-black uppercase tracking-wider text-slate-500 block"
-                      >
-                        Enter 6-Digit Code
-                      </Label>
-                      <Input
-                        id="verificationCode"
-                        value={verificationCode}
-                        onChange={(e) =>
-                          setVerificationCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))
-                        }
-                        placeholder="000000"
-                        className="text-center text-2xl font-bold tracking-[0.4em] h-12 bg-slate-50/50 border-slate-200/80 text-slate-950 focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 max-w-xs mx-auto rounded-xl"
-                        maxLength={6}
-                      />
-                    </div>
-
-                    <div className="flex justify-center text-xs text-slate-500 font-medium">
-                      Didn't receive the code?&nbsp;
-                      <button
-                        type="button"
-                        onClick={resendCode}
-                        className="text-primary hover:text-primary/80 hover:underline font-bold transition-colors cursor-pointer"
-                        disabled={verificationLoading}
-                      >
-                        Resend Code
-                      </button>
-                    </div>
-
-                    <div className="flex gap-3 mt-6 border-t border-slate-100 pt-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setStep(1)}
-                        className="flex-1 h-11 bg-transparent border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold rounded-xl"
-                        disabled={loading}
-                      >
-                        <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={loading}
-                        className="flex-[2] h-11 bg-ghana-gold hover:bg-ghana-gold/90 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_20px_rgba(212,160,23,0.15)]"
-                      >
-                        {loading ? (
-                          <span className="flex items-center gap-2">
-                            <svg
-                              className="animate-spin h-4 w-4 text-slate-950"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              />
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                              />
-                            </svg>
-                            Creating...
-                          </span>
-                        ) : (
-                          <span className="flex items-center justify-center gap-1.5">
-                            <UserPlus className="h-4 w-4" /> Confirm & Sign Up
-                          </span>
-                        )}
-                      </Button>
-                    </div>
-                  </form>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Sign In Callout */}
-          <div className="text-center mt-6 pt-5 border-t border-slate-100">
-            <p className="text-xs text-slate-500 font-medium">
+          <div className="text-center pt-2">
+            <p className="text-xs text-muted-foreground">
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="font-black text-primary hover:text-primary/80 underline underline-offset-4 decoration-2 decoration-primary/20 hover:decoration-primary/60 transition-all ml-1"
+                className="font-semibold text-primary hover:text-primary/80 underline underline-offset-4 ml-1"
               >
                 Sign in here →
               </Link>
