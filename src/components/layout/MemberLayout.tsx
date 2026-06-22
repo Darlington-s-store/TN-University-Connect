@@ -76,72 +76,17 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 export default function MemberLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Notification states
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [readIds, setReadIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    // Load announcements
-    async function loadAnnouncements() {
-      try {
-        const data = await getAnnouncements();
-        setAnnouncements(data.filter((a) => a.published));
-      } catch (err) {
-        console.error("Failed to load announcements in MemberLayout:", err);
-      }
-    }
-    loadAnnouncements();
-
-    // Load read announcements
-    async function loadReadAnnouncements() {
-      if (user) {
-        try {
-          const ids = await getReadAnnouncements();
-          setReadIds(ids);
-        } catch (err) {
-          console.error("Failed to load read announcements in MemberLayout:", err);
-          const stored = localStorage.getItem("tnu_read_announcements");
-          if (stored) setReadIds(JSON.parse(stored));
-        }
-      } else {
-        const stored = localStorage.getItem("tnu_read_announcements");
-        if (stored) {
-          setReadIds(JSON.parse(stored));
-        }
-      }
-    }
-    loadReadAnnouncements();
-  }, [location.pathname, user]);
-
-  const unreadAnnouncements = announcements.filter((a) => !readIds.includes(a.id));
-  const unreadCount = unreadAnnouncements.length;
-
-  const markAsRead = async (id: string) => {
-    const next = [...readIds, id];
-    setReadIds(next);
-    if (user) {
-      try {
-        await markAnnouncementAsRead(id);
-      } catch (err) {
-        console.error("Failed to mark announcement as read on backend:", err);
-        localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
-      }
-    } else {
-      localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
-    }
-    navigate(`/announcements/${id}`);
-  };
-
   const getPageTitle = () => {
-    const item = items.find((i) => i.to === location.pathname);
+    const path = typeof window !== "undefined" ? window.location.pathname : "";
+    const item = items.find((i) => i.to === path);
     if (item) return item.label;
-    if (location.pathname === "/profile") return "Profile";
-    if (location.pathname === "/student-info") return "Student Info";
+    if (path === "/profile") return "Profile";
+    if (path === "/student-info") return "Student Info";
     return "Dashboard";
   };
+
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
