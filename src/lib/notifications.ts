@@ -42,7 +42,7 @@ export async function createNotification(input: {
       title: input.title,
       body: input.body ?? null,
       link: input.link ?? null,
-      metadata: input.metadata ?? {},
+      metadata: (input.metadata ?? {}) as never,
     });
   } catch (err) {
     console.warn("[notifications] insert failed:", err);
