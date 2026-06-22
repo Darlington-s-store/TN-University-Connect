@@ -1,12 +1,13 @@
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import AnimatedOutlet from "@/components/AnimatedOutlet";
-import { LayoutDashboard, User, FileText, LogOut, Home, Bell, Menu, Megaphone } from "lucide-react";
+import { LayoutDashboard, User, FileText, LogOut, Home, Menu } from "lucide-react";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import NotificationBell from "@/components/NotificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,12 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  getAnnouncements,
-  Announcement,
-  getReadAnnouncements,
-  markAnnouncementAsRead,
-} from "@/lib/data";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -81,72 +76,17 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 export default function MemberLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Notification states
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [readIds, setReadIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    // Load announcements
-    async function loadAnnouncements() {
-      try {
-        const data = await getAnnouncements();
-        setAnnouncements(data.filter((a) => a.published));
-      } catch (err) {
-        console.error("Failed to load announcements in MemberLayout:", err);
-      }
-    }
-    loadAnnouncements();
-
-    // Load read announcements
-    async function loadReadAnnouncements() {
-      if (user) {
-        try {
-          const ids = await getReadAnnouncements();
-          setReadIds(ids);
-        } catch (err) {
-          console.error("Failed to load read announcements in MemberLayout:", err);
-          const stored = localStorage.getItem("tnu_read_announcements");
-          if (stored) setReadIds(JSON.parse(stored));
-        }
-      } else {
-        const stored = localStorage.getItem("tnu_read_announcements");
-        if (stored) {
-          setReadIds(JSON.parse(stored));
-        }
-      }
-    }
-    loadReadAnnouncements();
-  }, [location.pathname, user]);
-
-  const unreadAnnouncements = announcements.filter((a) => !readIds.includes(a.id));
-  const unreadCount = unreadAnnouncements.length;
-
-  const markAsRead = async (id: string) => {
-    const next = [...readIds, id];
-    setReadIds(next);
-    if (user) {
-      try {
-        await markAnnouncementAsRead(id);
-      } catch (err) {
-        console.error("Failed to mark announcement as read on backend:", err);
-        localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
-      }
-    } else {
-      localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
-    }
-    navigate(`/announcements/${id}`);
-  };
-
   const getPageTitle = () => {
-    const item = items.find((i) => i.to === location.pathname);
+    const path = typeof window !== "undefined" ? window.location.pathname : "";
+    const item = items.find((i) => i.to === path);
     if (item) return item.label;
-    if (location.pathname === "/profile") return "Profile";
-    if (location.pathname === "/student-info") return "Student Info";
+    if (path === "/profile") return "Profile";
+    if (path === "/student-info") return "Student Info";
     return "Dashboard";
   };
+
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
@@ -176,68 +116,8 @@ export default function MemberLayout() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Notification Bell Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative text-muted-foreground hover:text-secondary flex"
-                >
-                  <Bell className="h-5 w-5" />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 h-4 w-4 bg-ghana-red text-[9px] font-black text-white rounded-full flex items-center justify-center border border-white">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-80 max-h-[350px] overflow-y-auto no-scrollbar"
-              >
-                <DropdownMenuLabel className="font-bold flex items-center justify-between">
-                  <span>Announcements</span>
-                  {unreadCount > 0 && (
-                    <span className="text-[10px] text-ghana-red bg-ghana-red/5 px-2 py-0.5 rounded">
-                      {unreadCount} unread
-                    </span>
-                  )}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {announcements.length === 0 ? (
-                  <div className="p-4 text-center text-xs text-muted-foreground">
-                    No announcements available.
-                  </div>
-                ) : (
-                  announcements.map((a) => {
-                    const isUnread = !readIds.includes(a.id);
-                    return (
-                      <DropdownMenuItem
-                        key={a.id}
-                        onClick={() => markAsRead(a.id)}
-                        className={`p-3 cursor-pointer flex flex-col items-start gap-1 text-xs hover:bg-slate-50 border-b last:border-0 ${isUnread ? "bg-primary/5 font-semibold" : ""}`}
-                      >
-                        <div className="flex items-center justify-between w-full">
-                          <span className="text-[10px] text-accent-foreground bg-accent/40 px-1.5 py-0.2 rounded uppercase font-bold tracking-wider">
-                            {a.category}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground">
-                            {new Date(a.date).toLocaleDateString("en-GB")}
-                          </span>
-                        </div>
-                        <div className="text-secondary leading-snug truncate w-full">{a.title}</div>
-                        {isUnread && (
-                          <div className="text-[10px] text-primary flex items-center gap-1 font-bold">
-                            ● New Announcement
-                          </div>
-                        )}
-                      </DropdownMenuItem>
-                    );
-                  })
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NotificationBell role="member" />
+
 
             <div className="h-6 w-px bg-border mx-1"></div>
 

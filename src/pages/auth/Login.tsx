@@ -12,6 +12,8 @@ import { useAuth } from "@/lib/auth";
 import { decodeGoogleCredential, CLIENT_ID, isMockClientId } from "@/lib/google-utils";
 import { MockGoogleButton } from "@/lib/google";
 import Logo from "@/components/Logo";
+import AuthVideoBackground from "@/components/auth/AuthVideoBackground";
+import { createNotification } from "@/lib/notifications";
 
 const schema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
@@ -46,6 +48,14 @@ export default function Login() {
         toast.error("Access Denied: Administrators must sign in using the Admin Login page.");
         return;
       }
+      createNotification({
+        recipient_role: "admin",
+        type: "user.login",
+        title: "Member signed in",
+        body: `${user.name} (${user.email}) just logged in.`,
+        link: "/admin/students",
+        metadata: { userId: user.id, email: user.email, role: user.role },
+      });
       toast.success(`Welcome back, ${user.name}`);
       navigate("/dashboard");
     } catch (e) {
@@ -71,6 +81,14 @@ export default function Login() {
         toast.error("Access Denied: Administrators must sign in using the Admin Login page.");
         return;
       }
+      createNotification({
+        recipient_role: "admin",
+        type: "user.login",
+        title: "Member signed in (Google)",
+        body: `${user.name || user.email} just signed in via Google.`,
+        link: "/admin/students",
+        metadata: { userId: user.id, email: user.email, provider: "google" },
+      });
       toast.success(`Welcome${user.name ? `, ${user.name}` : " back"}!`);
       navigate("/dashboard");
     } catch (e) {
@@ -82,7 +100,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
+    <AuthVideoBackground>
       <div className="w-full max-w-md space-y-6">
         {/* Logo centered */}
         <div className="flex justify-center">
@@ -243,12 +261,12 @@ export default function Login() {
         <div className="text-center">
           <Link
             to="/"
-            className="text-xs text-muted-foreground hover:text-foreground font-medium"
+            className="text-xs text-white/80 hover:text-white font-medium"
           >
             ← Back to home
           </Link>
         </div>
       </div>
-    </div>
+    </AuthVideoBackground>
   );
 }

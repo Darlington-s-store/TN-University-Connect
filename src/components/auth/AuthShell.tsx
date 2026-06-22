@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import Logo from "@/components/Logo";
+import heroVideo from "@/assets/hero-video.mp4.asset.json";
+import heroBg from "@/assets/hero-bg.jpg";
 
 export default function AuthShell({
   title,
@@ -14,91 +16,45 @@ export default function AuthShell({
   footer?: ReactNode;
 }) {
   return (
-    <div className="min-h-screen grid lg:grid-cols-[45%_55%] bg-slate-50">
-      {styleBlock}
+    <div className="relative min-h-screen w-full overflow-hidden">
+      {/* Video background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster={heroBg}
+        className="absolute inset-0 h-full w-full object-cover"
+      >
+        <source src={heroVideo.url} type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-gradient-to-br from-secondary/85 via-secondary/75 to-slate-950/90" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,107,63,0.25),transparent_60%),radial-gradient(circle_at_80%_80%,rgba(252,209,22,0.18),transparent_55%)]" />
+      <div className="absolute top-0 left-0 right-0 h-1 flag-stripe z-10" />
 
-      {/* Left panel: Premium Brand Splash */}
-      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-gradient-to-br from-[#fffdf9] via-[#fbf8ee] to-[#f1ebd9] border-r border-slate-200/60">
-        {/* Animated ambient glow orbs */}
-        <div
-          className="absolute -top-40 -right-40 w-[450px] h-[450px] rounded-full bg-ghana-gold/15 blur-[120px]"
-          style={{ animation: "orb-drift 20s infinite ease-in-out" }}
-        />
-        <div
-          className="absolute -bottom-40 -left-40 w-[450px] h-[450px] rounded-full bg-ghana-red/8 blur-[120px]"
-          style={{ animation: "orb-drift 25s infinite ease-in-out reverse" }}
-        />
-
-        {/* Minimal Dot Matrix overlay */}
-        <div className="absolute inset-0 z-0 opacity-[0.03] bg-[radial-gradient(#0f172a_1px,transparent_1px)] [background-size:20px_20px]" />
-
-        {/* Top Ghana gradient bar */}
-        <div className="absolute top-0 inset-x-0 h-1 z-10 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
-
-        {/* Logo */}
-        <div className="relative z-10">
-          <Logo />
-        </div>
-
-        {/* Text Showcase */}
-        <div className="relative z-10 space-y-6 my-auto">
-          <h2 className="text-4xl xl:text-5xl font-black leading-[1.15] text-transparent bg-clip-text bg-gradient-to-br from-slate-950 via-slate-900 to-slate-700">
-            Guide.
-            <br />
-            Work.
-            <br />
-            Inspire.
-          </h2>
-          <p className="text-slate-650 text-sm leading-relaxed max-w-sm font-semibold">
-            Join a nationwide community of students, academic leaders, and distinguished alumni
-            shaping the future of Ghana.
-          </p>
-
-          {/* Minimal glowing kente accent */}
-          <div className="flex gap-2 pt-2">
-            <span className="h-1 w-8 rounded-full bg-ghana-red shadow-[0_2px_6px_rgba(207,16,32,0.18)] animate-pulse" />
-            <span className="h-1 w-8 rounded-full bg-ghana-gold shadow-[0_2px_6px_rgba(212,160,23,0.18)] animate-pulse [animation-delay:0.2s]" />
-            <span className="h-1 w-8 rounded-full bg-ghana-green shadow-[0_2px_6px_rgba(13,92,44,0.18)] animate-pulse [animation-delay:0.4s]" />
-          </div>
-        </div>
-
-        {/* Footer info */}
-        <div className="relative z-10 text-xs text-slate-400 font-bold">
-          © {new Date().getFullYear()} TN Universities Connect. All rights reserved.
-        </div>
-      </div>
-
-      {/* Right panel: Modern Form Section */}
-      <div className="flex flex-col justify-center px-6 py-12 sm:px-16 lg:px-20 bg-gradient-to-tr from-[#f8fafc] via-slate-50 to-[#f1f5f9] relative overflow-hidden">
-        {/* Mobile Header */}
-        <div className="lg:hidden mb-8 flex items-center justify-between border-b border-slate-100 pb-4">
-          <Logo />
-          <div className="h-0.5 w-16 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
-        </div>
-
-        <div className="max-w-md w-full mx-auto relative z-10">
-          {/* Header */}
-          <div className="space-y-2 mb-8">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none">
-              {title}
-            </h1>
-            {subtitle && <p className="text-slate-500 text-sm leading-relaxed">{subtitle}</p>}
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md space-y-6">
+          <div className="flex justify-center">
+            <Logo variant="light" />
           </div>
 
-          {/* Render children form content */}
-          <div className="relative">{children}</div>
+          <div className="bg-card/95 backdrop-blur border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
+            <div className="p-6 sm:p-8 space-y-5">
+              <div className="text-center space-y-1.5">
+                <h1 className="text-2xl font-bold text-foreground tracking-tight">{title}</h1>
+                {subtitle && <p className="text-muted-foreground text-sm">{subtitle}</p>}
+              </div>
+              {children}
+              {footer && <div className="text-center text-sm text-muted-foreground">{footer}</div>}
+            </div>
+          </div>
 
-          {/* Bottom link info */}
-          {footer && (
-            <div className="mt-8 text-xs text-slate-500 text-center font-semibold">{footer}</div>
-          )}
-
-          <div className="mt-8 text-center">
+          <div className="text-center">
             <Link
               to="/"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors duration-300 font-bold uppercase tracking-wider"
+              className="text-xs text-white/80 hover:text-white font-medium"
             >
-              <span>← Back to home</span>
+              ← Back to home
             </Link>
           </div>
         </div>
@@ -106,17 +62,3 @@ export default function AuthShell({
     </div>
   );
 }
-
-// Inline animation styles
-const styleBlock = (
-  <style
-    dangerouslySetInnerHTML={{
-      __html: `
-    @keyframes orb-drift {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(20px, -20px) scale(1.1); }
-    }
-  `,
-    }}
-  />
-);

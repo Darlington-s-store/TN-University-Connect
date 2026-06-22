@@ -12,6 +12,8 @@ import { decodeGoogleCredential, CLIENT_ID, isMockClientId } from "@/lib/google-
 import { MockGoogleButton } from "@/lib/google";
 import { PhoneInput } from "@/components/PhoneInput";
 import Logo from "@/components/Logo";
+import AuthVideoBackground from "@/components/auth/AuthVideoBackground";
+import { createNotification } from "@/lib/notifications";
 
 const registerSchema = z.object({
   name: z.string().trim().min(2, "Full name is required").max(100),
@@ -47,7 +49,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await register({
+      const newUser = await register({
         name: form.name,
         email: form.email,
         password: form.password,
@@ -64,6 +66,15 @@ export default function Register() {
         status: "Active Student",
         church: "",
         niche: "",
+      });
+
+      createNotification({
+        recipient_role: "admin",
+        type: "user.register",
+        title: "🎉 New account created",
+        body: `${form.name} (${form.email}) just created a TN Connect account.`,
+        link: "/admin/students",
+        metadata: { userId: newUser?.id, email: form.email, phone: form.phone },
       });
 
       setDone(true);
@@ -92,6 +103,14 @@ export default function Register() {
         toast.error("Access Denied: Administrators must sign in using the Admin Login page.");
         return;
       }
+      createNotification({
+        recipient_role: "admin",
+        type: "user.register",
+        title: "🎉 New Google sign-up / sign-in",
+        body: `${user.name || user.email} just joined via Google.`,
+        link: "/admin/students",
+        metadata: { userId: user.id, email: user.email, provider: "google" },
+      });
       toast.success(`Welcome${user.name ? `, ${user.name}` : " aboard"}!`);
       navigate("/dashboard");
     } catch (e) {
@@ -104,12 +123,12 @@ export default function Register() {
 
   if (done) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+      <AuthVideoBackground>
         <div className="w-full max-w-md space-y-6">
           <div className="flex justify-center">
-            <Logo />
+            <Logo variant="light" />
           </div>
-          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-2xl">
             <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
             <div className="p-8 text-center space-y-5">
               <div className="h-16 w-16 rounded-full bg-primary/10 grid place-items-center mx-auto">
@@ -127,18 +146,18 @@ export default function Register() {
             </div>
           </div>
         </div>
-      </div>
+      </AuthVideoBackground>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
+    <AuthVideoBackground>
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center">
-          <Logo />
+          <Logo variant="light" />
         </div>
 
-        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-2xl">
           <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
           <div className="p-6 sm:p-8 space-y-5">
             <div className="text-center space-y-1.5">
@@ -302,11 +321,11 @@ export default function Register() {
         </div>
 
         <div className="text-center">
-          <Link to="/" className="text-xs text-muted-foreground hover:text-foreground font-medium">
+          <Link to="/" className="text-xs text-white/80 hover:text-white font-medium">
             ← Back to home
           </Link>
         </div>
       </div>
-    </div>
+    </AuthVideoBackground>
   );
 }

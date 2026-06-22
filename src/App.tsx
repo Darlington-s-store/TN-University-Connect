@@ -12,6 +12,8 @@ import PageTransition from "@/components/PageTransition";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { initSchools } from "@/lib/schools";
 import { getSettings } from "@/lib/data";
+import { clearLegacyNotificationStorage } from "@/lib/notifications";
+import ChatBot from "@/components/ChatBot";
 import "./App.css";
 
 import PublicLayout from "@/components/layout/PublicLayout";
@@ -57,6 +59,7 @@ function RequireAuth({ children, role }: { children: ReactElement; role?: "admin
 
 export default function App() {
   useEffect(() => {
+    clearLegacyNotificationStorage();
     async function loadSettings() {
       try {
         const settings = await getSettings();
@@ -171,6 +174,7 @@ export default function App() {
                   />
                 </Routes>
                 <Toaster richColors position="top-right" />
+                <ChatBot />
               </BrowserRouter>
             </TooltipProvider>
           </GoogleProvider>
