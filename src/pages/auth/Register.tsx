@@ -123,12 +123,12 @@ export default function Register() {
 
   if (done) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+      <AuthVideoBackground>
         <div className="w-full max-w-md space-y-6">
           <div className="flex justify-center">
-            <Logo />
+            <Logo variant="light" />
           </div>
-          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-2xl">
             <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
             <div className="p-8 text-center space-y-5">
               <div className="h-16 w-16 rounded-full bg-primary/10 grid place-items-center mx-auto">
@@ -146,18 +146,18 @@ export default function Register() {
             </div>
           </div>
         </div>
-      </div>
+      </AuthVideoBackground>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
+    <AuthVideoBackground>
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center">
-          <Logo />
+          <Logo variant="light" />
         </div>
 
-        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-2xl">
           <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
           <div className="p-6 sm:p-8 space-y-5">
             <div className="text-center space-y-1.5">
