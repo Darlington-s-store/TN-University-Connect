@@ -10,14 +10,13 @@ import {
   Settings,
   LogOut,
   Home,
-  Bell,
   Search,
   Menu,
-  X,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import NotificationBell from "@/components/NotificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,13 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState, useEffect } from "react";
-import {
-  getAnnouncements,
-  Announcement,
-  getReadAnnouncements,
-  markAnnouncementAsRead,
-} from "@/lib/data";
+import { useState } from "react";
 
 const items = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true },
@@ -110,61 +103,7 @@ export default function AdminLayout() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Notification states
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [readIds, setReadIds] = useState<string[]>([]);
 
-  useEffect(() => {
-    // Load announcements
-    async function loadAnnouncements() {
-      try {
-        const data = await getAnnouncements();
-        setAnnouncements(data.filter((a) => a.published));
-      } catch (err) {
-        console.error("Failed to load announcements in AdminLayout:", err);
-      }
-    }
-    loadAnnouncements();
-
-    // Load read announcements
-    async function loadReadAnnouncements() {
-      if (user) {
-        try {
-          const ids = await getReadAnnouncements();
-          setReadIds(ids);
-        } catch (err) {
-          console.error("Failed to load read announcements in AdminLayout:", err);
-          const stored = localStorage.getItem("tnu_read_announcements");
-          if (stored) setReadIds(JSON.parse(stored));
-        }
-      } else {
-        const stored = localStorage.getItem("tnu_read_announcements");
-        if (stored) {
-          setReadIds(JSON.parse(stored));
-        }
-      }
-    }
-    loadReadAnnouncements();
-  }, [location.pathname, user]);
-
-  const unreadAnnouncements = announcements.filter((a) => !readIds.includes(a.id));
-  const unreadCount = unreadAnnouncements.length;
-
-  const markAsRead = async (id: string) => {
-    const next = [...readIds, id];
-    setReadIds(next);
-    if (user) {
-      try {
-        await markAnnouncementAsRead(id);
-      } catch (err) {
-        console.error("Failed to mark announcement as read on backend:", err);
-        localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
-      }
-    } else {
-      localStorage.setItem("tnu_read_announcements", JSON.stringify(next));
-    }
-    navigate(`/announcements/${id}`);
-  };
 
   const getPageTitle = () => {
     const item = items.find((i) => i.to === location.pathname);
