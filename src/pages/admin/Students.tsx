@@ -98,6 +98,7 @@ interface FullStudent {
   joinedAt?: string;
   schoolType?: string;
   uniType?: string;
+  avatar?: string;
 }
 
 export default function AdminStudents() {
@@ -780,12 +781,33 @@ export default function AdminStudents() {
                     {filteredList.map((s) => (
                       <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
                         <td className="py-3 px-2">
-                          <div className="font-extrabold text-secondary leading-snug">
-                            {s.fullName}
-                          </div>
-                          <div className="text-xs text-muted-foreground">{s.email}</div>
-                          <div className="text-[10px] text-primary font-semibold mt-0.5">
-                            {s.phone}
+                          <div className="flex items-center gap-3">
+                            {s.avatar ? (
+                              <img
+                                src={s.avatar}
+                                alt={s.fullName}
+                                className="h-10 w-10 rounded-full object-cover border border-slate-200 shrink-0"
+                              />
+                            ) : (
+                              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-foreground grid place-items-center text-xs font-bold shrink-0">
+                                {s.fullName
+                                  ? s.fullName
+                                      .split(" ")
+                                      .map((p) => p[0])
+                                      .slice(0, 2)
+                                      .join("")
+                                  : "?"}
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <div className="font-extrabold text-secondary leading-snug truncate">
+                                {s.fullName}
+                              </div>
+                              <div className="text-xs text-muted-foreground truncate">{s.email}</div>
+                              <div className="text-[10px] text-primary font-semibold mt-0.5">
+                                {s.phone}
+                              </div>
+                            </div>
                           </div>
                         </td>
                         <td className="py-3 px-2">
@@ -1708,6 +1730,33 @@ export default function AdminStudents() {
 
           {viewingStudent && (
             <div className="space-y-6">
+              {/* Avatar & headline */}
+              <div className="flex items-center gap-4 p-4 bg-slate-50/70 border border-slate-100 rounded-2xl">
+                {viewingStudent.avatar ? (
+                  <img
+                    src={viewingStudent.avatar}
+                    alt={viewingStudent.fullName}
+                    className="h-20 w-20 rounded-full object-cover border-2 border-primary/30 shadow"
+                  />
+                ) : (
+                  <div className="h-20 w-20 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-foreground grid place-items-center text-2xl font-bold">
+                    {viewingStudent.fullName
+                      ?.split(" ")
+                      .map((p) => p[0])
+                      .slice(0, 2)
+                      .join("") || "?"}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="text-base font-extrabold text-secondary truncate">
+                    {viewingStudent.fullName}
+                  </div>
+                  <div className="text-xs text-muted-foreground truncate">{viewingStudent.email}</div>
+                  <div className="text-[11px] text-primary font-semibold mt-0.5">
+                    {viewingStudent.phone}
+                  </div>
+                </div>
+              </div>
               {/* Security Credentials */}
               <div className="p-4 bg-red-50/50 border border-red-100 rounded-2xl">
                 <h4 className="text-xs uppercase tracking-wider text-ghana-red font-extrabold mb-3 flex items-center gap-1.5">

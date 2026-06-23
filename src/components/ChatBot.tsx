@@ -12,6 +12,7 @@ import {
   type Announcement,
   type BlogPost,
 } from "@/lib/data";
+import { NICHES, GHANA_SCHOOLS } from "@/lib/schools";
 import { useAuth } from "@/lib/auth";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
@@ -160,11 +161,35 @@ ${blogs
 - Registration Open: ${siteSettings.allowRegistration ? "Yes" : "No"}`
       : "";
 
+    const nichesCtxText = `Service Niches offered on TN Uniconnect (students can be matched/booked for these):
+${NICHES.map((n, i) => `${i + 1}. ${n}`).join("\n")}`;
+
+    const uniCtxText = `Ghanaian Universities & Schools in the platform (sample of ${GHANA_SCHOOLS.length}):
+${GHANA_SCHOOLS.slice(0, 30)
+  .map((s) => `- ${s.name}${s.type ? ` (${s.type})` : ""}`)
+  .join("\n")}`;
+
+    const pagesCtxText = `Key pages on the site:
+- / (Home) — overview & highlights
+- /about — about TN Uniconnect
+- /announcements — latest announcements & news
+- /blog — magazine-style articles & student stories
+- /contact — get in touch with the team
+- /login & /register — student authentication
+- /member — student dashboard
+- /member/student-form — submit/update student info`;
+
     const appContextPrompt = `
 [Application Context]
 ${userCtxText}
 
 ${siteSettingsCtxText}
+
+${pagesCtxText}
+
+${nichesCtxText}
+
+${uniCtxText}
 
 ${annsCtxText}
 
