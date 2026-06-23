@@ -64,6 +64,9 @@ export type Student = {
   niche?: string;
   schoolType?: string;
   uniType?: string;
+  avatar?: string;
+  joinedAt?: string;
+  password?: string;
 };
 
 export type SiteSettings = {
