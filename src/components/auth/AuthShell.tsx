@@ -50,10 +50,7 @@ export default function AuthShell({
           </div>
 
           <div className="text-center">
-            <Link
-              to="/"
-              className="text-xs text-white/80 hover:text-white font-medium"
-            >
+            <Link to="/" className="text-xs text-white/80 hover:text-white font-medium">
               ← Back to home
             </Link>
           </div>

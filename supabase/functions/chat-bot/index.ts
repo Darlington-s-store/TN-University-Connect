@@ -1,21 +1,24 @@
 // Streaming chatbot powered by Lovable AI Gateway.
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const SYSTEM_PROMPT = `You are "TN Connect Assistant", a warm, knowledgeable AI guide for the TN Connect platform — a Ghanaian student community connecting university students across Ghana.
+declare const Deno: any;
 
-You help students with:
-- Navigating the TN Connect website (register, login, profile, student form, announcements, blog, contact)
-- Understanding the registration process and how to complete their student information
-- Ghanaian universities (UG, KNUST, UCC, UEW, UDS, GIMPA, Ashesi, Central, UPSA, HTU and others), departments, programmes, levels
-- Scholarships, academic events, campus life, and announcement updates
-- General study tips, career guidance, and answering academic questions
-- Any general questions a student might ask
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
-Tone: friendly, encouraging, concise. Use markdown when helpful (lists, bold). Keep responses focused — usually 2–6 short sentences unless the student asks for detail. If you do not know something specific about TN Connect, say so and suggest contacting support via the Contact page.
+const SYSTEM_PROMPT = `You are a real, friendly support coordinator for TN Uniconnect (a platform connecting Ghanaian university students across Ghana).
 
-Never invent personal data. Never claim to perform account actions you cannot do — guide the student to the correct page instead.`;
+CRITICAL INSTRUCTIONS:
+- Act like a real human support coordinator, NOT an AI. Never refer to yourself as an AI, bot, virtual assistant, or AI model.
+- NEVER start responses with conversational AI filler/boilerplates (like "Certainly!", "I'd be glad to help...", "Here is what you need...", "As an AI..."). Answer the question directly and immediately.
+- NEVER end responses with robotic sign-offs (like "I hope this helps!", "Let me know if you need anything else!", "How else can I assist you today?"). Just end naturally.
+- Keep responses extremely short, concise, and direct (usually 1 to 3 short sentences).
+- Speak with a warm, polite, and authentic Ghanaian tone. You can naturally use polite phrases like "Please" or short, friendly terms like "Chale" (friend) or "Akwaaba" (welcome) naturally when greeting, but keep it professional.
+- Guide students directly to the appropriate page for actions (e.g., "Please go to the Student Info page to register your student details.").
+- If you don't know the answer to something, politely direct them to the Contact page.`;
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -29,13 +32,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { messages } = await req.json();
+    const { messages, systemPrompt, model, appContext } = await req.json();
     if (!Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "messages array required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const finalSystemPrompt = `${systemPrompt || SYSTEM_PROMPT}${
+      appContext ? `\n\n${appContext}` : ""
+    }`;
 
     const upstream = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -44,10 +51,10 @@ Deno.serve(async (req) => {
         "Lovable-API-Key": LOVABLE_API_KEY,
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: model || "google/gemini-3.5-flash",
         stream: true,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: finalSystemPrompt },
           ...messages.map((m: { role: string; content: string }) => ({
             role: m.role,
             content: m.content,
@@ -59,16 +66,22 @@ Deno.serve(async (req) => {
     if (!upstream.ok) {
       const errText = await upstream.text();
       if (upstream.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please wait a moment." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ error: "Rate limit exceeded. Please wait a moment." }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
       }
       if (upstream.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Ask admin to top up." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ error: "AI credits exhausted. Ask admin to top up." }),
+          {
+            status: 402,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
       }
       return new Response(JSON.stringify({ error: `AI gateway error: ${errText}` }), {
         status: upstream.status,

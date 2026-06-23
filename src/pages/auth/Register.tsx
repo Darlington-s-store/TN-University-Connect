@@ -140,7 +140,10 @@ export default function Register() {
                   Your account has been created. Redirecting to your dashboard...
                 </p>
               </div>
-              <Button asChild className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+              <Button
+                asChild
+                className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+              >
                 <Link to="/dashboard">Go to Dashboard</Link>
               </Button>
             </div>
@@ -161,15 +164,17 @@ export default function Register() {
           <div className="h-1 bg-gradient-to-r from-ghana-red via-ghana-gold to-ghana-green" />
           <div className="p-6 sm:p-8 space-y-5">
             <div className="text-center space-y-1.5">
-              <h1 className="text-2xl font-bold text-foreground tracking-tight">Create your account</h1>
-              <p className="text-muted-foreground text-sm">
-                Join the TN Universities network
-              </p>
+              <h1 className="text-2xl font-bold text-foreground tracking-tight">
+                Create your account
+              </h1>
+              <p className="text-muted-foreground text-sm">Join the TN Universities network</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-xs font-semibold text-foreground">Full name</Label>
+                <Label htmlFor="name" className="text-xs font-semibold text-foreground">
+                  Full name
+                </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -188,7 +193,9 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs font-semibold text-foreground">Email address</Label>
+                <Label htmlFor="email" className="text-xs font-semibold text-foreground">
+                  Email address
+                </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -208,7 +215,9 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-xs font-semibold text-foreground">Phone number</Label>
+                <Label htmlFor="phone" className="text-xs font-semibold text-foreground">
+                  Phone number
+                </Label>
                 <PhoneInput
                   id="phone"
                   value={form.phone}
@@ -222,7 +231,9 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-xs font-semibold text-foreground">Password</Label>
+                <Label htmlFor="password" className="text-xs font-semibold text-foreground">
+                  Password
+                </Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -257,8 +268,19 @@ export default function Register() {
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
                     </svg>
                     Creating account...
                   </span>
@@ -285,13 +307,27 @@ export default function Register() {
                   {googleLoading ? (
                     <Button disabled variant="outline" className="w-full h-11">
                       <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
                       </svg>
                       Connecting Google...
                     </Button>
                   ) : isMockClientId(CLIENT_ID) ? (
-                    <MockGoogleButton onClick={() => handleGoogleSuccess({ credential: "mock-credential" })} />
+                    <MockGoogleButton
+                      onClick={() => handleGoogleSuccess({ credential: "mock-credential" })}
+                    />
                   ) : (
                     <div className="w-full [&>div]:!w-full [&_iframe]:!w-full">
                       <GoogleLogin

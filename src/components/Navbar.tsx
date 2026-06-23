@@ -1,14 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Menu,
-  X,
-  LogIn,
-  UserPlus,
-  ChevronDown,
-  User as UserIcon,
-} from "lucide-react";
+import { Menu, X, LogIn, UserPlus, ChevronDown, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
@@ -41,7 +34,6 @@ export default function Navbar() {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
 
   return (
     <header
@@ -76,7 +68,6 @@ export default function Navbar() {
 
         <div className="flex items-center gap-2">
           <NotificationBell role={user?.role === "admin" ? "admin" : "public"} />
-
 
           {/* Desktop Auth Buttons / Dropdowns */}
           <div className="hidden lg:flex items-center gap-2">

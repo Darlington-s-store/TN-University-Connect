@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.window", "deno.unstable"],
+    "types": ["npm:@supabase/supabase-js"]
+  },
+  "importMap": "./import_map.json"
+}

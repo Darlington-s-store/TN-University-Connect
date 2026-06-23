@@ -4,6 +4,15 @@ import { MessageCircle, X, Send, Volume2, VolumeX, Loader2, RotateCcw } from "lu
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import {
+  getSettings,
+  getAnnouncements,
+  getBlogs,
+  type SiteSettings,
+  type Announcement,
+  type BlogPost,
+} from "@/lib/data";
+import { useAuth } from "@/lib/auth";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -20,7 +29,7 @@ function speak(text: string) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   try {
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text.replace(/[*_`#>\[\]()]/g, ""));
+    const u = new SpeechSynthesisUtterance(text.replace(/[*_`#>[\]()]/g, ""));
     u.rate = 1;
     u.pitch = 1;
     u.lang = "en-US";
@@ -37,6 +46,9 @@ function speak(text: string) {
 
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [messages, setMessages] = useState<ChatMsg[]>([GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,6 +58,36 @@ export default function ChatBot() {
   });
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [settingsData, annData, blogData] = await Promise.allSettled([
+          getSettings(),
+          getAnnouncements(),
+          getBlogs(),
+        ]);
+        if (settingsData.status === "fulfilled") setSiteSettings(settingsData.value);
+        if (annData.status === "fulfilled") setAnnouncements(annData.value);
+        if (blogData.status === "fulfilled") setBlogs(blogData.value);
+      } catch (err) {
+        console.warn("Failed to load application data for chatbot:", err);
+      }
+    }
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    if (siteSettings?.chatbotGreeting) {
+      setMessages((prev) => {
+        if (prev.length === 1 && prev[0].content === GREETING.content) {
+          return [{ role: "assistant", content: siteSettings.chatbotGreeting }];
+        }
+        return prev;
+      });
+    }
+  }, [siteSettings]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_VOICE_KEY, voiceOn ? "1" : "0");
@@ -78,11 +120,67 @@ export default function ChatBot() {
     let assistant = "";
     setMessages((m) => [...m, { role: "assistant", content: "" }]);
 
+    // Construct application context to feed the chatbot
+    const userCtxText = user
+      ? `Logged-in User Profile:
+- Name: ${user.name}
+- Email: ${user.email}
+- Role: ${user.role}
+- University: ${user.university || "Not set"}
+- Department: ${user.department || "Not set"}
+- Level: ${user.level || "Not set"}
+- Profile Complete: ${user.profileComplete ? "Yes" : "No"}`
+      : "User status: Guest / Not logged in";
+
+    const annsCtxText =
+      announcements.length > 0
+        ? `Active Announcements:
+${announcements
+  .slice(0, 5)
+  .map((a) => `- [Announcement] Title: "${a.title}" (Date: ${a.date}) | Excerpt: "${a.excerpt}"`)
+  .join("\n")}`
+        : "No active announcements found.";
+
+    const blogsCtxText =
+      blogs.length > 0
+        ? `Recent Blogs:
+${blogs
+  .slice(0, 5)
+  .map((b) => `- [Blog] Title: "${b.title}" by ${b.author} | Excerpt: "${b.excerpt}"`)
+  .join("\n")}`
+        : "No recent blog posts found.";
+
+    const siteSettingsCtxText = siteSettings
+      ? `Site Configuration:
+- Site Name: ${siteSettings.siteName}
+- Tagline: ${siteSettings.tagline}
+- Contact Email: ${siteSettings.contactEmail}
+- Contact Phone: ${siteSettings.contactPhone}
+- Description: ${siteSettings.description}
+- Registration Open: ${siteSettings.allowRegistration ? "Yes" : "No"}`
+      : "";
+
+    const appContextPrompt = `
+[Application Context]
+${userCtxText}
+
+${siteSettingsCtxText}
+
+${annsCtxText}
+
+${blogsCtxText}
+`;
+
     try {
       const res = await fetch(FUNCTIONS_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history }),
+        body: JSON.stringify({
+          messages: history,
+          systemPrompt: siteSettings?.chatbotSystemPrompt,
+          model: siteSettings?.chatbotModel,
+          appContext: appContextPrompt,
+        }),
       });
 
       if (!res.ok || !res.body) {
@@ -141,8 +239,17 @@ export default function ChatBot() {
 
   const reset = () => {
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-    setMessages([GREETING]);
+    setMessages([
+      {
+        role: "assistant",
+        content: siteSettings?.chatbotGreeting || GREETING.content,
+      },
+    ]);
   };
+
+  if (siteSettings && !siteSettings.chatbotEnabled) {
+    return null;
+  }
 
   return (
     <>
@@ -183,7 +290,7 @@ export default function ChatBot() {
                     TN
                   </div>
                   <div>
-                    <div className="font-semibold text-sm">TN Connect Assistant</div>
+                    <div className="font-semibold text-sm">TN Uniconnect Assistant</div>
                     <div className="text-[11px] text-white/70 flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
                       Online · AI powered
@@ -226,11 +333,12 @@ export default function ChatBot() {
                         : "bg-card border border-border text-foreground rounded-bl-sm",
                     )}
                   >
-                    {m.content || (loading && idx === messages.length - 1 ? (
-                      <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Thinking…
-                      </span>
-                    ) : null)}
+                    {m.content ||
+                      (loading && idx === messages.length - 1 ? (
+                        <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" /> Thinking…
+                        </span>
+                      ) : null)}
                   </div>
                 </div>
               ))}
@@ -259,7 +367,11 @@ export default function ChatBot() {
                   size="icon"
                   className="h-10 w-10 shrink-0 bg-primary hover:bg-primary/90"
                 >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
               <p className="text-[10px] text-muted-foreground mt-1.5 text-center">

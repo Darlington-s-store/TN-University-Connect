@@ -25,7 +25,11 @@ interface NotificationBellProps {
   triggerClassName?: string;
 }
 
-export default function NotificationBell({ role, iconClassName, triggerClassName }: NotificationBellProps) {
+export default function NotificationBell({
+  role,
+  iconClassName,
+  triggerClassName,
+}: NotificationBellProps) {
   const [items, setItems] = useState<AppNotification[]>([]);
   const navigate = useNavigate();
 
@@ -45,7 +49,12 @@ export default function NotificationBell({ role, iconClassName, triggerClassName
       .channel(`notif-${role}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "notifications", filter: `recipient_role=eq.${role}` },
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `recipient_role=eq.${role}`,
+        },
         () => load(),
       )
       .subscribe();
@@ -122,7 +131,9 @@ export default function NotificationBell({ role, iconClassName, triggerClassName
                   {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                 </span>
               </div>
-              <div className={`leading-snug w-full ${!n.is_read ? "font-bold text-secondary" : "text-foreground/80"}`}>
+              <div
+                className={`leading-snug w-full ${!n.is_read ? "font-bold text-secondary" : "text-foreground/80"}`}
+              >
                 {n.title}
               </div>
               {n.body && (

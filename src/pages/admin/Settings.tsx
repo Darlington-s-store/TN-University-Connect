@@ -21,6 +21,20 @@ export default function AdminSettings() {
     allowRegistration: true,
     emailNotifications: true,
     maintenance: false,
+    chatbotEnabled: true,
+    chatbotGreeting:
+      "Hi! I'm your TN Uniconnect assistant 👋 Ask me anything about registration, scholarships, or campus life.",
+    chatbotSystemPrompt: `You are Rawlings, the lead community coordinator and student support representative for TN Uniconnect (a platform connecting Ghanaian university students).
+
+CRITICAL INSTRUCTIONS:
+- You are a real human community coordinator, NOT an AI. Never refer to yourself as an AI, bot, large language model, or virtual assistant.
+- NEVER start responses with AI filler/boilerplates (like "Certainly!", "I would be happy to help...", "Here is what you need to know...", "As an AI assistant..."). Start answering the question directly.
+- NEVER end responses with polite robotic sign-offs (like "Let me know if you need anything else!", "I hope this helps!", "How else can I assist you today?"). Just end naturally.
+- Keep responses extremely short, concise, and direct (typically 1 to 3 sentences max).
+- Speak with a warm, polite, and authentic Ghanaian tone. You can use common polite phrases like "Please" or short, friendly terms like "Chale" (friend) or "Akwaaba" (welcome) naturally when greeting, but keep it professional.
+- Guide students directly to the appropriate page for actions (e.g., "Please head over to the Student Info page to register your student details.").
+`,
+    chatbotModel: "google/gemini-3.5-flash",
   });
   const [loading, setLoading] = useState(true);
 
@@ -135,6 +149,68 @@ export default function AdminSettings() {
               </div>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6 space-y-4">
+          <h3 className="font-bold text-secondary text-lg">TN Uniconnect ChatBot</h3>
+          <div className="flex justify-between items-center">
+            <div>
+              <div className="font-medium text-secondary">Enable ChatBot assistant</div>
+              <div className="text-sm text-muted-foreground">
+                Show the floating ChatBot launcher on all pages.
+              </div>
+            </div>
+            <Switch
+              checked={settings.chatbotEnabled}
+              onCheckedChange={(v) => setSettings({ ...settings, chatbotEnabled: v })}
+            />
+          </div>
+
+          {settings.chatbotEnabled && (
+            <>
+              <Separator className="my-3" />
+              <div className="space-y-4">
+                <div>
+                  <Label>Greeting Message</Label>
+                  <Textarea
+                    rows={2}
+                    value={settings.chatbotGreeting}
+                    onChange={(e) => setSettings({ ...settings, chatbotGreeting: e.target.value })}
+                    placeholder="Initial greeting message from the ChatBot..."
+                  />
+                </div>
+                <div>
+                  <Label>System Prompt / Rules</Label>
+                  <Textarea
+                    rows={8}
+                    value={settings.chatbotSystemPrompt}
+                    onChange={(e) =>
+                      setSettings({ ...settings, chatbotSystemPrompt: e.target.value })
+                    }
+                    placeholder="System instructions enforcing Rawlings personality, tone, and rules..."
+                  />
+                </div>
+                <div>
+                  <Label>AI Model</Label>
+                  <select
+                    value={settings.chatbotModel}
+                    onChange={(e) => setSettings({ ...settings, chatbotModel: e.target.value })}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1 cursor-pointer"
+                  >
+                    <option value="google/gemini-3.5-flash">
+                      Google Gemini 3.5 Flash (Fast, default)
+                    </option>
+                    <option value="google/gemini-3-flash-preview">
+                      Google Gemini 3 Flash Preview (Legacy)
+                    </option>
+                    <option value="openai/gpt-4o-mini">OpenAI GPT-4o Mini (Fast, logical)</option>
+                  </select>
+                </div>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 

@@ -87,7 +87,6 @@ export default function MemberLayout() {
     return "Dashboard";
   };
 
-
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       {/* Desktop Sidebar */}
@@ -117,7 +116,6 @@ export default function MemberLayout() {
 
           <div className="flex items-center gap-3">
             <NotificationBell role="member" />
-
 
             <div className="h-6 w-px bg-border mx-1"></div>
 

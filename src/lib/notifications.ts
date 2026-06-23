@@ -59,7 +59,11 @@ export async function markNotificationRead(id: string) {
 
 export async function markAllRead(role: "admin" | "member" | "public") {
   try {
-    await supabase.from("notifications").update({ is_read: true }).eq("recipient_role", role).eq("is_read", false);
+    await supabase
+      .from("notifications")
+      .update({ is_read: true })
+      .eq("recipient_role", role)
+      .eq("is_read", false);
   } catch (err) {
     console.warn("[notifications] mark all failed:", err);
   }

@@ -75,6 +75,10 @@ export type SiteSettings = {
   allowRegistration: boolean;
   emailNotifications: boolean;
   maintenance: boolean;
+  chatbotEnabled: boolean;
+  chatbotGreeting: string;
+  chatbotSystemPrompt: string;
+  chatbotModel: string;
 };
 
 export const UNIVERSITIES = [

@@ -103,8 +103,6 @@ export default function AdminLayout() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-
-
   const getPageTitle = () => {
     const item = items.find((i) => i.to === location.pathname);
     if (item) return item.label;
@@ -150,7 +148,6 @@ export default function AdminLayout() {
 
           <div className="flex items-center gap-2 sm:gap-4">
             <NotificationBell role="admin" />
-
 
             <div className="h-8 w-px bg-border mx-1"></div>
 
