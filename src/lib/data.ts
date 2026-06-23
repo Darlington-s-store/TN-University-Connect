@@ -491,13 +491,18 @@ export const saveSettings = async (settings: Partial<SiteSettings>): Promise<Sit
 };
 
 export const resetPasswordAdmin = async (userId: string, newPassword: string): Promise<void> => {
-  const res = await fetch(`${API_URL}/api/auth/admin/reset-password`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ user_id: userId, password: newPassword }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to reset password");
+  try {
+    const raw = localStorage.getItem("tnu_users");
+    if (!raw) return;
+    const users = JSON.parse(raw) as Array<{ id: string; password?: string }>;
+    const idx = users.findIndex((u) => u.id === userId);
+    if (idx >= 0) {
+      users[idx].password = newPassword;
+      localStorage.setItem("tnu_users", JSON.stringify(users));
+    }
+  } catch {
+    /* noop */
+  }
 };
 
 // ---------- Analytics ----------
