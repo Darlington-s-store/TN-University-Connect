@@ -98,6 +98,7 @@ interface FullStudent {
   joinedAt?: string;
   schoolType?: string;
   uniType?: string;
+  avatar?: string;
 }
 
 export default function AdminStudents() {
