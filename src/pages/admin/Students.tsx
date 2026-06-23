@@ -1730,6 +1730,33 @@ export default function AdminStudents() {
 
           {viewingStudent && (
             <div className="space-y-6">
+              {/* Avatar & headline */}
+              <div className="flex items-center gap-4 p-4 bg-slate-50/70 border border-slate-100 rounded-2xl">
+                {viewingStudent.avatar ? (
+                  <img
+                    src={viewingStudent.avatar}
+                    alt={viewingStudent.fullName}
+                    className="h-20 w-20 rounded-full object-cover border-2 border-primary/30 shadow"
+                  />
+                ) : (
+                  <div className="h-20 w-20 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-foreground grid place-items-center text-2xl font-bold">
+                    {viewingStudent.fullName
+                      ?.split(" ")
+                      .map((p) => p[0])
+                      .slice(0, 2)
+                      .join("") || "?"}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="text-base font-extrabold text-secondary truncate">
+                    {viewingStudent.fullName}
+                  </div>
+                  <div className="text-xs text-muted-foreground truncate">{viewingStudent.email}</div>
+                  <div className="text-[11px] text-primary font-semibold mt-0.5">
+                    {viewingStudent.phone}
+                  </div>
+                </div>
+              </div>
               {/* Security Credentials */}
               <div className="p-4 bg-red-50/50 border border-red-100 rounded-2xl">
                 <h4 className="text-xs uppercase tracking-wider text-ghana-red font-extrabold mb-3 flex items-center gap-1.5">
