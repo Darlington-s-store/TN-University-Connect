@@ -12,7 +12,7 @@ import {
   type Announcement,
   type BlogPost,
 } from "@/lib/data";
-import { NICHES, UNIVERSITIES_GHANA } from "@/lib/schools";
+import { NICHES, GHANA_SCHOOLS } from "@/lib/schools";
 import { useAuth } from "@/lib/auth";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
