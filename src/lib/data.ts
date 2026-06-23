@@ -396,7 +396,7 @@ export const submitStudentForm = async (student: Partial<Student>): Promise<Stud
     niche: student.niche,
     schoolType: student.schoolType,
     uniType: student.uniType,
-    avatar: student.avatar || session?.avatar,
+    avatar: student.avatar || (idx >= 0 ? list[idx].avatar : undefined) || session?.avatar,
     joinedAt: idx >= 0 ? list[idx].joinedAt : new Date().toISOString(),
   };
 
