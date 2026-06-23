@@ -1,4 +1,6 @@
-import { toast } from "sonner";
+// Mock OTP system - in production this would email the code.
+// For the demo we generate the code, store it in localStorage with a TTL,
+// and return it so the UI can surface it (toast) for testing.
 
 export interface VerificationData {
   email: string;
@@ -8,73 +10,48 @@ export interface VerificationData {
 }
 
 const STORAGE_KEY = "tnu_active_verification";
+const TTL_MS = 10 * 60 * 1000;
 
-/**
- * Generates a 6-digit verification code.
- */
 export function generateCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
 /**
- * Sends verification code via the backend API.
+ * Generates a 6-digit OTP, stores it, and returns the code so the demo UI
+ * can display it (acts as the "email" delivery channel for this mock build).
  */
 export async function sendVerificationCode(email: string, phone: string): Promise<string> {
-  // Save details to localStorage to track the active verification identifier (email)
-  const expiresAt = Date.now() + 10 * 60 * 1000;
-  const data = { email, phone, expiresAt };
+  const code = generateCode();
+  const data: VerificationData = {
+    email: email.trim().toLowerCase(),
+    phone,
+    code,
+    expiresAt: Date.now() + TTL_MS,
+  };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-  const response = await fetch(`${API_URL}/api/verification/send`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, phone }),
-  });
-
-  if (!response.ok) {
-    const errorBody = await response.json();
-    throw new Error(errorBody.message || "Failed to send verification code.");
-  }
-
-  // The actual OTP code is stored securely in the database and not sent back in the response body.
-  return "code_sent";
+  // Tiny artificial delay so it feels like a network roundtrip
+  await new Promise((r) => setTimeout(r, 350));
+  return code;
 }
 
-/**
- * Verifies the code entered by the user via the backend API.
- */
-export async function verifyCode(enteredCode: string): Promise<boolean> {
+export async function verifyCode(enteredCode: string, email?: string): Promise<boolean> {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return false;
-
   try {
-    const data = JSON.parse(raw);
+    const data: VerificationData = JSON.parse(raw);
     if (Date.now() > data.expiresAt) {
-      toast.error("Verification code has expired. Please request a new one.");
+      localStorage.removeItem(STORAGE_KEY);
       return false;
     }
-
-    const response = await fetch(`${API_URL}/api/verification/verify`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        code: enteredCode.trim(),
-        identifier: data.email, // Identify the verification record using the email
-      }),
-    });
-
-    if (response.ok) {
-      localStorage.removeItem(STORAGE_KEY); // clean up
-      return true;
-    }
-  } catch (e) {
-    console.error("Verification connection error:", e);
+    if (email && data.email !== email.trim().toLowerCase()) return false;
+    const ok = data.code === enteredCode.trim();
+    if (ok) localStorage.removeItem(STORAGE_KEY);
+    return ok;
+  } catch {
+    return false;
   }
-  return false;
+}
+
+export function clearVerification() {
+  localStorage.removeItem(STORAGE_KEY);
 }

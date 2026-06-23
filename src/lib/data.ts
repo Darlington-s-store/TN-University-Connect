@@ -64,6 +64,9 @@ export type Student = {
   niche?: string;
   schoolType?: string;
   uniType?: string;
+  avatar?: string;
+  joinedAt?: string;
+  password?: string;
 };
 
 export type SiteSettings = {
@@ -294,63 +297,156 @@ export const deleteMessage = async (id: string): Promise<void> => {
   if (!res.ok) throw new Error(data.message || "Failed to delete message");
 };
 
-// ---------- Students ----------
+// ---------- Students (mock, localStorage-backed) ----------
+const STUDENTS_KEY = "tnu_students";
+
+interface SessionUser {
+  id: string;
+  email: string;
+  name?: string;
+  phone?: string;
+  avatar?: string;
+}
+
+const getSessionUser = (): SessionUser | null => {
+  try {
+    const raw = localStorage.getItem("tnu_session_user");
+    return raw ? (JSON.parse(raw) as SessionUser) : null;
+  } catch {
+    return null;
+  }
+};
+
+const readStudents = (): Student[] => {
+  try {
+    const raw = localStorage.getItem(STUDENTS_KEY);
+    return raw ? (JSON.parse(raw) as Student[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+const writeStudents = (list: Student[]) => {
+  localStorage.setItem(STUDENTS_KEY, JSON.stringify(list));
+};
+
+const getAuthUserAvatar = (email?: string): string | undefined => {
+  try {
+    const raw = localStorage.getItem("tnu_users");
+    if (!raw || !email) return undefined;
+    const users = JSON.parse(raw) as Array<{ email: string; avatar?: string }>;
+    return users.find((u) => u.email.toLowerCase() === email.toLowerCase())?.avatar;
+  } catch {
+    return undefined;
+  }
+};
+
 export const getStudents = async (): Promise<Student[]> => {
-  const res = await fetch(`${API_URL}/api/students/admin/all`, {
-    headers: getAuthHeaders(),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to fetch student profiles");
-  return data.students;
+  const list = readStudents();
+  return list.map((s) => ({ ...s, avatar: s.avatar || getAuthUserAvatar(s.email) }));
 };
 
 export const getStudentById = async (id: string): Promise<Student> => {
-  const res = await fetch(`${API_URL}/api/students/admin/${id}`, {
-    headers: getAuthHeaders(),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to fetch student details");
-  return data.student;
+  const list = readStudents();
+  const s = list.find((x) => x.id === id);
+  if (!s) throw new Error("Student not found");
+  return { ...s, avatar: s.avatar || getAuthUserAvatar(s.email) };
 };
 
 export const getStudentMe = async (): Promise<Student | null> => {
-  const res = await fetch(`${API_URL}/api/students/me`, {
-    headers: getAuthHeaders(),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to fetch own student profile");
-  return data.student;
+  const session = getSessionUser();
+  if (!session) return null;
+  const list = readStudents();
+  const mine =
+    list.find((s) => s.userId === session.id) ||
+    list.find((s) => s.email.toLowerCase() === session.email.toLowerCase());
+  if (!mine) return null;
+  return { ...mine, avatar: mine.avatar || session.avatar };
 };
 
 export const submitStudentForm = async (student: Partial<Student>): Promise<Student> => {
-  const res = await fetch(`${API_URL}/api/students`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(student),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to submit student form");
-  return data.student;
+  const session = getSessionUser();
+  const list = readStudents();
+  const email = (student.email || session?.email || "").toLowerCase();
+  const idx = list.findIndex(
+    (s) =>
+      (session && s.userId === session.id) ||
+      (email && s.email.toLowerCase() === email),
+  );
+
+  const base: Student = {
+    id: idx >= 0 ? list[idx].id : `s-${Date.now()}`,
+    userId: session?.id,
+    fullName: student.fullName || session?.name || "",
+    email: student.email || session?.email || "",
+    phone: student.phone || session?.phone || "",
+    gender: student.gender || "other",
+    dob: student.dob || new Date().toISOString().slice(0, 10),
+    university: student.university || "",
+    faculty: student.faculty,
+    department: student.department || "",
+    program: student.program || "",
+    level: student.level || "",
+    indexNumber: student.indexNumber || `STU${Math.floor(100000 + Math.random() * 900000)}`,
+    address: student.address || "",
+    submittedAt: idx >= 0 ? list[idx].submittedAt : new Date().toISOString(),
+    nationality: student.nationality,
+    status: student.status,
+    church: student.church,
+    niche: student.niche,
+    schoolType: student.schoolType,
+    uniType: student.uniType,
+    avatar: student.avatar || (idx >= 0 ? list[idx].avatar : undefined) || session?.avatar,
+    joinedAt: idx >= 0 ? list[idx].joinedAt : new Date().toISOString(),
+  };
+
+  if (idx >= 0) list[idx] = { ...list[idx], ...base };
+  else list.push(base);
+  writeStudents(list);
+  return base;
 };
 
 export const deleteStudent = async (id: string): Promise<void> => {
-  const res = await fetch(`${API_URL}/api/students/admin/${id}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to delete student profile");
+  writeStudents(readStudents().filter((s) => s.id !== id));
 };
 
 export const saveStudentAdmin = async (student: Partial<Student>): Promise<Student> => {
-  const res = await fetch(`${API_URL}/api/students/admin/save`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(student),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to save student profile");
-  return data.student;
+  const list = readStudents();
+  const email = (student.email || "").toLowerCase();
+  const idx = list.findIndex(
+    (s) =>
+      (student.userId && s.userId === student.userId) ||
+      (email && s.email.toLowerCase() === email),
+  );
+  const base: Student = {
+    id: idx >= 0 ? list[idx].id : `s-${Date.now()}`,
+    userId: student.userId,
+    fullName: student.fullName || "",
+    email: student.email || "",
+    phone: student.phone || "",
+    gender: student.gender || "other",
+    dob: student.dob || new Date().toISOString().slice(0, 10),
+    university: student.university || "",
+    faculty: student.faculty,
+    department: student.department || "",
+    program: student.program || "",
+    level: student.level || "",
+    indexNumber: student.indexNumber || `STU${Math.floor(100000 + Math.random() * 900000)}`,
+    address: student.address || "Accra, Ghana",
+    submittedAt: idx >= 0 ? list[idx].submittedAt : new Date().toISOString(),
+    nationality: student.nationality || "Ghanaian",
+    status: student.status || "Active Student",
+    church: student.church || "None",
+    niche: student.niche || "General Studies",
+    schoolType: student.schoolType,
+    uniType: student.uniType,
+    avatar: student.avatar || (idx >= 0 ? list[idx].avatar : undefined) || getAuthUserAvatar(student.email),
+    joinedAt: idx >= 0 ? list[idx].joinedAt : new Date().toISOString(),
+  };
+  if (idx >= 0) list[idx] = { ...list[idx], ...base };
+  else list.push(base);
+  writeStudents(list);
+  return base;
 };
 
 export const sendMessageAdmin = async (params: {
@@ -364,14 +460,15 @@ export const sendMessageAdmin = async (params: {
   message: string;
   details: { emailSent: boolean; smsSent: boolean };
 }> => {
-  const res = await fetch(`${API_URL}/api/students/admin/send-message`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(params),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to send message to student");
-  return data;
+  // Mocked send — pretends to deliver to the chosen channel.
+  return {
+    success: true,
+    message: `Message queued for ${params.email || params.phone}`,
+    details: {
+      emailSent: params.channel !== "sms",
+      smsSent: params.channel !== "email",
+    },
+  };
 };
 
 // ---------- Settings ----------
@@ -394,13 +491,18 @@ export const saveSettings = async (settings: Partial<SiteSettings>): Promise<Sit
 };
 
 export const resetPasswordAdmin = async (userId: string, newPassword: string): Promise<void> => {
-  const res = await fetch(`${API_URL}/api/auth/admin/reset-password`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ user_id: userId, password: newPassword }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to reset password");
+  try {
+    const raw = localStorage.getItem("tnu_users");
+    if (!raw) return;
+    const users = JSON.parse(raw) as Array<{ id: string; password?: string }>;
+    const idx = users.findIndex((u) => u.id === userId);
+    if (idx >= 0) {
+      users[idx].password = newPassword;
+      localStorage.setItem("tnu_users", JSON.stringify(users));
+    }
+  } catch {
+    /* noop */
+  }
 };
 
 // ---------- Analytics ----------
