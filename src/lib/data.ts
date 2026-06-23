@@ -440,7 +440,7 @@ export const saveStudentAdmin = async (student: Partial<Student>): Promise<Stude
     niche: student.niche || "General Studies",
     schoolType: student.schoolType,
     uniType: student.uniType,
-    avatar: student.avatar,
+    avatar: student.avatar || (idx >= 0 ? list[idx].avatar : undefined) || getAuthUserAvatar(student.email),
     joinedAt: idx >= 0 ? list[idx].joinedAt : new Date().toISOString(),
   };
   if (idx >= 0) list[idx] = { ...list[idx], ...base };
