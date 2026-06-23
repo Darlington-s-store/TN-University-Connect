@@ -781,12 +781,33 @@ export default function AdminStudents() {
                     {filteredList.map((s) => (
                       <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
                         <td className="py-3 px-2">
-                          <div className="font-extrabold text-secondary leading-snug">
-                            {s.fullName}
-                          </div>
-                          <div className="text-xs text-muted-foreground">{s.email}</div>
-                          <div className="text-[10px] text-primary font-semibold mt-0.5">
-                            {s.phone}
+                          <div className="flex items-center gap-3">
+                            {s.avatar ? (
+                              <img
+                                src={s.avatar}
+                                alt={s.fullName}
+                                className="h-10 w-10 rounded-full object-cover border border-slate-200 shrink-0"
+                              />
+                            ) : (
+                              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-foreground grid place-items-center text-xs font-bold shrink-0">
+                                {s.fullName
+                                  ? s.fullName
+                                      .split(" ")
+                                      .map((p) => p[0])
+                                      .slice(0, 2)
+                                      .join("")
+                                  : "?"}
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <div className="font-extrabold text-secondary leading-snug truncate">
+                                {s.fullName}
+                              </div>
+                              <div className="text-xs text-muted-foreground truncate">{s.email}</div>
+                              <div className="text-[10px] text-primary font-semibold mt-0.5">
+                                {s.phone}
+                              </div>
+                            </div>
                           </div>
                         </td>
                         <td className="py-3 px-2">
