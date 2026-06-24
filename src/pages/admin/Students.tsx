@@ -10,6 +10,12 @@ import {
   Key,
   Undo2,
   Mail,
+  User as UserIcon,
+  GraduationCap,
+  Calendar,
+  Phone,
+  School,
+  BookOpen,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -1721,120 +1727,216 @@ export default function AdminStudents() {
 
       {/* DIALOG: VIEW DETAILS (Exposes password!) */}
       <Dialog open={!!viewingStudent} onOpenChange={(o) => !o && setViewingStudent(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto pr-1 md:pr-4 custom-scrollbar">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-secondary flex items-center gap-2">
+            <DialogTitle className="text-xl font-extrabold text-secondary flex items-center gap-2">
               Student Audit: {viewingStudent?.fullName}
             </DialogTitle>
           </DialogHeader>
 
           {viewingStudent && (
-            <div className="space-y-6">
-              {/* Avatar & headline */}
-              <div className="flex items-center gap-4 p-4 bg-slate-50/70 border border-slate-100 rounded-2xl">
-                {viewingStudent.avatar ? (
-                  <img
-                    src={viewingStudent.avatar}
-                    alt={viewingStudent.fullName}
-                    className="h-20 w-20 rounded-full object-cover border-2 border-primary/30 shadow"
-                  />
-                ) : (
-                  <div className="h-20 w-20 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-foreground grid place-items-center text-2xl font-bold">
-                    {viewingStudent.fullName
-                      ?.split(" ")
-                      .map((p) => p[0])
-                      .slice(0, 2)
-                      .join("") || "?"}
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <div className="text-base font-extrabold text-secondary truncate">
-                    {viewingStudent.fullName}
-                  </div>
-                  <div className="text-xs text-muted-foreground truncate">{viewingStudent.email}</div>
-                  <div className="text-[11px] text-primary font-semibold mt-0.5">
-                    {viewingStudent.phone}
-                  </div>
-                </div>
-              </div>
-              {/* Security Credentials */}
-              <div className="p-4 bg-red-50/50 border border-red-100 rounded-2xl">
-                <h4 className="text-xs uppercase tracking-wider text-ghana-red font-extrabold mb-3 flex items-center gap-1.5">
-                  <ShieldAlert className="h-4 w-4" /> Account Credentials
-                </h4>
-                <div className="grid sm:grid-cols-2 gap-4 text-xs">
-                  <div>
-                    <span className="text-muted-foreground">Login Email:</span>
-                    <div className="font-bold text-secondary mt-0.5">{viewingStudent.email}</div>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Account Password:</span>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <code className="bg-slate-100 px-2 py-0.5 rounded font-mono font-bold text-ghana-red text-sm">
-                        {showPassword ? viewingStudent.password : "••••••••••"}
-                      </code>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-7 px-2 text-[10px] font-bold"
-                        onClick={() => setShowPassword(!showPassword)}
+            <div className="space-y-6 my-2">
+              {/* Header card with gradient and premium styling */}
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-6 text-white shadow-lg border border-slate-800">
+                {/* Decorative background gradients */}
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-28 h-28 bg-indigo-500/20 rounded-full blur-xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-28 h-28 bg-emerald-500/10 rounded-full blur-xl pointer-events-none" />
+
+                <div className="relative flex flex-col md:flex-row items-center gap-6">
+                  {viewingStudent.avatar ? (
+                    <img
+                      src={viewingStudent.avatar}
+                      alt={viewingStudent.fullName}
+                      className="h-24 w-24 rounded-full object-cover border-4 border-indigo-500/30 shadow-2xl shrink-0"
+                    />
+                  ) : (
+                    <div className="h-24 w-24 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 text-white grid place-items-center text-3xl font-extrabold shadow-2xl border-4 border-indigo-500/30 shrink-0">
+                      {viewingStudent.fullName
+                        ?.split(" ")
+                        .map((p) => p[0])
+                        .slice(0, 2)
+                        .join("") || "?"}
+                    </div>
+                  )}
+
+                  <div className="text-center md:text-left space-y-2 min-w-0 flex-1">
+                    <div>
+                      <h3 className="text-2xl font-black tracking-tight truncate">
+                        {viewingStudent.fullName}
+                      </h3>
+                      <p className="text-sm text-indigo-200/90 font-medium truncate flex items-center justify-center md:justify-start gap-1.5 mt-0.5">
+                        <Mail className="h-3.5 w-3.5 shrink-0" /> {viewingStudent.email}
+                      </p>
+                      <p className="text-xs text-indigo-300/80 font-medium flex items-center justify-center md:justify-start gap-1.5 mt-0.5">
+                        <Phone className="h-3.5 w-3.5 shrink-0" /> {viewingStudent.phone}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1">
+                      <Badge className="bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 border border-indigo-500/30 font-bold px-2.5 py-1 text-xs rounded-full">
+                        {viewingStudent.niche}
+                      </Badge>
+                      <Badge
+                        className={`border font-bold px-2.5 py-1 text-xs rounded-full ${
+                          viewingStudent.status === "Active Student"
+                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                            : viewingStudent.status === "Alumni"
+                              ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
+                              : "bg-rose-500/10 border-rose-500/30 text-rose-300"
+                        }`}
                       >
-                        {showPassword ? "Hide" : "Reveal Plaintext"}
-                      </Button>
+                        {viewingStudent.status}
+                      </Badge>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Personal Details */}
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-xs">
-                {[
-                  ["Gender", viewingStudent.gender],
-                  ["Nationality", viewingStudent.nationality],
-                  ["Phone Number", viewingStudent.phone],
-                  ["Church", viewingStudent.church],
-                  ["Date of Birth", viewingStudent.dob],
-                  [
-                    "Account Created",
-                    viewingStudent.joinedAt
-                      ? new Date(viewingStudent.joinedAt).toLocaleString("en-GB")
-                      : "N/A",
-                  ],
-                ].map(([k, v]) => (
-                  <div key={k} className="border-b pb-2 border-slate-100">
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-0.5">
-                      {k}
-                    </div>
-                    <div className="font-bold text-secondary text-sm">{v}</div>
-                  </div>
-                ))}
-              </div>
+              {/* Grid sections */}
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Section 1: Personal & Account */}
+                <div className="space-y-6">
+                  {/* Account & Credentials */}
+                  <Card className="border border-slate-100 shadow-sm bg-white overflow-hidden rounded-xl">
+                    <CardHeader className="bg-slate-50/50 py-3 px-4 border-b border-slate-100">
+                      <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <ShieldAlert className="h-4 w-4 text-indigo-600" /> Account Security
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 space-y-4 text-xs">
+                      <div>
+                        <span className="text-muted-foreground font-medium">Authentication Email</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5">{viewingStudent.email}</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground font-medium">Access Password</span>
+                        <div className="flex items-center justify-between gap-2 mt-1 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                          <code className="font-mono font-bold text-rose-600 text-sm tracking-wider">
+                            {showPassword ? viewingStudent.password : "••••••••••"}
+                          </code>
+                          <Button
+                            size="sm"
+                            type="button"
+                            variant="ghost"
+                            className="h-7 px-2.5 text-[10px] font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50/50"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? "Hide" : "Reveal Plaintext"}
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-              {/* Academic Details */}
-              <div className="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-xs bg-slate-50/50 p-4 border rounded-2xl">
-                {[
-                  ["School Type", viewingStudent.schoolType || "University"],
-                  ["Ownership / Sub-type", viewingStudent.uniType || "N/A"],
-                  ["School / Institution", viewingStudent.university],
-                  ["Faculty", viewingStudent.faculty || "Not Specified"],
-                  ["Department", viewingStudent.department],
-                  ["Degree / Program", viewingStudent.program],
-                  ["Current Level", viewingStudent.level],
-                  ["Academic Status", viewingStudent.status],
-                  ["Niche Category", viewingStudent.niche],
-                  ["Index Number", viewingStudent.indexNumber || "N/A"],
-                ].map(([k, v]) => (
-                  <div key={k}>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-0.5">
-                      {k}
-                    </div>
-                    <div className="font-extrabold text-secondary text-sm">{v}</div>
-                  </div>
-                ))}
+                  {/* Personal Profile */}
+                  <Card className="border border-slate-100 shadow-sm bg-white overflow-hidden rounded-xl">
+                    <CardHeader className="bg-slate-50/50 py-3 px-4 border-b border-slate-100">
+                      <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <UserIcon className="h-4 w-4 text-indigo-600" /> Personal Profile
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 grid grid-cols-2 gap-4 text-xs">
+                      <div>
+                        <span className="text-muted-foreground font-medium">Gender</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5 capitalize">{viewingStudent.gender}</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground font-medium">Nationality</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5">{viewingStudent.nationality || "Ghanaian"}</div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground font-medium">Date of Birth</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5 flex items-center gap-1">
+                          <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> {viewingStudent.dob || "N/A"}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground font-medium">Church/Religion</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5">{viewingStudent.church || "None"}</div>
+                      </div>
+                      <div className="col-span-2 border-t pt-2 border-slate-100">
+                        <span className="text-muted-foreground font-medium">Registration Date</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5">
+                          {viewingStudent.joinedAt
+                            ? new Date(viewingStudent.joinedAt).toLocaleString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "N/A"}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Section 2: Academic Profile */}
+                <div className="space-y-6">
+                  <Card className="border border-slate-100 shadow-sm bg-white overflow-hidden rounded-xl h-full flex flex-col">
+                    <CardHeader className="bg-slate-50/50 py-3 px-4 border-b border-slate-100">
+                      <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <GraduationCap className="h-4 w-4 text-indigo-600" /> Academic Information
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 grid grid-cols-2 gap-x-4 gap-y-3.5 text-xs flex-1">
+                      <div className="col-span-2">
+                        <span className="text-muted-foreground font-medium">University / Institution</span>
+                        <div className="font-bold text-secondary text-sm mt-0.5 flex items-start gap-1.5">
+                          <School className="h-4 w-4 text-indigo-600 mt-0.5 shrink-0" />
+                          <span>{viewingStudent.university}</span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <span className="text-muted-foreground font-medium">School Type</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5">{viewingStudent.schoolType || "University"}</div>
+                      </div>
+                      
+                      <div>
+                        <span className="text-muted-foreground font-medium">Sub-Type</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5">
+                          <Badge className="bg-indigo-50 text-indigo-700 hover:bg-indigo-50 border-0 font-bold text-[10px]">
+                            {viewingStudent.uniType || "Public"}
+                          </Badge>
+                        </div>
+                      </div>
+                      
+                      <div className="col-span-2 border-t pt-2 border-slate-100">
+                        <span className="text-muted-foreground font-medium">Faculty</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5">{viewingStudent.faculty || "Not Specified"}</div>
+                      </div>
+
+                      <div className="col-span-2">
+                        <span className="text-muted-foreground font-medium">Department</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5">{viewingStudent.department}</div>
+                      </div>
+
+                      <div className="col-span-2">
+                        <span className="text-muted-foreground font-medium">Degree / Programme</span>
+                        <div className="font-bold text-secondary text-sm mt-0.5 flex items-start gap-1.5">
+                          <BookOpen className="h-4 w-4 text-indigo-600 mt-0.5 shrink-0" />
+                          <span>{viewingStudent.program}</span>
+                        </div>
+                      </div>
+
+                      <div className="border-t pt-2 border-slate-100">
+                        <span className="text-muted-foreground font-medium">Current Level</span>
+                        <div className="font-semibold text-secondary text-sm mt-0.5">Level {viewingStudent.level}</div>
+                      </div>
+
+                      <div className="border-t pt-2 border-slate-100">
+                        <span className="text-muted-foreground font-medium">Index Number</span>
+                        <div className="font-mono font-bold text-secondary text-sm mt-0.5">{viewingStudent.indexNumber || "N/A"}</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </div>
           )}
-          <DialogFooter>
+          <DialogFooter className="mt-4">
             <Button variant="outline" onClick={() => setViewingStudent(null)} className="font-bold">
               Close Portal
             </Button>
